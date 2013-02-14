@@ -1,205 +1,420 @@
-/* scriptweeder stylesheet */
+/* JSArmor CSS by laurenbacall (last update: 14/02/13) */
 
-html			{ background:transparent; }
-body			{ margin:0px; white-space:nowrap; font-family:Ubuntu,Tahoma,Sans; font-size:normal; }
+body			{ margin:0px; background:transparent;  }
+body > *		{ position:absolute; width:auto; height:auto; margin-bottom:0px; }
 
-/* font sizes */
-body.small_font		{ font-size:small; }
-body.large_font 	{ font-size:1.3em; }
-button,select,textarea	{ font-family:inherit; font-size:inherit;} /* why does opera 12.14 need this ?! */
-
-/* sane padding/margin sizing, please !  http://css-tricks.com/box-sizing/  */
-*			{ box-sizing:border-box; }
-
-#main			{ position:absolute; width:auto; height:auto; margin-bottom:0px; }
-
-/* main button */
-#main_button		{ border-width: 2px; margin: 0; float: none; } 
-
-.autohide		{ visibility:hidden; }
-:hover .autohide	{ visibility:visible }
-
-
-/*************************************************************************************************************/
-/* left/right/top/bottom layouts */
-
-body.right		{ direction:rtl; }
-body.right #main	{ direction:ltr; right:0; z-index:1; }
-body.right .submenu	{ z-index:0 }
-body.right #main_button	{ direction:rtl; }
-
-body.left		{ direction:ltr; }
-body.left #main		{ direction:ltr; left:0;  z-index:0; }
-body.left .submenu	{ z-index:1 }
-body.left #main_button	{ direction:ltr; }
-
-body.bottom #main	{ bottom:0; } /* bottom align */
-body.top #main		{ top:0; }    /* top align */
-
-
-/*************************************************************************************************************/
-
-/* host table */
-li#host_table				{ padding:0; }
-#host_table table			{ width:100%; } 
-#host_table table tr td			{ padding: 0px 0px 1px 0px;} 
-#host_table table tr:hover		{ background:#ddd }
-
-/* hostnames display */
-.td_not_loaded img		{ width:16px; height:16px; }  /* take up space even if all are empty */
-.fat_icons .td_not_loaded img	{ width:22px; height:22px; }  /* take up space even if all are empty */
-/* .td_checkbox */
-.td_host		{ color:#888; text-align:right; }
-.td_domain		{ color:#333; }
-.helper			{ color:#000; } /* helper domain */
-/* .td_iframe */
-.td_allowed_globally img		{ visibility:hidden; padding: 0px 3px; width:14px; height:14px;
-					  vertical-align:middle; background-size:contain; }
-.td_allowed_globally:hover img		{ visibility:visible; } 
-.td_allowed_globally.visible img	{ visibility:visible; }
-.td_script_count			{ text-align:right; }
-
-/* submenu */
-.submenu		{ position:absolute; }
-
-#options_details table				{ width:100% }
-.details_item , .options_item			{ text-align:center; }
-.details_item label, .options_item label	{ display:block; width:100%;
-						  border-radius:6px; padding:1px 5px; text-decoration:none; }
-.details_item label:hover, .options_item label:hover	{ background:#ddd }
-
-/*************************************************************************************************************/
-/* generic stuff */
-
-table					{ border-spacing:0px; border-collapse: collapse; }
-
-/* radio buttons (scope etc) */
-input[type=radio]			{ display:none; } 
-input[type=radio] + label:hover		{ background-color: #ddd; } 
-input[type=radio] + label		{ box-shadow:inset 0px 1px 0px 0px #ffffff; border-radius:6px; 
-					  border:1px solid #dcdcdc; background-color: #c7c7c7;  
-					  display:inline-block; padding:1px 5px; text-decoration:none; 
-					} 
-input[type=radio]:checked + label	{ background-color: #fa4; } 
-
-textarea				{ width:400px; height:300px; }
-
-a, a:visited				{ color:#00f }
-
-/* images */
-
-img	{ width:1px; height:1px; vertical-align:middle; 
-	  background-size:contain; background-repeat:no-repeat; background-position:center }
-
-/* only used by the extension toolbar button */
-#toolbar_button.disabled img	{ /*img_size*/ background-image:url('../img/disabled.png'); }
-
-/* bullet images by momentumdesignlab.com  */
-/* mode icons */
-.menu .block_all img, .menu .filtered  img, 
-.menu .relaxed   img, .menu .allow_all img { margin: 3px }
-.block_all img		{ /*img_size*/ background-image:url('../img/block_all.png'); }
-.filtered  img		{ /*img_size*/ background-image:url('../img/filtered.png');  }
-.relaxed   img		{ /*img_size*/ background-image:url('../img/relaxed.png');  }
-.allow_all img		{ /*img_size*/ background-image:url('../img/allow_all.png'); }
-
-.fat_icons .allowed img, .fat_icons .blocked img, .fat_icons .not_loaded img  { width:22px; height:22px; }
-/* left out:  .allowed_globally .*iframe */
-
-.allowed img		{ /*img_size*/ background-image:url('../img/allowed.png'); }
-.blocked img		{ /*img_size*/ background-image:url('../img/blocked.png') }
-.not_loaded img		{ /*img_size*/ background-image:url('../img/not_loaded.png') }
-.iframe	img		{ /*img_size*/ background-image:url('../img/iframe.png') }
-.blocked_iframe img	{ /*img_size*/ background-image:url('../img/blocked_iframe.png') }
-
-/* 'script allowed globally' icon */
-.allowed_globally img		{ /*img_size*/ background-image:url('../img/allowed_globally.png') }
-
-.menu {
-	padding: 1px 1px; text-align:left; direction:ltr;
-	box-shadow: 8px 10px 10px rgba(0,0,0,0.5), inset 2px 3px 3px rgba(255,255,255,0.75);
-	border-radius: 5px; border-width: 2px; border-style: outset; border-color: gray;
-	display:table; background: #ccc; 
+body {
+/*    background: hsl(0,0%,100%);  */
+    margin: 0;
 }
 
-/* autoscroll these instead of screening out. 
- * js will set the right max-height to make it work if it finds overflow is set but no max-height */
-#host_table,  
-#details_menu #menu_content { overflow-y:auto }
+
+/*Auto-calculates padding, borders, and width without the hassle*/
+#jsarmor-toolbar, #jsarmor-toolbar *, #jsarmor-options, #jsarmor-options * {box-sizing: border-box; cursor: default;}
 
 
-/* menu title */
-h1	{ color:#fff; font-weight:bold; font-size: 1em; text-align: center;
-	  margin:0;
-	  background:url('../img/title_background.png') repeat-x;}
+/*ANIMATION------------------------------------------------*/
+#jsarmor-toolbar {
+    animation: animation1 ease-in-out 500ms;
+    -o-animation: animation1 ease-in-out 500ms;/*for older verions*/
+}
+@keyframes animation1 {from {margin-top: -34px;} to {margin-top: 0;} }
+@-o-keyframes animation1 {from {margin-top: -34px;} to {margin-top: 0;} }/*for older verions*/
 
-/* menu item stuff */
-.right_item		{ float:right; }
+#jsarmor-bg-options {
+    animation: animation2 ease-in-out 1s;
+    -o-animation: animation2 ease-in-out 1s;
+}
+@keyframes animation2 {from {opacity: 0;} to {opacity: 1;} }
+@-o-keyframes animation2 {from {opacity: 0;} to {opacity: 1;} }
 
-ul			{ padding:0 0 0 1px; margin:0 }
-ul ul			{ margin-left:1em }
-li			{ list-style:none; border-radius:3px; padding:0 0 0 2px}
-
-li:hover		{ background:#ddd } /* items active by default */
-li.inactive:hover	{ background:inherit }
-
-
-/* mode menu items */
-li.block_all, li.filtered, li.relaxed, li.allow_all	{ padding:2px }
-.menu .selected, .menu .selected:hover { background-color: #fa4; }
+#jsarmor-options {
+    animation: animation3 linear 400ms;
+    -o-animation: animation3 linear 400ms;
+}
+@keyframes animation3 {from {opacity: 0; position: relative; top: -15px;} to {opacity: 1; top: 0;} }
+@-o-keyframes animation3 {from {opacity: 0; position: relative; top: -15px;} to {opacity: 1; top: 0} }
 
 
-/*************************************************************************************************************/
-/* Options menu */
-
-#options_menu li:hover	{ background:inherit }
-#options_menu td	{ vertical-align:top; }
-
-.separator	{ height: 1px; display: block; background-color: #bbb; margin-left: auto; margin-right: auto; }
-
-.frame		{ border:1px solid #bbb; margin:10px; padding:9px; position:relative; min-width:200px; }
-.frame td, .frame li	{ padding: 2px; }
-
-.frame_title	{ position:absolute; top:-10px; background: #ccc; }
-
-/* file input form styling: http://www.quirksmode.org/dom/inputfile.html */
-#import_settings, #load_custom_style
-	{ display:inline-block; position:relative; overflow:hidden; vertical-align:text-bottom }
-#import_settings input, #load_custom_style input
-	{ display:block; position:absolute; top:0; right:0; margin:0; border:0; opacity:0 }
-
-.dropdown_setting		{ width:100% }
-.dropdown_setting select	{ padding-right:5px } /* why does opera 12.14 truncate otherwise ?! */
-.dropdown_setting td + td	{ text-align:right; }
-
-.button_table  *, #general_options button	{ width:100% }
-
-#style_editor textarea           { width: 800px; height: 300px; }
-
-/********************************************************************************************************** 
- * transparent button 
- * http://www.dreamtemplate.com/dreamcodes/documentation/buttons_transparent.html
- */
-
-.tbutton {
-	border: 1px solid rgba(0,0,0,0.2); box-sizing: content-box !important; color: #f5f5f5; cursor: pointer;
-	display: inline-block; padding: 2px 10px; text-align: center; text-decoration: none; white-space: normal;
-	text-shadow: 0 0 5px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.4); outline: none; 
-	-o-transition: all 200ms ease 0ms !important; 	/* Transition */
-	background: none repeat scroll 0 0 rgba(255,255,255,0.04); 	/* Background Color */
-	border-radius: 3px; 	/* Border Rounding */
-	background-clip: padding-box; 	/* Background Clipping */
-	box-shadow: 0 0 3px rgba(255,255,255,0.25) inset, 0 0 1px rgba(255,255,255,0.2), 0 10px 10px rgba(255,255,255,0.08) inset;
-	box-shadow: 0 0 3px rgba(255,255,255,0.25) inset, 0 0 1px rgba(255,255,255,0.2), 0 10px 10px rgba(255,255,255,0.08) inset;
+/*DROP-DOWN BUTTON MENUS-----------------------------------*/
+#jsarmor-toolbar .button ul.menu,
+#jsarmor-toolbar .button ul.menu li ul {
+    background-color: hsl(0,0%,100%);
+    list-style: none;
+    display: none;
+    padding: 15px 15px 0;
+    box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
+    border-radius: 5px;
+    border: solid hsla(0,0%,0%,0.3) 1px;
+    margin: 3px 0 0 -9px;
+    position: absolute;
+    z-index: 100;
 }
 
-.tbutton:hover {
-	color: #fff; text-shadow: 0 0 5px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.4);	
-	box-shadow: 0 0 5px rgba(255,255,255,0.45) inset, 0 0 1px rgba(255,255,255,0.2), 0 10px 10px rgba(255,255,255,0.08) inset;
- }
+#jsarmor-toolbar .button.active ul.menu {display: block;}
+#jsarmor-toolbar .button.active ul.menu li:hover ul {display: block; margin: -30px 0 0 100%;}
 
-.tbutton:active {
-	color: #eee;
-	box-shadow: 0 0 5px rgba(255,255,255,0.1) inset, 0 0 1px rgba(255,255,255,0.2), 0 0 4px rgba(0,0,0,0.4) inset, 0 10px 10px rgba(255,255,255,0.08) inset;
- }
+/*FIND A alternative method of expanding from right than using 'right' positioning!*/
+/*Expands ULs to min-width of button and expands width out from the right-side for the right-most buttons*/
+#jsarmor-toolbar .button.temp ul.menu {min-width: 157px;}
+#jsarmor-toolbar .button.whitelist ul.menu {min-width: 128px; right: 0;}
+
+#jsarmor-toolbar .button ul.menu li {white-space: nowrap; margin-bottom: 15px;}
+#jsarmor-toolbar .button ul.menu li:hover {
+    background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.04) 50%, hsla(0,0%,0%,0.07) 100%);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    border: solid hsla(0,0%,0%,0.33) 1px;
+    margin: -6px -6px 9px;
+}
+
+
+/*TOOLBAR-------------------------------------------------*/
+#jsarmor-toolbar {
+    width: 100%;
+    /*background-image: -o-linear-gradient(top, hsl(44,82%,81%) 50%, hsl(43,82%,76%) 100%);*/
+    /*background-image: -o-linear-gradient(top, hsl(0,0%,96%) 50%, hsl(0,0%,95%) 100%);*/
+    background-image: -o-linear-gradient(top, #f1f1f1 8%, #f0f0f0 12%, #e5e5e5 97%, #e9e9e9 100%);
+    padding: 6px 8px 0;
+    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.3);
+    border-bottom: solid hsl(0,0%,50%) 1px;
+    position: fixed;
+    z-index: 97;
+}
+/*Static top-shadow*/
+/*#jsarmor-toolbar:before {
+  width: 100%;
+  height: 34px;
+  background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.1) 3%, transparent 8%);
+  content: '';
+  position: absolute;
+  margin: -6px 0 0 -8px;
+  z-index: 98;
+  }*/
+
+
+/*LEFT/RIGHT CONTAINERS------------------------------------*/
+#jsarmor-toolbar .info-container {display: inline-block; float: left; position: relative; z-index: 99}
+
+#jsarmor-toolbar .button-container {display: inline-block; float: right; position: relative; z-index: 99}
+
+
+/*BASE FONTS-----------------------------------------------*/
+#jsarmor-toolbar .title, #jsarmor-toolbar .button, #jsarmor-options * {color: hsla(0,0%,10%,0.75); font: normal 8pt 'Lucida Grande', sans-serif;}
+
+#jsarmor-toolbar .title, #jsarmor-toolbar .button {display: inline-block;}
+
+
+/*INSET INFO-----------------------------------------------*/
+#jsarmor-toolbar .title.blocked b,
+#jsarmor-toolbar .title.temp b,
+#jsarmor-toolbar .title.allowed b {
+    height: 21px;
+    /*background-image: -o-linear-gradient(top, hsl(5,46%,61%) 20%, hsl(357,53%,52%) 100%);*/
+    background-image: -o-linear-gradient(top, hsl(5,56%,61%) 20%, hsl(357,53%,52%) 100%);
+    color: hsl(0,0%,97%);
+    font-weight: normal;
+    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
+    display: inline-block;
+    padding: 2px 12px;
+    box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.15),
+    0 1px 0 hsla(0,0%,100%,0.50);
+    border: solid hsla(0,0%,0%,0.3) 1px;
+    border-radius: 99px;
+    margin: 0 9px 0 5px;
+}
+#jsarmor-toolbar .title.temp b {
+    background-image: -o-linear-gradient(top, hsl(211,13%,67%) 20%, hsl(212,12%,59%) 100%);
+}
+#jsarmor-toolbar .title.allowed b {
+    background-image: -o-linear-gradient(top, hsl(208,45%,65%) 20%, hsl(215,42%,56%) 100%);
+}
+
+
+/*BUTTONS-------------------------------------------------*/
+#jsarmor-toolbar .button,
+#jsarmor-options .button {
+    height: 21px;
+    background-image: -o-linear-gradient(top, hsla(0,0%,100%,0.25) 83%, hsla(0,0%,100%,0.33) 100%);
+    display: inline-block;
+    padding: 2px 9px;
+    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.53),
+    0 1px 0 hsla(0,0%,100%,0.50);
+    border-radius: 9px;
+    border: solid hsla(0,0%,0%,0.2) 1px;
+    border-left: solid hsla(0,0%,0%,0.25) 1px;
+    border-right: solid hsla(0,0%,0%,0.25) 1px;
+    border-bottom: solid hsla(0,0%,0%,0.3) 1px;
+    margin: 0 2px 6px 2px;
+    vertical-align: top;
+}
+/*.button:active {
+  background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.27) 83%, hsla(0,0%,94%,0.25) 100%);
+  box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.2),
+  0 1px 0 hsla(0,0%,100%,0.50);
+  border: solid hsla(0,0%,0%,0.22) 1px;
+  border-left: solid hsla(0,0%,0%,0.17) 1px;
+  border-right: solid hsla(0,0%,0%,0.17) 1px;
+  border-bottom: solid hsla(0,0%,0%,0.12) 1px;
+  }*/
+#jsarmor-toolbar .button:active,
+#jsarmor-options .button:active {
+    background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.37) 83%, hsla(0,0%,94%,0.35) 100%);
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.4),
+    0 1px 0 hsla(0,0%,100%,0.50);
+    border-top: solid hsla(0,0%,0%,0.45) 1px;
+    border-left: solid hsla(0,0%,0%,0.3) 1px;
+    border-right: solid hsla(0,0%,0%,0.3) 1px;
+}
+
+#jsarmor-options .button.add,
+#jsarmor-options .button.delete {width: 25px; border-radius: 1px; margin: 0 -4px 0 0;}
+#jsarmor-options .button.add {border-right: 0}
+
+
+/*BUTTON ICONS---------------------------------------------*/
+#jsarmor-toolbar .button i,
+#jsarmor-toolbar .button u,
+#jsarmor-toolbar .button ul.menu li i,
+#jsarmor-toolbar .button ul.menu li u,
+#jsarmor-toolbar .button ul.menu li ul li,
+#jsarmor-options-body .content ul.userlist li i, 
+#jsarmor-options .button.add i,
+#jsarmor-options .button.delete i {
+    width: -o-skin;
+    height: -o-skin;
+    background: none;
+    display: inline-block;
+    text-shadow: none;
+    padding: 0;
+    border: none;
+    vertical-align: top;
+    position: relative; top: -1px;
+}
+#jsarmor-toolbar .button u,
+#jsarmor-toolbar .button ul.menu li u {background-image:-o-skin('Down Arrow'); margin: 2px 0 0 11px; float: right;}
+#jsarmor-toolbar .button ul.menu li u {background-image:-o-skin('Right Arrow'); margin: 4px 2px 0 11px;}
+
+#jsarmor-toolbar .button ul.menu li ul li i {background-image:-o-skin('Attachment Documents');}
+
+
+#jsarmor-toolbar .button ul.menu li i {background-image:-o-skin('Address Bar Web Icon'); margin: 0 7px 0 -1px}
+
+#jsarmor-toolbar .button.whitelist ul.menu li i,
+#jsarmor-options-body .content .allowed-tab ul.userlist li i {background-image:-o-skin('Addressbar Site Certified');}
+
+#jsarmor-toolbar .button.temp ul.menu li i {background-image:-o-skin('Addressbar Spinner');}
+
+#jsarmor-toolbar .button.block ul.menu li i,
+#jsarmor-options-body .content .blocked-tab ul.userlist li i  {background-image:-o-skin('Transfer Failure');}
+
+#jsarmor-toolbar .button.options i {background-image:-o-skin('Main Menu Tools'); margin-right: 4px}
+#jsarmor-toolbar .button.block i {background-image:-o-skin('Mark as spam'); margin: 0 4px 0 -3px}
+#jsarmor-toolbar .button.temp i {background-image:-o-skin('Panel History Inverted'); margin-right: 4px}
+#jsarmor-toolbar .button.revoke i {background-image:-o-skin('Reply'); margin: 0 4px 0 -3px}
+#jsarmor-toolbar .button.whitelist i {background-image:-o-skin('Mark as read'); margin-left: -3px}
+
+
+#jsarmor-options-body .content ul.userlist li i {margin-right: 6px;}
+
+#jsarmor-options .button.disabled {opacity: 0.5;}
+#jsarmor-options .button.disabled:active {background: inherit; box-shadow: inherit; border: solid hsla(0,0%,0%,0.2) 1px;}
+
+#jsarmor-options .button.add i {background-image:-o-skin('New Note'); margin-left: -9px;}
+#jsarmor-options .button.delete i {background-image:-o-skin('Delete'); margin-left: -9px;}
+
+#jsarmor-options .button.block {float: right;}
+
+
+
+/*---------------------------------------------------------*/
+/*OPTIONS--------------------------------------------------*/
+/*---------------------------------------------------------*/
+
+/*FULLSCREEN DARKENED BACKGROUND---------------------------*/
+#jsarmor-bg-options {
+    width: 100%;
+    height: 100%;
+    background: hsla(0,0%,0%,0.2);
+    display: block;
+    overflow: hidden;
+    margin: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 95;
+}
+
+#jsarmor-options {
+    width: 340px;
+    min-height: 240px;
+    background: hsl(0,0%,70%);/*FOR PAPER PAD STYLE*/
+    /*background-image: -o-linear-gradient(bottom, hsl(0,0%,70%) 2px, hsl(0,0%,90%) 12px, hsl(0,0%,70%) 100%);*/
+    display: inline-block;
+    box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
+    margin: 100px 0 0 -170px; /*Left margin should always be half the height of the width OR use some javascript instead to horizontally center the element*/
+    border-radius: 9px;
+    left: 50%;
+    position: absolute;
+    z-index: 95;
+}
+
+#jsarmor-options i.divider {
+    height: 100%;
+    display: inline-block;
+    border-top: solid hsl(0,0%,35%) 1px;
+    /*border-right: solid hsla(0,0%,7%,0.5) 1px;*/
+    border-right: solid hsla(0,0%,7%,0.2) 1px;
+    margin-left: 130px;
+    position: absolute;
+}
+
+#jsarmor-options-titlebar {
+    height: 33px;
+    background-image: -o-linear-gradient(top, hsl(0,0%,49%) 10%, hsl(0,0%,35%) 100%);
+    padding: 5px;
+    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.15);
+    border: solid hsl(0,0%,40%) 1px;
+    border-bottom: solid hsl(0,0%,33%) 1px;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+}
+
+/*TITLEBAR CLOSE BUTTON, FONTS-----------------------------*/
+#jsarmor-options-titlebar b {
+    height: 21px;
+    background-image: -o-linear-gradient(top, hsla(0,0%,71%,0.64) 10%, hsla(0,0%,51%,0.25) 100%);
+    text-shadow: hsla(0,0%,100%,0.1) 0 1px 0;
+    display: inline-block;
+    padding: 2px 9px;
+    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.23),
+    0 1px 0 hsla(0,0%,100%,0.1);
+    border-radius: 5px;
+    border: solid hsl(0,0%,35%) 1px;
+    border-bottom: solid hsl(0,0%,30%) 1px;
+    margin-right: 10px;
+}
+#jsarmor-options-titlebar b:active {
+    background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.37) 83%, hsla(0,0%,94%,0.35) 100%);
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.4),
+    0 1px 0 hsla(0,0%,100%,0.1);
+    border-top: solid hsla(0,0%,0%,0.45) 1px;
+}
+
+#jsarmor-options-titlebar strong,
+#jsarmor-options-body .content .titlebar-name {
+    color: hsl(0,0%,97%);
+    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
+}
+#jsarmor-options-titlebar strong {margin-top: 3px;}
+
+/*BODY START-----------------------------------------------*/
+#jsarmor-options-body {
+    min-height: 207px;
+    background-image: -o-linear-gradient(top, hsl(0,0%,96%) 83%, hsl(0,0%,95%) 100%);
+    /*border: solid hsl(0,0%,75%) 1px;
+      border-bottom: solid hsl(0,0%,70%) 1px;*/
+    border-top: none;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+    margin-bottom: 7px;/*FOR PAPER PAD STYLE*/
+}
+
+/*STATIC UNDER-TITLEBAR SHADOW----------------------------*/
+#jsarmor-options-body:before {
+    height: 5px;
+    background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.15) 10%, transparent 60%);
+    content: '';
+    display: block;
+    position: relative;
+    margin: 0 0 -34px;
+    z-index: 96;
+}
+
+/*SIDE NAVIGATION MENU-------------------------------------*/
+#jsarmor-options-body ul.menu {
+    /*width: 38%;*/
+    width: 130px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    float: left;
+    clear: both;
+}
+
+#jsarmor-options-body ul.menu li {
+    font-size: 9pt;
+    font-weight: bold;
+    display: block;
+    padding: 8px 15px;
+    border-top: solid transparent 1px;
+    border-bottom: solid hsla(0,0%,0%,0.05) 1px;
+}
+#jsarmor-options-body ul.menu li.selected,
+#jsarmor-options-body ul.menu li:active {
+    background-image: -o-linear-gradient(top, hsl(208,45%,65%) 20%, hsl(215,42%,56%) 100%);
+    color: hsl(0,0%,97%);
+    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
+    border-bottom: solid hsla(0,0%,0%,0.3) 1px;
+}
+#jsarmor-options-body ul.menu li:first-child {border-top: none}
+
+/*OPTIONS CONTENT------------------------------------------*/
+#jsarmor-options-body .content {
+    padding-bottom: 15px;
+    /*margin: 9px 15px -18px 145px;*/
+    margin: 9px 15px 0 145px;
+    position: relative;
+    top: -4px;
+}
+#jsarmor-options-body .content .titlebar-name {
+    display: block;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#jsarmor-options-body .content .option {
+    background: hsla(0,0%,0%,0.05);
+    padding: 9px 24px;
+    border: solid hsl(0,0%,73%) 1px;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.15);
+    margin-bottom: 16px;
+}
+#jsarmor-options-body .content .option:last-child {margin-bottom: 0}
+
+#jsarmor-options-body .content .option-title {
+    font-style: normal;
+    display: block;
+    margin: 0 4px 2px;
+}
+#jsarmor-options-body .content .option select,
+#jsarmor-options-body .content .option input[type=button] {width: 100%;}
+#jsarmor-options-body .content .option input[type=checkbox] {margin: 6px; margin-bottom: 0}
+
+/*USERLISTS (WHITELIST/BLACKLISTS)-------------------------*/
+#jsarmor-options-body .content ul.userlist {
+    min-height: 130px;
+    max-height: 300px;
+    background: hsl(0,0%,100%);
+    list-style: none;
+    white-space: nowrap;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: solid hsla(0,0%,0%,0.25) 1px;
+    border-top: solid hsla(0,0%,0%,0.5) 1px;
+    padding: 0 0 8px 0;
+}
+
+#jsarmor-options-body .content ul.userlist li {padding: 5px 4px;}
+
+#jsarmor-options-body .content ul.userlist li:nth-child(even) {background: hsla(0,0%,7%,0.1);}
+#jsarmor-options-body .content ul.userlist li:active,
+#jsarmor-options-body .content ul.userlist li:focus {
+    background: hsl(208,45%,65%);
+    /*background: hsl(0,0%,100%);*/
+    color: hsl(0,0%,97%);
+/*box-shadow: 0 0 5px hsl(208,45%,45%);*/
+}
 
