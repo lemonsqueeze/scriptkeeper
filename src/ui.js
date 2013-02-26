@@ -31,6 +31,7 @@ function(){   // fake line, keep_editor_happy
     var menu_request = false;		// external api request while not ready yet (opera button ...)
     var using_opera_button = false;	// seen external api request
     var submenu = null;
+    var nsmenu = null;
     
     // called on script startup, no ui available at this stage.
     function register_ui()
@@ -108,7 +109,7 @@ function(){   // fake line, keep_editor_happy
     function create_main_ui()
     {
 	debug_log("create_main_ui");
-	main_ui = new_widget("toolbar");
+	main_ui = new_widget("main");
 	return;
 	
 	main_ui = idoc.createElement('div');

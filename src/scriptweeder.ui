@@ -15,119 +15,197 @@
 
 <widgets>
 
-<widget name="toolbar">
-  <div id="jsarmor-toolbar">
-    <div class="info-container">
-      <blocked></blocked>
-      <allowed></allowed>
-    </div>
-    <div class="button-container">
-      <span class="button options" onclick="show_options"><i></i>Options...</span>
-      <span class="button block"><i></i>Block<u></u>
-	<ul class="menu">
-	  <li><i></i>plus.google.com</li>
-	  <li><i></i>analytics.google.com</li>
-	  <li><i></i>images.photobucket.com</li>
-	</ul>
-      </span>
-      <span class="button temp">
-	<i></i>Temporarily allow<u></u>
-	<ul class="menu">
-	  <li><i></i>All this page</li>
-	  <li><i></i>my.opera.com</li>
-	  <li><i></i>facebook.com</li>
-	  <li><i></i>doubleclick.com</li>
-	</ul>
-      </span>
-      <!-- <span class="button revoke"><i></i>Revoke temporary permissions</span> -->
-      <span class="button whitelist">
-	<i></i>Always allow<u></u>
-	<ul class="menu">
-	  <li><i></i>All this page</li>
-	  <li><i></i>my.opera.com</li>
-	  <li><i></i>facebook.com</li>
-	  <li><i></i>doubleclick.com</li>
-	</ul>
-      </span>
-    </div>
+<widget name="main">
+  <div id="main-container">
+
+    <main_interface></main_interface>
+    
+    <footer>
+      <div id="options-button" title="Options"></div>
+      <div id="display-blocked" title="Display blocked"></div>
+      
+      <ol class="paginated">
+	<li class="current" title="Page 1"></li>
+	<li title="Page 2"></li>
+      </ol>
+      
+      <div id="about-button" title="About"></div>
+    </footer>
+    
   </div>
 </widget>
 
-<widget name="blocked" init>
-  <span class="title blocked">
-    <b class="number">3</b><span class="button" onclick="toggle_active">Blocked<u></u>
+
+<!-- main-interface -->
+<widget name="main_interface">
+  <section id="main-interface">
+    
+    <nav class="menu main">
+      <div class="button dropdown">Relaxed mode</div>
       <ul class="menu">
-	<!-- menuitems -->
+        <li>Globally enable all</li>
+        <li class="selected">Relaxed mode</li>
+        <li>Standard mode</li>
+        <li>Globally disable all</li>
       </ul>
-    </span>
-  </span>
-</widget>
+    </nav>
 
-<widget name="allowed" init>
-  <span class="title allowed">
-    <b class="number">1</b><span class="button" onclick="toggle_active">Allowed<u></u>
-      <ul class="menu">
-	<!-- menuitems -->
-      </ul>
-    </span>
-  </span>
-</widget>
-
-<widget name="menuitem" label init>
-  <li><i></i>label<u></u>
-  </li>
-</widget>
-
-<widget name="submenuitem">
-  <ul>
-    <li><i></i>label</li>
-  </ul>
-</widget>
-
-
-<!-- OPTIONS -->
-<widget name="options_bg">
-  <div id="jsarmor-bg-options"></div>
-</widget>
-
-<widget name="options">
-  <div id="jsarmor-options">
-    <i class="divider"></i>
-    <div id="jsarmor-options-titlebar"><b>Close</b><strong>Options</strong></div>
-
-    <div id="jsarmor-options-body">
-      <ul class="menu">
-	<li class="selected">General</li>
-	<li>Allowed sites</li>
-	<li>Blocked sites</li>
-	<li>Import/Export</li>
-      </ul>
-
-      <div class="content">
-	<div class="general-tab">
-	  <strong class="titlebar-name">General</strong>
-
-	  <em class="option-title">IFrames</em>
-	  <div class="option">
-	    <select>
-	      <option>Allow</option>
-	      <option selected>Filter scripts</option>
-	      <option>Disable</option>
-	    </select>
-	    <input type="checkbox" name="display-controls" value="IFrameUIControls">Display controls
-	  </div>
-
-
-	  <em class="option-title">Reload method</em>
-	  <div class="option">
-	    <select>
-	      <option selected>Normal</option>
-	      <option>Cache</option>
-	    </select>
-	  </div>
-	</div>
-      </div>
+    <div id="allow-toolbar">
+      <span class="button allow-all" title="Allow all">All</span>
+      <span class="button temp-allow-all" title="Allow all once">All</span>
+      <span class="button undo" title="Undo last change"></span>
     </div>
+
+    <items_container></items_container>
+  </section>
 </widget>
+
+
+<!-- items_container -->
+<widget name="items_container">
+  <div id="items-container">
+
+    <div class="item top-level mode-adjusted">
+      <div class="allow-bg" title="Allow permanently"></div>
+      <div class="block-bg"></div>
+      <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
+    </div>
+
+    <div class="item mode-adjusted">
+      <div class="allow-bg" title="Allow permanently"></div>
+      <div class="block-bg"></div>
+      <div class="slider left static">&lrm;<i>assets.</i>pinterest.com</div>
+    </div>
+    
+    <div class="item">
+      <div class="allow-bg"></div>
+      <div class="block-bg"></div>
+      <div class="slider">&lrm;<b class="revoke" title="Cancel allow once"></b><i>www.</i>youtube.com<u>(2)</u></div>
+    </div>
+    
+    <div class="item">
+      <div class="allow-bg"></div>
+      <div class="block-bg"></div>
+      <div class="slider">&lrm;<b title="Allow once"></b><i>apis.</i>google.com<u>(4)</u></div>
+    </div>
+    
+    <div class="item block-animation">
+      <div class="allow-bg"></div>
+      <div class="block-bg"></div>
+      <div class="slider right">&lrm;<i>0.</i>gravatar.com</div>
+    </div>
+    
+    <div class="item block-animation-undo">
+      <div class="allow-bg"></div>
+      <div class="block-bg"></div>
+      <div class="slider left">&lrm;<i>widgets.</i>twimg.com</div>
+    </div>
+    
+    <div class="item block-animation-show">
+      <div class="allow-bg"></div>
+      <div class="block-bg"></div>
+      <div class="slider right static">&lrm;<i>static.ak.</i>fbcdn.net</div>
+    </div>
+    
+  </div>
+</widget>
+
+
+  <!-- <section id="options">
+
+       <nav class="menu main">
+         <div class="button dropdown">General</div>
+         <ul>
+           <li class="selected">General</li>
+           <li>Allowed sites</li>
+           <li>Blocked sites</li>
+           <li>Import/Export</li>
+         </ul>
+       </nav>
+
+       <div id="options-general">
+
+         <div class="option">
+           <strong class="title">Appearance:</strong>
+           <em class="label">Show:</em>
+           <div class="menu">
+             <div class="button dropdown">Full sites</div>
+             <ul>
+               <li class="selected">Full sites</li>
+               <li>Domains</li>
+             </ul>
+           </div>
+         </div>
+
+         <div class="option">
+           <strong class="title">Script reload:</strong>
+           <em class="label">Method:</em>
+           <div class="menu">
+             <div class="button dropdown">Normal</div>
+             <ul>
+               <li class="selected">Normal</li>
+               <li>Cached</li>
+             </ul>
+           </div>
+         </div>
+
+         <div class="option">
+           <strong class="title">IFrames:</strong>
+           <em class="label">Scripts:</em>
+           <div class="menu">
+             <div class="button dropdown">Inherit</div>
+             <ul>
+               <li>Allow</li>
+               <li class="selected">Inherit</li>
+               <li>Disable</li>
+             </ul>
+           </div>
+           <em class="label">Show:</em>
+           <div class="checkbox">
+             <div class="button checked"></div><span class="label">Controls</span>
+           </div>
+         </div>
+         
+         <div class="option">
+           <strong class="title">Globally disable all:</strong>
+           <div class="checkbox standalone">
+             <div class="button checked"></div><span class="label">Imitate true disabling</span>
+           </div>
+         </div>
+
+       </div>
+
+
+       <div id="options-whitelist">
+
+         <ul class="list">
+           <li><i>connect.</i>facebook.com</li>
+           <li><i>www.</i>github.com</li>
+           <li><i>my.</i>opera.com</li>
+         </ul>
+
+         <span class="button add">Add</span>
+         <span class="button delete">Remove</span>
+
+       </div>
+
+
+       <div id="options-import-export">
+
+         <div class="option">
+           <strong class="title">Settings:</strong>
+           <div class="button save">Save...</div>
+           <div class="button save">Load...</div>
+         </div>
+
+         <div class="option">
+           <strong class="title">Reset to defaults:</strong>
+           <div class="button reset">Reset</div>
+         </div>
+
+       </div>
+
+  </section> -->
+
 
 </widgets>

@@ -1,420 +1,464 @@
-/* JSArmor CSS by laurenbacall (last update: 14/02/13) */
+/* JSArmor CSS by laurenbacall (last update: 25/02/13) */
 
-body			{ margin:0px; background:transparent;  }
-body > *		{ position:absolute; width:auto; height:auto; margin-bottom:0px; }
+body                {
+                        /* background: hsl(0,0%,100%); */
+			background: transparent;
+                        color: hsla(0,0%,7%,0.70);
+                        font: normal 8pt 'Lucida Grande', sans-serif;
+                        margin: 100px auto;
+                    }
 
-body {
-/*    background: hsl(0,0%,100%);  */
-    margin: 0;
-}
-
-
-/*Auto-calculates padding, borders, and width without the hassle*/
-#jsarmor-toolbar, #jsarmor-toolbar *, #jsarmor-options, #jsarmor-options * {box-sizing: border-box; cursor: default;}
-
-
-/*ANIMATION------------------------------------------------*/
-#jsarmor-toolbar {
-    animation: animation1 ease-in-out 500ms;
-    -o-animation: animation1 ease-in-out 500ms;/*for older verions*/
-}
-@keyframes animation1 {from {margin-top: -34px;} to {margin-top: 0;} }
-@-o-keyframes animation1 {from {margin-top: -34px;} to {margin-top: 0;} }/*for older verions*/
-
-#jsarmor-bg-options {
-    animation: animation2 ease-in-out 1s;
-    -o-animation: animation2 ease-in-out 1s;
-}
-@keyframes animation2 {from {opacity: 0;} to {opacity: 1;} }
-@-o-keyframes animation2 {from {opacity: 0;} to {opacity: 1;} }
-
-#jsarmor-options {
-    animation: animation3 linear 400ms;
-    -o-animation: animation3 linear 400ms;
-}
-@keyframes animation3 {from {opacity: 0; position: relative; top: -15px;} to {opacity: 1; top: 0;} }
-@-o-keyframes animation3 {from {opacity: 0; position: relative; top: -15px;} to {opacity: 1; top: 0} }
+@font-face          {
+                        font-family: 'entypo';
+                        src: url('entypo.woff') format('woff');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
 
 
-/*DROP-DOWN BUTTON MENUS-----------------------------------*/
-#jsarmor-toolbar .button ul.menu,
-#jsarmor-toolbar .button ul.menu li ul {
-    background-color: hsl(0,0%,100%);
-    list-style: none;
-    display: none;
-    padding: 15px 15px 0;
-    box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
-    border-radius: 5px;
-    border: solid hsla(0,0%,0%,0.3) 1px;
-    margin: 3px 0 0 -9px;
-    position: absolute;
-    z-index: 100;
-}
+/*-------------Generic----------------*/
 
-#jsarmor-toolbar .button.active ul.menu {display: block;}
-#jsarmor-toolbar .button.active ul.menu li:hover ul {display: block; margin: -30px 0 0 100%;}
-
-/*FIND A alternative method of expanding from right than using 'right' positioning!*/
-/*Expands ULs to min-width of button and expands width out from the right-side for the right-most buttons*/
-#jsarmor-toolbar .button.temp ul.menu {min-width: 157px;}
-#jsarmor-toolbar .button.whitelist ul.menu {min-width: 128px; right: 0;}
-
-#jsarmor-toolbar .button ul.menu li {white-space: nowrap; margin-bottom: 15px;}
-#jsarmor-toolbar .button ul.menu li:hover {
-    background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.04) 50%, hsla(0,0%,0%,0.07) 100%);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 3px;
-    border: solid hsla(0,0%,0%,0.33) 1px;
-    margin: -6px -6px 9px;
-}
+*                   { box-sizing: border-box; cursor: default; } /* Auto-calculates padding/width */
+::selection         { background: transparent; } /* Makes text selection on buttons transparent */
+ul, ol              { list-style: none; padding: 0; margin: 0; }
+i                   { color: #9d9d9d; font-style: normal; cursor: move; } /* Targets the grey subdomain of the URL in .item */
+.menu.main .dropdown     { font-weight: bold; } /* Used for main menu drop-down */
+.button,
+.dropdown,
+.slider, .slider b,
+.menu ul li,
+footer *,
+.checkbox .label    { cursor: pointer; } /* Changes the buttons/menus cursor */
+.button,
+.menu,
+.slider             { text-align: center; } /* Center aligns text for these selectors */
+.disabled           { background: hsl(0,0%,98%) !important; color: hsla(0,0%,0%,0.5) !important; cursor: default; } /* Disabled button style, order class before other classes */
+.disabled:hover,
+.disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
+.slider b,
+.slider u,
+.item.block-animation-show,
+.mode-adjusted div[class$='-bg'],
+footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 
-/*TOOLBAR-------------------------------------------------*/
-#jsarmor-toolbar {
-    width: 100%;
-    /*background-image: -o-linear-gradient(top, hsl(44,82%,81%) 50%, hsl(43,82%,76%) 100%);*/
-    /*background-image: -o-linear-gradient(top, hsl(0,0%,96%) 50%, hsl(0,0%,95%) 100%);*/
-    background-image: -o-linear-gradient(top, #f1f1f1 8%, #f0f0f0 12%, #e5e5e5 97%, #e9e9e9 100%);
-    padding: 6px 8px 0;
-    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.3);
-    border-bottom: solid hsl(0,0%,50%) 1px;
-    position: fixed;
-    z-index: 97;
-}
-/*Static top-shadow*/
-/*#jsarmor-toolbar:before {
-  width: 100%;
-  height: 34px;
-  background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.1) 3%, transparent 8%);
-  content: '';
-  position: absolute;
-  margin: -6px 0 0 -8px;
-  z-index: 98;
-  }*/
+/*-------------Drop-down menus----------------*/
+/* Should normally appear when drop-down button is clicked */
+
+.menu ul            {
+                        background: #fff;
+                        color: #333;
+                        display: none;
+                        border-bottom-left-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.2) 1px;
+                        box-shadow: 0 2px 4px hsla(0,0%,0%,0.2);
+                        padding: 5px 0;
+                        margin: -9px 0 0;
+                        position: absolute;
+                        z-index: 2;
+                    }
+
+.menu:hover ul, .menu.main:hover ul     { display: block; }
+
+.menu ul li         { padding: 10px; margin: 0; }
+.menu ul li:hover   { background: #eee; }
+
+/* Main menu at top */
+
+.menu.main ul       { width: 167px; /* 20px less than #main-container width */ }
+
+/* Options drop-down menu styling */
+
+.option .menu       { width: 55%; display: inline-block; }
+
+.option .menu .button.dropdown
+                    {
+                        width: 100%;
+                        height: 22px;
+                        text-align: left;
+                        padding-top: 3px;
+                    }
+
+.option .menu ul    { width: 91px; text-align: left; } /* Must change with any #main-container width  */
+
+.option .menu ul li { padding-left: 25px; }
 
 
-/*LEFT/RIGHT CONTAINERS------------------------------------*/
-#jsarmor-toolbar .info-container {display: inline-block; float: left; position: relative; z-index: 99}
+/*-------------Lists----------------*/
 
-#jsarmor-toolbar .button-container {display: inline-block; float: right; position: relative; z-index: 99}
+.list               {   
+                        min-height: 120px;
+                        background-image: -o-linear-gradient(transparent 50%, #F3F3F3 50%, #F3F3F3);
+                        background-size: 48px 48px; /* Double the height of the li */
+                        border-radius: 4px;
+                        border: solid #E5E5E5 1px; /* A solid color so the background doesn't show through */
+                        padding-bottom: 24px;
+                        margin-bottom: 8px;
+                    }
 
+.list li            { padding: 5px 10px; }
 
-/*BASE FONTS-----------------------------------------------*/
-#jsarmor-toolbar .title, #jsarmor-toolbar .button, #jsarmor-options * {color: hsla(0,0%,10%,0.75); font: normal 8pt 'Lucida Grande', sans-serif;}
+/* Styling for selection - would normally stay selected until clicking elsewhere */
 
-#jsarmor-toolbar .title, #jsarmor-toolbar .button {display: inline-block;}
-
-
-/*INSET INFO-----------------------------------------------*/
-#jsarmor-toolbar .title.blocked b,
-#jsarmor-toolbar .title.temp b,
-#jsarmor-toolbar .title.allowed b {
-    height: 21px;
-    /*background-image: -o-linear-gradient(top, hsl(5,46%,61%) 20%, hsl(357,53%,52%) 100%);*/
-    background-image: -o-linear-gradient(top, hsl(5,56%,61%) 20%, hsl(357,53%,52%) 100%);
-    color: hsl(0,0%,97%);
-    font-weight: normal;
-    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
-    display: inline-block;
-    padding: 2px 12px;
-    box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.15),
-    0 1px 0 hsla(0,0%,100%,0.50);
-    border: solid hsla(0,0%,0%,0.3) 1px;
-    border-radius: 99px;
-    margin: 0 9px 0 5px;
-}
-#jsarmor-toolbar .title.temp b {
-    background-image: -o-linear-gradient(top, hsl(211,13%,67%) 20%, hsl(212,12%,59%) 100%);
-}
-#jsarmor-toolbar .title.allowed b {
-    background-image: -o-linear-gradient(top, hsl(208,45%,65%) 20%, hsl(215,42%,56%) 100%);
-}
+.list li:active,
+.list li:active i   { background: #55b3d9; color: #fff; }
 
 
-/*BUTTONS-------------------------------------------------*/
-#jsarmor-toolbar .button,
-#jsarmor-options .button {
-    height: 21px;
-    background-image: -o-linear-gradient(top, hsla(0,0%,100%,0.25) 83%, hsla(0,0%,100%,0.33) 100%);
-    display: inline-block;
-    padding: 2px 9px;
-    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.53),
-    0 1px 0 hsla(0,0%,100%,0.50);
-    border-radius: 9px;
-    border: solid hsla(0,0%,0%,0.2) 1px;
-    border-left: solid hsla(0,0%,0%,0.25) 1px;
-    border-right: solid hsla(0,0%,0%,0.25) 1px;
-    border-bottom: solid hsla(0,0%,0%,0.3) 1px;
-    margin: 0 2px 6px 2px;
-    vertical-align: top;
-}
-/*.button:active {
-  background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.27) 83%, hsla(0,0%,94%,0.25) 100%);
-  box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.2),
-  0 1px 0 hsla(0,0%,100%,0.50);
-  border: solid hsla(0,0%,0%,0.22) 1px;
-  border-left: solid hsla(0,0%,0%,0.17) 1px;
-  border-right: solid hsla(0,0%,0%,0.17) 1px;
-  border-bottom: solid hsla(0,0%,0%,0.12) 1px;
-  }*/
-#jsarmor-toolbar .button:active,
-#jsarmor-options .button:active {
-    background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.37) 83%, hsla(0,0%,94%,0.35) 100%);
-    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.4),
-    0 1px 0 hsla(0,0%,100%,0.50);
-    border-top: solid hsla(0,0%,0%,0.45) 1px;
-    border-left: solid hsla(0,0%,0%,0.3) 1px;
-    border-right: solid hsla(0,0%,0%,0.3) 1px;
-}
+/*-------------Containers----------------*/
 
-#jsarmor-options .button.add,
-#jsarmor-options .button.delete {width: 25px; border-radius: 1px; margin: 0 -4px 0 0;}
-#jsarmor-options .button.add {border-right: 0}
+#main-container     {
+                        width: 187px;
+                        background-color: #fff;
+                        padding: 9px;
+                        border-radius: 6px;
+                        border: solid hsla(0,0%,0%,0.3) 1px;
+                        box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
+                        margin: 0 auto;
+                    }
 
 
-/*BUTTON ICONS---------------------------------------------*/
-#jsarmor-toolbar .button i,
-#jsarmor-toolbar .button u,
-#jsarmor-toolbar .button ul.menu li i,
-#jsarmor-toolbar .button ul.menu li u,
-#jsarmor-toolbar .button ul.menu li ul li,
-#jsarmor-options-body .content ul.userlist li i, 
-#jsarmor-options .button.add i,
-#jsarmor-options .button.delete i {
-    width: -o-skin;
-    height: -o-skin;
-    background: none;
-    display: inline-block;
-    text-shadow: none;
-    padding: 0;
-    border: none;
-    vertical-align: top;
-    position: relative; top: -1px;
-}
-#jsarmor-toolbar .button u,
-#jsarmor-toolbar .button ul.menu li u {background-image:-o-skin('Down Arrow'); margin: 2px 0 0 11px; float: right;}
-#jsarmor-toolbar .button ul.menu li u {background-image:-o-skin('Right Arrow'); margin: 4px 2px 0 11px;}
+/*-------------Options specific styling----------------*/
 
-#jsarmor-toolbar .button ul.menu li ul li i {background-image:-o-skin('Attachment Documents');}
+.option:not(:last-child)    { margin-bottom: 10px; }
+
+.title                      { display: block; margin: 0 0 10px 2px; }
+
+.option > .label            {
+                                width: 30%;
+                                font-style: normal;
+                                text-align: right;
+                                display: inline-block;
+                                margin-right: 10px;
+                            }
+
+.checkbox                   { display: inline-block; }
+
+/* Standalone version - creates centered 'block' alignment (proper width varies by font used) */
+
+.checkbox.standalone        { width: 140px; text-align: left; display: block; margin: 0 auto; }
 
 
-#jsarmor-toolbar .button ul.menu li i {background-image:-o-skin('Address Bar Web Icon'); margin: 0 7px 0 -1px}
+/*-------------Button/item slider----------------*/
 
-#jsarmor-toolbar .button.whitelist ul.menu li i,
-#jsarmor-options-body .content .allowed-tab ul.userlist li i {background-image:-o-skin('Addressbar Site Certified');}
+.button,
+.slider             {
+                        height: 29px;
+                        background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+                        color: #444;
+                        padding: 6px 8px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        margin-bottom: 8px;
+                    }
 
-#jsarmor-toolbar .button.temp ul.menu li i {background-image:-o-skin('Addressbar Spinner');}
+.button:hover       {
+                        color: #222;
+                        border: solid #c6c6c6 1px;
+                        box-shadow: 0 1px 1px hsla(0,0%,0%,0.1);
+                        position: relative;
+                        z-index: 1;
+                    }
 
-#jsarmor-toolbar .button.block ul.menu li i,
-#jsarmor-options-body .content .blocked-tab ul.userlist li i  {background-image:-o-skin('Transfer Failure');}
-
-#jsarmor-toolbar .button.options i {background-image:-o-skin('Main Menu Tools'); margin-right: 4px}
-#jsarmor-toolbar .button.block i {background-image:-o-skin('Mark as spam'); margin: 0 4px 0 -3px}
-#jsarmor-toolbar .button.temp i {background-image:-o-skin('Panel History Inverted'); margin-right: 4px}
-#jsarmor-toolbar .button.revoke i {background-image:-o-skin('Reply'); margin: 0 4px 0 -3px}
-#jsarmor-toolbar .button.whitelist i {background-image:-o-skin('Mark as read'); margin-left: -3px}
-
-
-#jsarmor-options-body .content ul.userlist li i {margin-right: 6px;}
-
-#jsarmor-options .button.disabled {opacity: 0.5;}
-#jsarmor-options .button.disabled:active {background: inherit; box-shadow: inherit; border: solid hsla(0,0%,0%,0.2) 1px;}
-
-#jsarmor-options .button.add i {background-image:-o-skin('New Note'); margin-left: -9px;}
-#jsarmor-options .button.delete i {background-image:-o-skin('Delete'); margin-left: -9px;}
-
-#jsarmor-options .button.block {float: right;}
+.button:active      { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1); }
 
 
+/* Activate this style in JS after .menu button has been clicked and the drop-down appears */ 
 
-/*---------------------------------------------------------*/
-/*OPTIONS--------------------------------------------------*/
-/*---------------------------------------------------------*/
+.button.dropdown:active
+                    {
+                        background: #eee -o-linear-gradient(top, #eee, #e0e0e0);
+                        color:  #333;
+                        border: solid #ccc 1px;
+                    }
 
-/*FULLSCREEN DARKENED BACKGROUND---------------------------*/
-#jsarmor-bg-options {
-    width: 100%;
-    height: 100%;
-    background: hsla(0,0%,0%,0.2);
-    display: block;
-    overflow: hidden;
-    margin: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 95;
-}
+.checkbox .button   {
+                        width: 18px;
+                        height: 18px;
+                        display: inline-block;
+                        padding: 1px 3px;
+                        margin-right: 8px;
+                        position: relative;
+                        top: -2px;
+                        vertical-align: top;
+                    }
 
-#jsarmor-options {
-    width: 340px;
-    min-height: 240px;
-    background: hsl(0,0%,70%);/*FOR PAPER PAD STYLE*/
-    /*background-image: -o-linear-gradient(bottom, hsl(0,0%,70%) 2px, hsl(0,0%,90%) 12px, hsl(0,0%,70%) 100%);*/
-    display: inline-block;
-    box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
-    margin: 100px 0 0 -170px; /*Left margin should always be half the height of the width OR use some javascript instead to horizontally center the element*/
-    border-radius: 9px;
-    left: 50%;
-    position: absolute;
-    z-index: 95;
-}
+.button.add,
+.button.delete      { display: inline-block; }
 
-#jsarmor-options i.divider {
-    height: 100%;
-    display: inline-block;
-    border-top: solid hsl(0,0%,35%) 1px;
-    /*border-right: solid hsla(0,0%,7%,0.5) 1px;*/
-    border-right: solid hsla(0,0%,7%,0.2) 1px;
-    margin-left: 130px;
-    position: absolute;
-}
 
-#jsarmor-options-titlebar {
-    height: 33px;
-    background-image: -o-linear-gradient(top, hsl(0,0%,49%) 10%, hsl(0,0%,35%) 100%);
-    padding: 5px;
-    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.15);
-    border: solid hsl(0,0%,40%) 1px;
-    border-bottom: solid hsl(0,0%,33%) 1px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-}
+/*------------The 'Allow' toolbar buttons----------------*/
 
-/*TITLEBAR CLOSE BUTTON, FONTS-----------------------------*/
-#jsarmor-options-titlebar b {
-    height: 21px;
-    background-image: -o-linear-gradient(top, hsla(0,0%,71%,0.64) 10%, hsla(0,0%,51%,0.25) 100%);
-    text-shadow: hsla(0,0%,100%,0.1) 0 1px 0;
-    display: inline-block;
-    padding: 2px 9px;
-    box-shadow: inset 0 1px 0 hsla(0,0%,100%,0.23),
-    0 1px 0 hsla(0,0%,100%,0.1);
-    border-radius: 5px;
-    border: solid hsl(0,0%,35%) 1px;
-    border-bottom: solid hsl(0,0%,30%) 1px;
-    margin-right: 10px;
-}
-#jsarmor-options-titlebar b:active {
-    background-image: -o-linear-gradient(top, hsla(0,0%,80%,0.37) 83%, hsla(0,0%,94%,0.35) 100%);
-    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.4),
-    0 1px 0 hsla(0,0%,100%,0.1);
-    border-top: solid hsla(0,0%,0%,0.45) 1px;
-}
+#allow-toolbar      {
+                        width: 100%;
+                        display: table;
+                        table-layout: fixed;
+                        border-radius: 4px;
+                        margin-bottom: 8px;
+                    }
 
-#jsarmor-options-titlebar strong,
-#jsarmor-options-body .content .titlebar-name {
-    color: hsl(0,0%,97%);
-    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
-}
-#jsarmor-options-titlebar strong {margin-top: 3px;}
+.allow-all,
+.temp-allow-all,
+.undo               { display: table-cell; border-radius: 0; }
 
-/*BODY START-----------------------------------------------*/
-#jsarmor-options-body {
-    min-height: 207px;
-    background-image: -o-linear-gradient(top, hsl(0,0%,96%) 83%, hsl(0,0%,95%) 100%);
-    /*border: solid hsl(0,0%,75%) 1px;
-      border-bottom: solid hsl(0,0%,70%) 1px;*/
-    border-top: none;
-    border-bottom-left-radius: 9px;
-    border-bottom-right-radius: 9px;
-    margin-bottom: 7px;/*FOR PAPER PAD STYLE*/
-}
+/* Border-radius styling for first and last buttons */
 
-/*STATIC UNDER-TITLEBAR SHADOW----------------------------*/
-#jsarmor-options-body:before {
-    height: 5px;
-    background-image: -o-linear-gradient(top, hsla(0,0%,0%,0.15) 10%, transparent 60%);
-    content: '';
-    display: block;
-    position: relative;
-    margin: 0 0 -34px;
-    z-index: 96;
-}
+.allow-all          { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.undo               { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-/*SIDE NAVIGATION MENU-------------------------------------*/
-#jsarmor-options-body ul.menu {
-    /*width: 38%;*/
-    width: 130px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    float: left;
-    clear: both;
-}
+/* Colored hover background */ 
 
-#jsarmor-options-body ul.menu li {
-    font-size: 9pt;
-    font-weight: bold;
-    display: block;
-    padding: 8px 15px;
-    border-top: solid transparent 1px;
-    border-bottom: solid hsla(0,0%,0%,0.05) 1px;
-}
-#jsarmor-options-body ul.menu li.selected,
-#jsarmor-options-body ul.menu li:active {
-    background-image: -o-linear-gradient(top, hsl(208,45%,65%) 20%, hsl(215,42%,56%) 100%);
-    color: hsl(0,0%,97%);
-    text-shadow: hsla(0,0%,0%,0.45) 0 -1px 0;
-    border-bottom: solid hsla(0,0%,0%,0.3) 1px;
-}
-#jsarmor-options-body ul.menu li:first-child {border-top: none}
+.allow-all:hover,
+.temp-allow-all:hover
+                    {
+                        background: -o-linear-gradient(top, #5ab7dc, #4aa8ce);
+                        color: #fff;
+                        border: solid #3895ba 1px;
+                    }
 
-/*OPTIONS CONTENT------------------------------------------*/
-#jsarmor-options-body .content {
-    padding-bottom: 15px;
-    /*margin: 9px 15px -18px 145px;*/
-    margin: 9px 15px 0 145px;
-    position: relative;
-    top: -4px;
-}
-#jsarmor-options-body .content .titlebar-name {
-    display: block;
-    text-align: center;
-    margin-bottom: 25px;
-}
+.allow-all:active,
+.temp-allow-all:active   { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.3); }
 
-#jsarmor-options-body .content .option {
-    background: hsla(0,0%,0%,0.05);
-    padding: 9px 24px;
-    border: solid hsl(0,0%,73%) 1px;
-    border-radius: 5px;
-    box-shadow: inset 0 1px 3px hsla(0,0%,0%,0.15);
-    margin-bottom: 16px;
-}
-#jsarmor-options-body .content .option:last-child {margin-bottom: 0}
+/* Targets the middle button so it doesn't have double-borders */
+/* Duplicates some existing button code */
 
-#jsarmor-options-body .content .option-title {
-    font-style: normal;
-    display: block;
-    margin: 0 4px 2px;
-}
-#jsarmor-options-body .content .option select,
-#jsarmor-options-body .content .option input[type=button] {width: 100%;}
-#jsarmor-options-body .content .option input[type=checkbox] {margin: 6px; margin-bottom: 0}
+       .temp-allow-all,
+       .temp-allow-all:hover,
+       .temp-allow-all:active { border-left: none; border-right: none; }
+       .temp-allow-all:hover,
+       .temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, 0 1px 1px hsla(0,0%,0%,0.1); }
+       .temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1px 2px hsla(0,0%,0%,0.3); }
 
-/*USERLISTS (WHITELIST/BLACKLISTS)-------------------------*/
-#jsarmor-options-body .content ul.userlist {
-    min-height: 130px;
-    max-height: 300px;
-    background: hsl(0,0%,100%);
-    list-style: none;
-    white-space: nowrap;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border: solid hsla(0,0%,0%,0.25) 1px;
-    border-top: solid hsla(0,0%,0%,0.5) 1px;
-    padding: 0 0 8px 0;
-}
 
-#jsarmor-options-body .content ul.userlist li {padding: 5px 4px;}
+/*------------Script items slider styling----------------*/
 
-#jsarmor-options-body .content ul.userlist li:nth-child(even) {background: hsla(0,0%,7%,0.1);}
-#jsarmor-options-body .content ul.userlist li:active,
-#jsarmor-options-body .content ul.userlist li:focus {
-    background: hsl(208,45%,65%);
-    /*background: hsl(0,0%,100%);*/
-    color: hsl(0,0%,97%);
-/*box-shadow: 0 0 5px hsl(208,45%,45%);*/
-}
+.item               { height: 29px; overflow: hidden; margin-bottom: 8px; position: relative; z-index: 1; }
+
+.slider             {   
+                        height: 29px;
+                        font-size: 8pt; /* Fixes font-enlargement issue in animation */ 
+                        cursor: move;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        padding: 6px 10px;
+                        position: relative;
+                        top: -29px;
+                        transition: all 500ms ease-in;
+                        -o-transition: all 500ms ease-in;
+                    }
+
+
+.top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
+
+/* Allow once icon and script number counter on hover */
+
+.slider b,
+.slider u           {
+                        background: #f4f4f4;
+                        font-weight: normal;
+                        text-decoration: none;
+                        opacity: 0;
+                        padding: 2px;
+                        border-radius: 99px;
+                        box-shadow: 0 0 5px 5px #f4f4f4;
+                        margin: -2px -100% 0 -2px;
+                        position: relative;
+                        z-index: 1;
+                        float: left;
+                    }
+
+.slider u           { padding: 0; margin: 0 0 0 -100%; float: right; } /* Script number counter styling */
+
+/* Icon transparency on hover, including for 'Options' and 'About' icons */
+
+.slider:hover b,
+.slider:hover u     { color: hsla(0,0%,27%,0.5); opacity: 1; }
+
+.slider:hover b:hover,
+.slider b.revoke  { color: inherit; opacity: 0.8; } /* Solid when hovered on actual icon */
+
+
+/*-------------Sliding grab movement demo----------------*/
+/* .slider.right has a 'bug' where numeric
+    and special character sub-domains flip to
+    the 'wrong' side (really it's correct
+    but that's what we need for the CSS
+    transition to work). Quickfix: add '&lrm;'
+    before the list item names. */
+
+.slider.left:hover,
+.slider.left.static             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
+.slider.right:hover,
+.slider.right.static            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
+
+
+/*-------------Special animations----------------*/
+/* The final version would not have any animation-delays (the 2nd timing value) */
+
+.item.block-animation:hover     { animation: blockedout 1s 1s; z-index: 2; /* Used after slider is set to 'block/untrust' */
+                                  -o-animation: blockedout 1s 1s; z-index: 2; } /* z-index so it travels over */
+
+.item.block-animation-undo      { animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; /* The 'Undo' animation if the last action was to block an item */
+                                  -o-animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; }
+
+.item.block-animation-undo .slider    { animation: blockundo-p3 1s 2s;
+                                        -o-animation: blockundo-p3 1s 2s; }
+
+.item.block-animation-show      {   /* The 'Display untrusted' animation */
+                                    animation: blockshow 500ms 3s;
+                                    -o-animation: blockshow 500ms 5s;
+                                    opacity: 0.5;
+                                    z-index: 0;
+                                }
+
+.item.block-animation-show:hover      { opacity: 1; }
+
+
+@keyframes blockedout           {
+                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
+                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
+                                }
+
+@keyframes blockundo-p1         {
+                                    from    { height: 0; visibility: hidden; }
+                                    to      { height: 29px; visibility: visible; }
+                                }
+
+@keyframes blockundo-p2         {
+                                    from    { opacity: 0; transform: translate(-100px,0); }
+                                    to      { opacity: 1; transform: translate(0,0); }
+                                }
+
+@keyframes blockundo-p3         {   from    { margin-right: 35px; } to { margin-right: 0; } }
+
+@keyframes blockshow            {
+                                    from    { opacity: 0; margin-top: -29px; }
+                                    to      { opacity: 0.5; margin-top: 0; }
+                                }
+
+/* Dupes for older Opera versions: */
+
+@-o-keyframes blockedout        {
+                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
+                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
+                                }
+
+@-o-keyframes blockundo-p1      {
+                                    from    { height: 0; visibility: hidden; }
+                                    to      { height: 29px; visibility: visible; }
+                                }
+
+@-o-keyframes blockundo-p2      {
+                                    from    { opacity: 0; transform: translate(-100px,0); }
+                                    to      { opacity: 1; transform: translate(0,0); }
+                                }
+
+@-o-keyframes blockundo-p3      {   from    { margin-right: 35px; } to { margin-right: 0; } }
+
+@-o-keyframes blockshow         {
+                                    from    { opacity: 0; margin-top: -29px; }
+                                    to      { opacity: 0.5; margin-top: 0; }
+                                }
+  
+
+/*-------------Slider hidden colored backgrounds----------------*/
+
+div[class$='-bg']   {   /* Targets all div classes ending with '-bg' */
+                        width: 50%;
+                        height: 100%;
+                        background: #55b3d9;
+                        color: #fff;
+                        text-shadow: hsla(0,0%,0%,0.5) 0 1px 1px;
+                        padding: 0 12px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1);
+                    }
+
+div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
+
+/* Opacity adjusted when overridden in a Mode */
+
+.mode-adjusted div[class$='-bg']          { background: hsla(197,63%,59%,0.5); }
+.mode-adjusted div[class$='-bg']:hover    { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+
+
+/*------------Icons----------------*/
+
+:before,
+:after,
+.slider b           {
+                        font-family: 'entypo';
+                        font-size: 125%;
+                        font-weight: normal;
+                        line-height: 10pt;
+                    }
+
+:after              {
+                        margin-left: -100%;
+                        margin-right: 0;
+                        position: relative; 
+                        left: 0;
+                        right: 4px;
+                        float: right;
+                    }
+
+.button:not(.undo):before       { margin-right: 5px; }
+
+.menu ul li:before              { margin-left: 16px; position: absolute; left: 0; } /* Drop-down menu icon positioning */
+.option .menu ul li:before      { margin-left: 9px; position: absolute; } /* Targets .option drop-down menus */
+
+.dropdown:after                 { content: ''; color: hsl(0,0%,47%); font-size: 100%; } /* Menu arrows */
+.allow-bg:before,
+span[class$='-all']:before,
+.menu ul li.selected:before,
+.checkbox .button.checked:before { content: '✓'; } /* Tick */
+.slider b,
+span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
+span.temp-allow-all.revoke:before,
+.slider b.revoke                { content: ''; } /* Allow once revoke */
+.undo:before                    { content: ''; } /* Undo */
+div[class$='-bg']:before        { position: relative; top: 25%; float: left;} /* Slider bg icon styling */
+div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' */
+#options-button:before          { content: '⚙'; } /* Options cog */
+#display-blocked:before         { content: ''; } /* Eye */
+#about-button:before            { content: 'ℹ'; } /* About 'i' */
+.button.add:before              { content: '+'; } /* Add '+' */
+.button.delete:before           { content: '-'; } /* Delete '-' */
+.button.reset:before            { content: '⟲'; margin-left: -5px; } /* Reset */
+
+#main-interface .menu.main ul li.selected:before    { content: '⚑'; } /* Flag for selected main-interface menu item */
+
+:hover:after,
+:active:after       { color: inherit; }
+
+
+/*------------Footer icons/buttons----------------*/
+
+footer div,
+footer ol li        { display: inline-block; opacity: 0.25; }
+footer div:hover,
+footer ol li:hover  { opacity: 0.5; }
+#options-button     { margin-right: 5px; }
+#display-blocked    { visibility: visible; } /* Change to 'hidden' when no items are blocked */
+#about-button       { float: right; }
+
+/* Paginated icons */
+
+.paginated          { width: 100%; text-align: center; display: inline-block; margin: 0 -35px; }
+
+.paginated li       {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 99pt;
+                        border: solid 1px;
+                        border-color: inherit;
+                        margin-right: 5px;
+                    }
+
+.paginated li:last-child    { margin-right: 0; }
+
+.paginated li.current,
+.paginated li:hover         { background: hsla(0,0%,7%,0.70); }
 

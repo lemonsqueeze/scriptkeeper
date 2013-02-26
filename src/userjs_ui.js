@@ -256,7 +256,7 @@ function(){   // fake line, keep_editor_happy
     function resize_iframe()
     {
 	// can't just idoc.body.firstChild with things like modern scroll extension adding their stuff in ...
-	var content = idoc.body.querySelector('#jsarmor-toolbar');
+	var content = idoc.body.querySelector('#main-container');
 
 	var width = content.scrollWidth;
 	var height = content.scrollHeight;
