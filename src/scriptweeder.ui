@@ -82,11 +82,11 @@
   <div class="item">
     <div class="allow-bg"></div>
     <div class="block-bg"></div>
-    <slider host="" allowed=""></slider>
+    <slider host=""></slider>
   </div>
 </widget>
 
-<widget name="slider" host allowed init>
+<widget name="slider" host init>
   <div class="solid_slider slider" onmousedown onmouseup>
     <i>assets.</i>pinterest.com
   </div>

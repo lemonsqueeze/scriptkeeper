@@ -30,8 +30,8 @@ i                   { color: #9d9d9d; font-style: normal; cursor: move; } /* Tar
 footer *,
 .checkbox .label    { cursor: pointer; } /* Changes the buttons/menus cursor */
 .button,
-.menu,
-.slider             { text-align: center; } /* Center aligns text for these selectors */
+.menu
+/* .slider */             { text-align: center; } /* Center aligns text for these selectors */
 .disabled           { background: hsl(0,0%,98%) !important; color: hsla(0,0%,0%,0.5) !important; cursor: default; } /* Disabled button style, order class before other classes */
 .disabled:hover,
 .disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
@@ -272,7 +272,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .slider u           { padding: 0; margin: 0 0 0 -100%; float: right; } /* Script number counter styling */
 
-.solid_slider		{ width:232px; left:35px; }
+.solid_slider		{ width:232px;  }
+.solid_slider.allowed   { left:35px; }
 
 /* Icon transparency on hover, including for 'Options' and 'About' icons */
 

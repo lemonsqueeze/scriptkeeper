@@ -121,6 +121,7 @@ function(){   // fake line, keep_editor_happy
     function parent_main_ui()
     {
 	idoc.body.appendChild(main_ui);
+	main_ui_parented();
     }    
 
     /****************************** external api *****************************/
@@ -142,7 +143,24 @@ function(){   // fake line, keep_editor_happy
     }
 
     /****************************** widget handlers *****************************/
+    
+    function main_ui_parented()
+    {
+	var items = main_ui.getElementsByClassName('item');
+	var max_width = 0;	
+	foreach(items, function(item)
+	{
+	    max_width = max(item_host_offset(item), max_width);
+	});
+	//alert('max width: ' + max_width);
 
+	foreach(items, function(w)
+	{
+	    var offset = item_host_offset(w);
+	    w.querySelector('i').style = 'margin-left:' + (max_width - offset) + 'px;';
+	});	    
+    }
+    
     function items_container_init(w)
     {
 	foreach_host_node(function(hn, dn)
@@ -151,6 +169,7 @@ function(){   // fake line, keep_editor_happy
 	    var h = hn.name;
 	    var allowed = allowed_host(h);
 	    var item = new_item(h, allowed);
+	    item.allowed = allowed;
 	    if (h == current_host)
 		set_class(item, 'top-level');
 	    w.appendChild(item);
@@ -160,12 +179,24 @@ function(){   // fake line, keep_editor_happy
     function item_init(w, host, allowed)
     {
 	var s = w.querySelector('.slider');
-	slider_init(s, host, allowed);
+	slider_init(s, host);
+	if (allowed)
+	    set_class(s, 'allowed');
     }
 
-    function slider_init(w, host, allowed)
+    function item_host_offset(w)
     {
-	w.style = 'left:' + (allowed ? 35 : 0) + 'px;';
+	var i = w.querySelector('i');
+	//if (i.innerHTML != '')
+	// assert(false, "clientWidth == 0 !");
+	var o = i.clientWidth;
+	if (w.allowed)
+	    o += 35;
+	return o;
+    }
+
+    function slider_init(w, host)
+    {
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
 	w.innerHTML = "<i>" + h + "</i>" + d;
