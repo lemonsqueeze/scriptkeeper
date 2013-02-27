@@ -66,7 +66,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /* Main menu at top */
 
-.menu.main ul       { width: 167px; /* 20px less than #main-container width */ }
+.menu.main ul       { /*width: 167px;*/ /* 20px less than #main-container width */ }
 
 /* Options drop-down menu styling */
 
@@ -108,7 +108,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 /*-------------Containers----------------*/
 
 #main-container     {
-                        width: 187px;
+                        width: 287px; 
                         background-color: #fff;
                         padding: 9px;
                         border-radius: 6px;
@@ -244,10 +244,12 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         padding: 6px 10px;
                         position: relative;
                         top: -29px;
-                        transition: all 500ms ease-in;
-                        -o-transition: all 500ms ease-in;
                     }
 
+.slider_animation	{
+                          transition: all 500ms ease-in;
+                          -o-transition: all 500ms ease-in;
+			}
 
 .top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
 
@@ -269,6 +271,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                     }
 
 .slider u           { padding: 0; margin: 0 0 0 -100%; float: right; } /* Script number counter styling */
+
+.solid_slider		{ width:232px; left:35px; }
 
 /* Icon transparency on hover, including for 'Options' and 'About' icons */
 

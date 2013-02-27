@@ -71,10 +71,17 @@
       <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
     </div>
 
+<!--
     <div class="item mode-adjusted">
       <div class="allow-bg" title="Allow permanently"></div>
       <div class="block-bg"></div>
       <div class="slider left static">&lrm;<i>assets.</i>pinterest.com</div>
+    </div>
+-->
+    <div class="item">
+      <div class="allow-bg" title="Allow permanently"></div>
+      <div class="block-bg"></div>
+      <slider></slider>
     </div>
     
     <div class="item">
@@ -110,6 +117,11 @@
   </div>
 </widget>
 
+<widget name="slider">
+  <div class="solid_slider slider" onmousedown onmouseup>
+    <i>assets.</i>pinterest.com
+  </div>
+</widget>
 
   <!-- <section id="options">
 

@@ -143,64 +143,33 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
-    function blocked_init(w)
-    {
-	var menu = find_element(w, 'menu');
-	var n = 0;
-	foreach_host_node(function(hn, dn)
-	{
-	    var d = dn.name;
-	    var h = hn.name;
-	    var allowed = allowed_host(h);
-	    if (allowed)
-		return;
-	    n++;
-	    var item = new_menuitem(h);
-	    menu.appendChild(item);
-	});
 
-	var no = find_element(w, 'number');
-	no.innerText = n;
+    function slider_onmousedown(e)
+    {
+	this.origx = e.screenX;
+	this.origleft = this.offsetLeft;
+	unset_class(this, 'slider_animation');
+	this.onmousemove = slider_onmousemove;
     }
 
-    function allowed_init(w)
+    function slider_onmouseup(e)
     {
-	var menu = find_element(w, 'menu');
-	var n = 0;
-	foreach_host_node(function(hn, dn)
-	{
-	    var d = dn.name;
-	    var h = hn.name;
-	    var allowed = allowed_host(h);
-	    if (!allowed)
-		return;
-	    n++;
-	    var item = new_menuitem(h);
-	    menu.appendChild(item);
-	});
+	this.onmousemove = null;
+	var offset = e.screenX - this.origx;
+	offset = (offset > 0 ? 35 : 0);
+	set_class(this, 'slider_animation');
+	this.style.left = offset + 'px';
+    }
 
-	var no = find_element(w, 'number');
-	no.innerText = n;
-    }    
+    function slider_onmousemove(e)
+    {
+	var offset = this.origleft + (e.screenX - this.origx);
+	offset = min(offset, 35);
+	offset = max(offset, 0);
+	//this.style = 'left:' + offset + 'px;';
+	this.style.left = offset + 'px';
+    }
     
-    function menuitem_init(w, label)
-    {
-	w.innerHTML = w.innerHTML.replace('label', label);
-    }
-
-    function toggle_active(e)
-    {
-	toggle_class(this, 'active');
-    }
-
-    function show_options(e)
-    {
-	var w = new_widget("options_bg");
-	idoc.body.appendChild(w);
-	var w = new_widget("options");
-	idoc.body.appendChild(w);
-    }
-        
     /***************************** Repaint logic ******************************/
 
     var repaint_ui_timer = null;
