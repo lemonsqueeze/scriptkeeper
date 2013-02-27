@@ -143,6 +143,33 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
+    function items_container_init(w)
+    {
+	foreach_host_node(function(hn, dn)
+        {
+	    var d = dn.name;
+	    var h = hn.name;
+	    var allowed = allowed_host(h);
+	    var item = new_item(h, allowed);
+	    if (h == current_host)
+		set_class(item, 'top-level');
+	    w.appendChild(item);
+	});
+    }
+
+    function item_init(w, host, allowed)
+    {
+	var s = w.querySelector('.slider');
+	slider_init(s, host, allowed);
+    }
+
+    function slider_init(w, host, allowed)
+    {
+	w.style = 'left:' + (allowed ? 35 : 0) + 'px;';
+	var d = get_domain(host);
+	var h = host.slice(0, host.length - d.length);
+	w.innerHTML = "<i>" + h + "</i>" + d;
+    }
 
     function slider_onmousedown(e)
     {
@@ -156,9 +183,15 @@ function(){   // fake line, keep_editor_happy
     {
 	this.onmousemove = null;
 	var offset = e.screenX - this.origx;
-	offset = (offset > 0 ? 35 : 0);
+	if (offset) 
+	    offset = (offset > 0 ? 35 : 0);
+	else  // just click ? toggle then
+	    offset = (this.origleft ? 0 : 35);
+
 	set_class(this, 'slider_animation');
 	this.style.left = offset + 'px';
+	//if (offset != this.origleft)
+	//  alert("changed!");
     }
 
     function slider_onmousemove(e)

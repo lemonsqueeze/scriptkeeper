@@ -66,7 +66,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /* Main menu at top */
 
-.menu.main ul       { /*width: 167px;*/ /* 20px less than #main-container width */ }
+.menu.main, .menu.main ul       { width: 267px; /* 20px less than #main-container width */ }
 
 /* Options drop-down menu styling */
 
@@ -247,8 +247,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                     }
 
 .slider_animation	{
-                          transition: all 500ms ease-in;
-                          -o-transition: all 500ms ease-in;
+                          transition: all 500ms ease;
+                          -o-transition: all 500ms ease;
 			}
 
 .top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */

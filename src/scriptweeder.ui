@@ -62,62 +62,31 @@
 
 
 <!-- items_container -->
-<widget name="items_container">
+<widget name="items_container" init>
   <div id="items-container">
 
+<!--
     <div class="item top-level mode-adjusted">
       <div class="allow-bg" title="Allow permanently"></div>
       <div class="block-bg"></div>
       <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
     </div>
-
-<!--
-    <div class="item mode-adjusted">
-      <div class="allow-bg" title="Allow permanently"></div>
-      <div class="block-bg"></div>
-      <div class="slider left static">&lrm;<i>assets.</i>pinterest.com</div>
-    </div>
 -->
-    <div class="item">
-      <div class="allow-bg" title="Allow permanently"></div>
-      <div class="block-bg"></div>
-      <slider></slider>
-    </div>
-    
-    <div class="item">
-      <div class="allow-bg"></div>
-      <div class="block-bg"></div>
-      <div class="slider">&lrm;<b class="revoke" title="Cancel allow once"></b><i>www.</i>youtube.com<u>(2)</u></div>
-    </div>
-    
-    <div class="item">
-      <div class="allow-bg"></div>
-      <div class="block-bg"></div>
-      <div class="slider">&lrm;<b title="Allow once"></b><i>apis.</i>google.com<u>(4)</u></div>
-    </div>
-    
-    <div class="item block-animation">
-      <div class="allow-bg"></div>
-      <div class="block-bg"></div>
-      <div class="slider right">&lrm;<i>0.</i>gravatar.com</div>
-    </div>
-    
-    <div class="item block-animation-undo">
-      <div class="allow-bg"></div>
-      <div class="block-bg"></div>
-      <div class="slider left">&lrm;<i>widgets.</i>twimg.com</div>
-    </div>
-    
-    <div class="item block-animation-show">
-      <div class="allow-bg"></div>
-      <div class="block-bg"></div>
-      <div class="slider right static">&lrm;<i>static.ak.</i>fbcdn.net</div>
-    </div>
+
+
     
   </div>
 </widget>
 
-<widget name="slider">
+<widget name="item" host allowed init>
+  <div class="item">
+    <div class="allow-bg"></div>
+    <div class="block-bg"></div>
+    <slider host="" allowed=""></slider>
+  </div>
+</widget>
+
+<widget name="slider" host allowed init>
   <div class="solid_slider slider" onmousedown onmouseup>
     <i>assets.</i>pinterest.com
   </div>
