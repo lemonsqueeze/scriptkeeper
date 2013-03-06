@@ -26,7 +26,7 @@
 @include "settings.js"    
 @include "userjs_ui.js"
 @include "utils.js"
-@include "ui.js"
+@include "newui.js"
 
     /********************************* Defaults ************************************/
 

@@ -1,0 +1,462 @@
+/* JSArmor CSS by laurenbacall (last update: 25/02/13) */
+
+body                {
+                        background: hsl(0,0%,100%);
+                        color: hsla(0,0%,7%,0.70);
+                        font: normal 8pt 'Lucida Grande', sans-serif;
+                        margin: 100px auto;
+                    }
+
+@font-face          {
+                        font-family: 'entypo';
+                        src: url('entypo.woff') format('woff');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+
+
+/*-------------Generic----------------*/
+
+*                   { box-sizing: border-box; cursor: default; } /* Auto-calculates padding/width */
+::selection         { background: transparent; } /* Makes text selection on buttons transparent */
+ul, ol              { list-style: none; padding: 0; margin: 0; }
+i                   { color: #9d9d9d; font-style: normal; cursor: move; } /* Targets the grey subdomain of the URL in .item */
+.menu.main .dropdown     { font-weight: bold; } /* Used for main menu drop-down */
+.button,
+.dropdown,
+.slider, .slider b,
+.menu ul li,
+footer *,
+.checkbox .label    { cursor: pointer; } /* Changes the buttons/menus cursor */
+.button,
+.menu,
+.slider             { text-align: center; } /* Center aligns text for these selectors */
+.disabled           { background: hsl(0,0%,98%) !important; color: hsla(0,0%,0%,0.5) !important; cursor: default; } /* Disabled button style, order class before other classes */
+.disabled:hover,
+.disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
+.slider b,
+.slider u,
+.item.block-animation-show,
+.mode-adjusted div[class$='-bg'],
+footer div          { transition: all 200ms; -o-transition: all 200ms;}
+
+
+/*-------------Drop-down menus----------------*/
+/* Should normally appear when drop-down button is clicked */
+
+.menu ul            {
+                        background: #fff;
+                        color: #333;
+                        display: none;
+                        border-bottom-left-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.2) 1px;
+                        box-shadow: 0 2px 4px hsla(0,0%,0%,0.2);
+                        padding: 5px 0;
+                        margin: -9px 0 0;
+                        position: absolute;
+                        z-index: 2;
+                    }
+
+.menu:hover ul, .menu.main:hover ul     { display: block; }
+
+.menu ul li         { padding: 10px; margin: 0; }
+.menu ul li:hover   { background: #eee; }
+
+/* Main menu at top */
+
+.menu.main ul       { width: 167px; /* 20px less than #main-container width */ }
+
+/* Options drop-down menu styling */
+
+.option .menu       { width: 55%; display: inline-block; }
+
+.option .menu .button.dropdown
+                    {
+                        width: 100%;
+                        height: 22px;
+                        text-align: left;
+                        padding-top: 3px;
+                    }
+
+.option .menu ul    { width: 91px; text-align: left; } /* Must change with any #main-container width  */
+
+.option .menu ul li { padding-left: 25px; }
+
+
+/*-------------Lists----------------*/
+
+.list               {   
+                        min-height: 120px;
+                        background-image: -o-linear-gradient(transparent 50%, #F3F3F3 50%, #F3F3F3);
+                        background-size: 48px 48px; /* Double the height of the li */
+                        border-radius: 4px;
+                        border: solid #E5E5E5 1px; /* A solid color so the background doesn't show through */
+                        padding-bottom: 24px;
+                        margin-bottom: 8px;
+                    }
+
+.list li            { padding: 5px 10px; }
+
+/* Styling for selection - would normally stay selected until clicking elsewhere */
+
+.list li:active,
+.list li:active i   { background: #55b3d9; color: #fff; }
+
+
+/*-------------Containers----------------*/
+
+#main-container     {
+                        width: 187px;
+                        background-color: #fff;
+                        padding: 9px;
+                        border-radius: 6px;
+                        border: solid hsla(0,0%,0%,0.3) 1px;
+                        box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
+                        margin: 0 auto;
+                    }
+
+
+/*-------------Options specific styling----------------*/
+
+.option:not(:last-child)    { margin-bottom: 10px; }
+
+.title                      { display: block; margin: 0 0 10px 2px; }
+
+.option > .label            {
+                                width: 30%;
+                                font-style: normal;
+                                text-align: right;
+                                display: inline-block;
+                                margin-right: 10px;
+                            }
+
+.checkbox                   { display: inline-block; }
+
+/* Standalone version - creates centered 'block' alignment (proper width varies by font used) */
+
+.checkbox.standalone        { width: 140px; text-align: left; display: block; margin: 0 auto; }
+
+
+/*-------------Button/item slider----------------*/
+
+.button,
+.slider             {
+                        height: 29px;
+                        background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+                        color: #444;
+                        padding: 6px 8px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        margin-bottom: 8px;
+                    }
+
+.button:hover       {
+                        color: #222;
+                        border: solid #c6c6c6 1px;
+                        box-shadow: 0 1px 1px hsla(0,0%,0%,0.1);
+                        position: relative;
+                        z-index: 1;
+                    }
+
+.button:active      { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1); }
+
+
+/* Activate this style in JS after .menu button has been clicked and the drop-down appears */ 
+
+.button.dropdown:active
+                    {
+                        background: #eee -o-linear-gradient(top, #eee, #e0e0e0);
+                        color:  #333;
+                        border: solid #ccc 1px;
+                    }
+
+.checkbox .button   {
+                        width: 18px;
+                        height: 18px;
+                        display: inline-block;
+                        padding: 1px 3px;
+                        margin-right: 8px;
+                        position: relative;
+                        top: -2px;
+                        vertical-align: top;
+                    }
+
+.button.add,
+.button.delete      { display: inline-block; }
+
+
+/*------------The 'Allow' toolbar buttons----------------*/
+
+#allow-toolbar      {
+                        width: 100%;
+                        display: table;
+                        table-layout: fixed;
+                        border-radius: 4px;
+                        margin-bottom: 8px;
+                    }
+
+.allow-all,
+.temp-allow-all,
+.undo               { display: table-cell; border-radius: 0; }
+
+/* Border-radius styling for first and last buttons */
+
+.allow-all          { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.undo               { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+
+/* Colored hover background */ 
+
+.allow-all:hover,
+.temp-allow-all:hover
+                    {
+                        background: -o-linear-gradient(top, #5ab7dc, #4aa8ce);
+                        color: #fff;
+                        border: solid #3895ba 1px;
+                    }
+
+.allow-all:active,
+.temp-allow-all:active   { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.3); }
+
+/* Targets the middle button so it doesn't have double-borders */
+/* Duplicates some existing button code */
+
+temp-allow-all,
+temp-allow-all:hover,
+temp-allow-all:active { border-left: none; border-right: none; }
+temp-allow-all:hover,
+temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, 0 1px 1px hsla(0,0%,0%,0.1); }
+temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1px 2px hsla(0,0%,0%,0.3); }
+
+
+/*------------Script items slider styling----------------*/
+
+.item               { height: 29px; overflow: hidden; margin-bottom: 8px; position: relative; z-index: 1; }
+
+.slider             {   
+                        height: 29px;
+                        font-size: 8pt; /* Fixes font-enlargement issue in animation */ 
+                        cursor: move;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        padding: 6px 10px;
+                        position: relative;
+                        top: -29px;
+                        transition: all 500ms ease-in;
+                        -o-transition: all 500ms ease-in;
+                    }
+
+
+.top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
+
+/* Allow once icon and script number counter on hover */
+
+.slider b,
+.slider u           {
+                        background: #f4f4f4;
+                        font-weight: normal;
+                        text-decoration: none;
+                        opacity: 0;
+                        padding: 2px;
+                        border-radius: 99px;
+                        box-shadow: 0 0 5px 5px #f4f4f4;
+                        margin: -2px -100% 0 -2px;
+                        position: relative;
+                        z-index: 1;
+                        float: left;
+                    }
+
+.slider u           { padding: 0; margin: 0 0 0 -100%; float: right; } /* Script number counter styling */
+
+/* Icon transparency on hover, including for 'Options' and 'About' icons */
+
+.slider:hover b,
+.slider:hover u     { color: hsla(0,0%,27%,0.5); opacity: 1; }
+
+.slider:hover b:hover,
+.slider b.revoke  { color: inherit; opacity: 0.8; } /* Solid when hovered on actual icon */
+
+
+/*-------------Sliding grab movement demo----------------*/
+/* .slider.right has a bug where numeric
+    and special character sub-domains flip to
+    the 'wrong' side (really it's correct
+    but that's what we need for the CSS
+    transition to work). Quickfix: add '&lrm;'
+    before the list item names. */
+
+.slider.left:hover,
+.slider.left.static             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
+.slider.right:hover,
+.slider.right.static            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
+
+
+/*-------------Special animations----------------*/
+/* The final version would not have any animation-delays (the 2nd timing value) */
+
+.item.block-animation:hover     { animation: blockedout 1s 1s; z-index: 2; /* Used after slider is set to 'block/untrust' */
+                                  -o-animation: blockedout 1s 1s; z-index: 2; } /* z-index so it travels over */
+
+.item.block-animation-undo      { animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; /* The 'Undo' animation if the last action was to block an item */
+                                  -o-animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; }
+
+.item.block-animation-undo .slider    { animation: blockundo-p3 1s 2s;
+                                        -o-animation: blockundo-p3 1s 2s; }
+
+.item.block-animation-show      {   /* The 'Display untrusted' animation */
+                                    animation: blockshow 500ms 3s;
+                                    -o-animation: blockshow 500ms 5s;
+                                    opacity: 0.5;
+                                    z-index: 0;
+                                }
+
+.item.block-animation-show:hover      { opacity: 1; }
+
+
+@keyframes blockedout           {
+                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
+                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
+                                }
+
+@keyframes blockundo-p1         {
+                                    from    { height: 0; visibility: hidden; }
+                                    to      { height: 29px; visibility: visible; }
+                                }
+
+@keyframes blockundo-p2         {
+                                    from    { opacity: 0; transform: translate(-100px,0); }
+                                    to      { opacity: 1; transform: translate(0,0); }
+                                }
+
+@keyframes blockundo-p3         {   from    { margin-right: 35px; } to { margin-right: 0; } }
+
+@keyframes blockshow            {
+                                    from    { opacity: 0; margin-top: -29px; }
+                                    to      { opacity: 0.5; margin-top: 0; }
+                                }
+
+/* Dupes for older Opera versions: */
+
+@-o-keyframes blockedout        {
+                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
+                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
+                                }
+
+@-o-keyframes blockundo-p1      {
+                                    from    { height: 0; visibility: hidden; }
+                                    to      { height: 29px; visibility: visible; }
+                                }
+
+@-o-keyframes blockundo-p2      {
+                                    from    { opacity: 0; transform: translate(-100px,0); }
+                                    to      { opacity: 1; transform: translate(0,0); }
+                                }
+
+@-o-keyframes blockundo-p3      {   from    { margin-right: 35px; } to { margin-right: 0; } }
+
+@-o-keyframes blockshow         {
+                                    from    { opacity: 0; margin-top: -29px; }
+                                    to      { opacity: 0.5; margin-top: 0; }
+                                }
+
+
+/*-------------Slider hidden colored backgrounds----------------*/
+
+div[class$='-bg']   {   /* Targets all div classes ending with '-bg' */
+                        width: 50%;
+                        height: 100%;
+                        background: #55b3d9;
+                        color: #fff;
+                        text-shadow: hsla(0,0%,0%,0.5) 0 1px 1px;
+                        padding: 0 12px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1);
+                    }
+
+div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
+
+/* Opacity adjusted when overridden in a Mode */
+
+.mode-adjusted div[class$='-bg']          { background: hsla(197,63%,59%,0.5); }
+.mode-adjusted div[class$='-bg']:hover    { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+
+
+/*------------Icons----------------*/
+
+:before,
+:after,
+.slider b           {
+                        font-family: 'entypo';
+                        font-size: 125%;
+                        font-weight: normal;
+                        line-height: 10pt;
+                    }
+
+:after              {
+                        margin-left: -100%;
+                        margin-right: 0;
+                        position: relative; 
+                        left: 0;
+                        right: 4px;
+                        float: right;
+                    }
+
+.button:not(.undo):before       { margin-right: 5px; }
+
+.menu ul li:before              { margin-left: 16px; position: absolute; left: 0; } /* Drop-down menu icon positioning */
+.option .menu ul li:before      { margin-left: 9px; position: absolute; } /* Targets .option drop-down menus */
+
+.dropdown:after                 { content: ''; color: hsl(0,0%,47%); font-size: 100%; } /* Menu arrows */
+.allow-bg:before,
+span[class$='-all']:before,
+.menu ul li.selected:before,
+.checkbox .button.checked:before { content: '✓'; } /* Tick */
+.slider b,
+span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
+span.temp-allow-all.revoke:before,
+.slider b.revoke                { content: ''; } /* Allow once revoke */
+.undo:before                    { content: ''; } /* Undo */
+div[class$='-bg']:before        { position: relative; top: 25%; float: left;} /* Slider bg icon styling */
+div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' */
+#options-button:before          { content: '⚙'; } /* Options cog */
+#display-blocked:before         { content: ''; } /* Eye */
+#about-button:before            { content: 'ℹ'; } /* About 'i' */
+.button.add:before              { content: '+'; } /* Add '+' */
+.button.delete:before           { content: '-'; } /* Delete '-' */
+.button.reset:before            { content: '⟲'; margin-left: -5px; } /* Reset */
+
+#main-interface .menu.main ul li.selected:before    { content: '⚑'; } /* Flag for selected main-interface menu item */
+
+:hover:after,
+:active:after       { color: inherit; }
+
+
+/*------------Footer icons/buttons----------------*/
+
+footer div,
+footer ol li        { display: inline-block; opacity: 0.25; }
+footer div:hover,
+footer ol li:hover  { opacity: 0.5; }
+#options-button     { margin-right: 5px; }
+#display-blocked    { visibility: visible; } /* Change to 'hidden' when no items are blocked */
+#about-button       { float: right; }
+
+/* Paginated icons */
+
+.paginated          { width: 100%; text-align: center; display: inline-block; margin: 0 -35px; }
+
+.paginated li       {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 99pt;
+                        border: solid 1px;
+                        border-color: inherit;
+                        margin-right: 5px;
+                    }
+
+.paginated li:last-child    { margin-right: 0; }
+
+.paginated li.current,
+.paginated li:hover         { background: hsla(0,0%,7%,0.70); }

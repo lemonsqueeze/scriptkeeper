@@ -1,8 +1,8 @@
 
-NAME	= scriptweeder.js
-SRC	= main.js core.js settings.js utils.js userjs_ui.js ui.js
-GEN_SRC	= scriptweeder_style.js scriptweeder_widgets.js
-TMPFILES= scriptweeder.xml scriptweeder.inlined.css custom.style
+NAME	= scriptkeeper.js
+SRC	= main.js core.js settings.js utils.js userjs_ui.js newui.js
+GEN_SRC	= scriptkeeper_style.js scriptkeeper_widgets.js
+TMPFILES= scriptkeeper.xml scriptkeeper.inlined.css custom.style
 ALLSRC	= $(SRC) $(GEN_SRC)
 # where we save output from generate_layout.html
 GEN_LAYOUT=/home/opera/downloads/default
@@ -13,14 +13,14 @@ all: $(NAME)
 clean:
 	-rm $(NAME) $(GEN_SRC) $(TMPFILES) *~
 
-scriptweeder.js: $(ALLSRC)
+scriptkeeper.js: $(ALLSRC)
 	$(TOOLS)/jpp $<  > $@
 
-scriptweeder.inlined.css: scriptweeder.css
+scriptkeeper.inlined.css: scriptkeeper.css
 	@echo generating $@ from $<
 	@../tools/data_urls < $<  > $@
 
-scriptweeder_style.js: scriptweeder.inlined.css
+scriptkeeper_style.js: scriptkeeper.inlined.css
 	@echo generating $@ from $<
 	@echo "    var builtin_style = " > $@
 	@echo -n '"' >> $@
@@ -29,15 +29,15 @@ scriptweeder_style.js: scriptweeder.inlined.css
 
 
 # Layout generation pipeline:
-# - we start with the interface description in scriptweeder.ui ...
-# - then expand the xml macros in there to get scriptweeder.xml
+# - we start with the interface description in scriptkeeper.ui ...
+# - then expand the xml macros in there to get scriptkeeper.xml
 # - and turn that into js object with the html for each widget.
 
-scriptweeder.xml: scriptweeder.ui
+scriptkeeper.xml: scriptkeeper.ui
 	@echo generating $@ from $<
 	@$(TOOLS)/xml_macros < $<   > $@
 
-scriptweeder_widgets.js: scriptweeder.xml
+scriptkeeper_widgets.js: scriptkeeper.xml
 	@echo generating $@ from $<
 	@$(TOOLS)/pack_widgets $<  > $@
 

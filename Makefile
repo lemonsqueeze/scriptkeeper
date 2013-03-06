@@ -2,7 +2,7 @@
 #MAKE=make
 MAKE=make --no-print-directory
 
-scriptweeder.js: FORCE
+scriptkeeper.js: FORCE
 	@cd src && $(MAKE) $@
 	cp src/$@ .
 
