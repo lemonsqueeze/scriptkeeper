@@ -3,7 +3,7 @@
 // @author lemonsqueeze https://github.com/lemonsqueeze/scriptweeder
 // @description Block unwanted javascript. noscript on steroids for opera !
 // @license GNU GPL version 2 or later version.
-// @published Mar 07 2013
+// @published Mar 08 2013
 // ==/UserScript==
 
 
@@ -19,7 +19,7 @@
 {
     var version_number = "1.5.1";
     var version_type = "userjs";
-    var version_date = "Mar 07 2013";
+    var version_date = "Mar 08 2013";
     var version_full = "scriptweeder " + version_type + " v" + version_number + ", " + version_date + ".";
     
 
@@ -2214,6 +2214,7 @@
 		my_alert(file + ":\nUnknown file type, should be a .style or .css");
 		return;
 	    }
+	    alert("Loaded !");
 	    need_reload = true;
 	};
 	this.onchange = file_loader(load_style);
@@ -2591,8 +2592,16 @@
 	switch_menu(w);		
     }
 
+    function details_menu_autoscroll()
+    {
+	var c = main_ui.querySelector('#menu_content');
+	autoscroll_element(c);
+	nsmenu.style = "bottom:0px;";  // who knows why we need this ...
+    }
+    
     function details_menu_init(realmenu)
-    {	    
+    {
+	realmenu.autoscroll = details_menu_autoscroll;
 	var menu = find_element(realmenu, "menu_content");
 	var last = find_element(realmenu, "last_item");
 
@@ -2710,7 +2719,9 @@
 	var d = (show ? 'inline-block' : 'none');	
 	if (toggle)
 	    d = (create || nsmenu.style.display == 'none' ? 'inline-block' : 'none');
-	nsmenu.style.display = d;      
+	nsmenu.style.display = d;
+	if (nsmenu.autoscroll)
+	    nsmenu.autoscroll();
 	resize_iframe();
     }
 
@@ -2750,6 +2761,13 @@
 	else
 	    this.onclick = function() { set_mode(for_mode); }	
     }
+
+    function main_menu_autoscroll()
+    {
+	var t = main_ui.querySelector('#host_table');
+	if (t)
+	    autoscroll_element(t);
+    }
     
     function main_menu_init(menu)
     {
@@ -2762,6 +2780,8 @@
 	// add host table
 	if (mode != 'block_all')
 	    add_host_table_after(menu.querySelector('li.' + mode));
+
+	menu.autoscroll = main_menu_autoscroll;
 	
 	// FIXME put it back one day
 	// plugin api
@@ -3017,6 +3037,25 @@
 //	    tr.childNodes[0].innerHTML = "&nbsp;&nbsp;";	
     }
 
+    // display scrollbar instead of screening out
+    function autoscroll_element(t)
+    {
+	var cs = iwin.getComputedStyle(t);	// can cs.getPropertyValue('overflow-y') also
+	if (cs.overflowY != 'auto' ||
+	    (cs.maxHeight[0] != '-' && cs.maxHeight != ''))
+	    return;	// current style doesn't want us to autoscroll
+	t.style = 'max-height:inherit;';
+	
+	var win_height = document.documentElement.clientHeight;
+	var ui_height = main_ui.offsetHeight;	
+	if (ui_height <= win_height)
+	    return;
+	// ui screens out, 
+	var max_height = win_height - (ui_height - t.offsetHeight);
+	max_height = max(max_height, 16);
+	t.style = 'max-height:' + max_height + 'px;';
+    }
+    
 
     /**************************** Plugin API **********************************/
 
@@ -3289,6 +3328,12 @@ img	{ width:1px; height:1px; vertical-align:middle;   \n\
 	border-radius: 5px; border-width: 2px; border-style: outset; border-color: gray;  \n\
 	display:table; background: #ccc;   \n\
 }  \n\
+  \n\
+/* autoscroll these instead of screening out.   \n\
+ * js will set the right max-height to make it work if it finds overflow is set but no max-height */  \n\
+#host_table,    \n\
+#details_menu #menu_content { overflow-y:auto }  \n\
+  \n\
   \n\
 /* menu title */  \n\
 h1	{ color:#fff; font-weight:bold; font-size: 1em; text-align: center;  \n\
