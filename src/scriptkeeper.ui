@@ -40,15 +40,7 @@
 <widget name="main_interface">
   <section id="main-interface">
     
-    <nav class="menu main">
-      <div class="button dropdown">Relaxed mode</div>
-      <ul class="menu">
-        <li>Globally enable all</li>
-        <li class="selected">Relaxed mode</li>
-        <li>Standard mode</li>
-        <li>Globally disable all</li>
-      </ul>
-    </nav>
+    <mode_menu></mode_menu>
 
     <div id="allow-toolbar">
       <span class="button allow-all" title="Allow all">All</span>
@@ -60,6 +52,17 @@
   </section>
 </widget>
 
+<widget name="mode_menu" init>
+  <nav class="menu main">
+    <div class="button dropdown">Relaxed mode</div>
+    <ul class="menu">
+      <li mode="allow_all" onclick="mode_menu_clicked">Globally enable all</li>
+      <li mode="relaxed"   onclick="mode_menu_clicked">Relaxed mode</li>
+      <li mode="filtered"  onclick="mode_menu_clicked">Standard mode</li>
+      <li mode="block_all" onclick="mode_menu_clicked">Globally disable all</li>
+    </ul>
+  </nav>
+</widget>
 
 <!-- items_container -->
 <widget name="items_container" init>
@@ -78,7 +81,7 @@
   </div>
 </widget>
 
-<widget name="item" host allowed allow_once revoke n init>
+<widget name="item" hn init>
   <div class="item">
     <div class="allow-bg"></div>
     <div class="block-bg"></div>
@@ -86,7 +89,7 @@
   </div>
 </widget>
 
-<widget name="slider" host allowed allow_once revoke n init>
+<widget name="slider" hn init>
   <div class="slider" onclick>
     <!-- &lrm;<b>foo</b><i>assets.</i>pinterest.com<u>(4)</u> --> 
   </div>

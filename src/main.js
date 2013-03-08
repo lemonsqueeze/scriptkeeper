@@ -65,6 +65,7 @@
             set_global_setting('version_number', version_number);
             set_global_setting('version_type', version_type);               
             set_global_setting('whitelist',             serialize_name_hash(default_global_whitelist) );
+            set_global_setting('blacklist',             serialize_name_hash({}) );	    
             set_global_setting('helper_blacklist',      serialize_name_hash(default_helper_blacklist) );
         }
 	

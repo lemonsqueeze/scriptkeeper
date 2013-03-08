@@ -28,6 +28,7 @@ function(){   // fake line, keep_editor_happy
     var current_host;
     var current_domain;
     var whitelist;
+    var blacklist;
     var helper_blacklist;
     var block_inline_scripts = false;
     var handle_noscript_tags = false;
@@ -98,6 +99,7 @@ function(){   // fake line, keep_editor_happy
 	    startup_checks();
 	
 	whitelist = deserialize_name_hash(global_setting('whitelist'));
+	blacklist = deserialize_name_hash(global_setting('blacklist'));	
 	helper_blacklist = deserialize_name_hash(global_setting('helper_blacklist'));
     }
 
@@ -356,6 +358,29 @@ function(){   // fake line, keep_editor_happy
     // TODO show iframe placeholder ?
         
     /***************************** Host filtering *****************************/    
+
+    function host_blacklisted(host)
+    {
+	if (blacklist[host])
+	    return true;	
+	// whole domain blacklisted ?
+	return (blacklist[get_domain(host)] ? true : false);
+    }    
+
+    function blacklist_host(host)
+    {
+	blacklist[host] = 1;
+	set_global_setting('blacklist', serialize_name_hash(blacklist));
+    }
+
+    function unblacklist_host(host)
+    {
+	delete blacklist[host];
+	// remove domain also if it's there
+	delete blacklist[get_domain(host)];
+	set_global_setting('blacklist', serialize_name_hash(blacklist));
+    }
+    
     
     function allow_host(host)
     {
@@ -455,11 +480,12 @@ function(){   // fake line, keep_editor_happy
     
     function allowed_host(host)
     {
-      if (mode == 'block_all') return false; 
-      if (mode == 'filtered')  return filtered_mode_allowed_host(host);
-      if (mode == 'relaxed')   return relaxed_mode_allowed_host(host); 
-      if (mode == 'allow_all') return true;
-      error('mode="' + mode + '", this should not happen!');
+	if (host_blacklisted(host)) return false;	    
+	if (mode == 'block_all') return false; 
+	if (mode == 'filtered')  return filtered_mode_allowed_host(host);
+	if (mode == 'relaxed')   return relaxed_mode_allowed_host(host); 
+	if (mode == 'allow_all') return true;
+	error('mode="' + mode + '", this should not happen!');
     }
     
     /**************************** Scripts store *******************************/

@@ -415,6 +415,7 @@ span[class$='-all']:before,
 .checkbox .button.checked:before { content: '✓'; } /* Tick */
 .slider b,
 span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
+.slider b.disabled		{ content:inherit }
 span.temp-allow-all.revoke:before,
 .slider b.revoke                { content: ''; } /* Allow once revoke */
 .undo:before                    { content: ''; } /* Undo */
