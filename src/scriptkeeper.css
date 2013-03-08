@@ -1,7 +1,8 @@
 /* JSArmor CSS by laurenbacall (last update: 25/02/13) */
 
+
 body                {
-                        background: hsl(0,0%,100%);
+			background: rgba(0,0,0,0.3);                        
                         color: hsla(0,0%,7%,0.70);
                         font: normal 8pt 'Lucida Grande', sans-serif;
                         margin: 100px auto;
@@ -286,10 +287,9 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
     transition to work). Quickfix: add '&lrm;'
     before the list item names. */
 
-.slider.left:hover,
-.slider.left.static             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
-.slider.right:hover,
-.slider.right.static            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
+
+.slider.left.clicked             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
+.slider.right.clicked            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
 
 
 /*-------------Special animations----------------*/

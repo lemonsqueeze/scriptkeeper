@@ -78,7 +78,7 @@
   </div>
 </widget>
 
-<widget name="item" host allowed init>
+<widget name="item" host allowed allow_once revoke n init>
   <div class="item">
     <div class="allow-bg"></div>
     <div class="block-bg"></div>
@@ -86,9 +86,9 @@
   </div>
 </widget>
 
-<widget name="slider" host allowed init>
-  <div class="solid_slider slider" onmousedown onmouseup>
-    <i>assets.</i>pinterest.com
+<widget name="slider" host allowed allow_once revoke n init>
+  <div class="slider" onclick>
+    <!-- &lrm;<b>foo</b><i>assets.</i>pinterest.com<u>(4)</u> --> 
   </div>
 </widget>
 

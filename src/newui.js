@@ -145,32 +145,87 @@ function(){   // fake line, keep_editor_happy
 
     function items_container_init(w)
     {
+	var i = 0;
+	sort_domains();
 	foreach_host_node(function(hn, dn)
         {
 	    var d = dn.name;
 	    var h = hn.name;
 	    var allowed = allowed_host(h);
-	    var item = new_item(h, allowed);
+	    if (hn.helper_host)
+		var item = new_item(h, allowed);
+	    else
+	    {
+		//if (i%2 == 0)
+		var item = new_item(h, allowed, true, false, hn.scripts.length);
+		//else
+		//var item = new_item(h, allowed, false, true);		    
+	    }	    
 	    if (h == current_host)
 		set_class(item, 'top-level');
+	    if (hn.helper_host)
+		set_class(item, 'mode-adjusted');
 	    w.appendChild(item);
+	    i++;
 	});
     }
 
-    function item_init(w, host, allowed)
+    function item_init(w, host, allowed, allow_once, revoke, n)
     {
 	var s = w.querySelector('.slider');
-	slider_init(s, host, allowed);
+	slider_init(s, host, allowed, allow_once, revoke, n);
     }
-
-    function slider_init(w, host, allowed)
+    
+    function slider_init(w, host, allowed, allow_once, revoke, n)
     {
-	w.style = 'left:' + (allowed ? 35 : 0) + 'px;';
+	w.allowed = allowed;
+	set_slider_class(w, allowed);
+
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
-	w.innerHTML = "<i>" + h + "</i>" + d;
+	if (!allow_once && !revoke)
+	{
+	    w.innerHTML = "<i>" + h + "</i>" + d;
+	    return;
+	}
+	
+	w.innerHTML = "&lrm;<b>foo</b><i>" + h + "</i>" + d + "<u>" + n + "</u>";
+	var b = w.querySelector('b');
+	assert(b, "crap");
+	if (allow_once)
+	{
+	    b.title = "Allow once";
+	    b.onclick = allow_once_clicked;
+	}
+	if (revoke)
+	{
+	    b.className = 'revoke';
+	    b.title = "Cancel allow once";
+	}	
     }
 
+    function set_slider_class(s, clicked)
+    {
+	s.className = 'slider ' + (s.allowed ? 'left' : 'right');
+	if (clicked)
+	    set_class(s, 'clicked');
+    }
+    
+
+    function allow_once_clicked(e)
+    {
+	var s = this.parentNode;
+	assert(s.nodeName == 'DIV', "allow_once_clicked() shouldn't happen");
+	s.allowed = true;
+	set_slider_class(s, true);
+	e.stopPropagation();
+    }
+    
+    function slider_onclick(e)
+    {
+	toggle_class(this, 'clicked');
+    }
+    
     function slider_onmousedown(e)
     {
 	this.origx = e.screenX;
