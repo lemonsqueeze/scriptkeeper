@@ -240,10 +240,10 @@ function(){   // fake line, keep_editor_happy
 	if (allowed_host(host))
 	{
 	    global_remove_host(host);
-	    remove_host(host);
+	    temp_remove_host(host);
 	}
 	else
-	    allow_host(host);
+	    temp_allow_host(host);
 	allow_once_init(this, host);
 	set_slider_class(s);	
 	e.stopPropagation();
@@ -268,7 +268,7 @@ function(){   // fake line, keep_editor_happy
 	    if (allowed_host(host))
 	    {
 		global_remove_host(host);
-		remove_host(host);
+		temp_remove_host(host);
 	    }
 	    else
 		global_allow_host(host);

@@ -29,6 +29,7 @@ function(){   // fake line, keep_editor_happy
     var current_domain;
     var whitelist;
     var blacklist;
+    var templist;
     var helper_blacklist;
     var block_inline_scripts = false;
     var handle_noscript_tags = false;
@@ -99,7 +100,8 @@ function(){   // fake line, keep_editor_happy
 	    startup_checks();
 	
 	whitelist = deserialize_name_hash(global_setting('whitelist'));
-	blacklist = deserialize_name_hash(global_setting('blacklist'));	
+	blacklist = deserialize_name_hash(global_setting('blacklist'));
+	templist = deserialize_name_hash(global_setting('templist'));
 	helper_blacklist = deserialize_name_hash(global_setting('helper_blacklist'));
     }
 
@@ -381,28 +383,12 @@ function(){   // fake line, keep_editor_happy
 	set_global_setting('blacklist', serialize_name_hash(blacklist));
     }
     
-    
-    function allow_host(host)
-    {
-	var l = hosts_setting();
-	if (list_contains(l, host))
-	    return;
-	set_hosts_setting(l + ' ' + host);
-    }
-
     function global_allow_host(host)
     {
 	whitelist[host] = 1;
 	set_global_setting('whitelist', serialize_name_hash(whitelist));
     }
     
-    function remove_host(host)
-    {
-	var l = hosts_setting();
-	l = l.replace(' ' + host, '');
-	set_hosts_setting(l);
-    }
-
     function global_remove_host(host)
     {
 	delete whitelist[host];
@@ -419,6 +405,34 @@ function(){   // fake line, keep_editor_happy
 	return (whitelist[get_domain(host)] ? true : false);
     }
 
+    function temp_allow_host(host)
+    {
+	templist[host] = 1;
+	set_global_setting('templist', serialize_name_hash(templist));
+    }
+    
+    function temp_remove_host(host)
+    {
+	delete templist[host];
+	// remove domain also if it's there
+	delete templist[get_domain(host)];
+	set_global_setting('templist', serialize_name_hash(templist));
+    }
+    
+    function host_temp_allowed(host)
+    {
+	if (templist[host])
+	    return true;	
+	// whole domain allowed ?
+	return (templist[get_domain(host)] ? true : false);
+    }
+
+    function clear_temp_list()
+    {
+	templist = {};
+	set_global_setting('templist', serialize_name_hash(templist));	
+    }
+
     function on_helper_blacklist(host)
     {
 	if (helper_blacklist[host])
@@ -427,17 +441,11 @@ function(){   // fake line, keep_editor_happy
 	return (helper_blacklist[get_domain(host)] ? true : false);
     }
     
-    function host_allowed_locally(host)
-    {
-	var l = hosts_setting();
-	return list_contains(l, host);
-    }
-    
     function filtered_mode_allowed_host(host)
     {
 	return (
 	    host_allowed_globally(host) ||
-	    host_allowed_locally(host));
+	    host_temp_allowed(host));
     }
 
     // cached in host_node.helper_host
@@ -480,7 +488,7 @@ function(){   // fake line, keep_editor_happy
     
     function allowed_host(host)
     {
-	if (host_blacklisted(host)) return false;	    
+	if (host_blacklisted(host)) return false;
 	if (mode == 'block_all') return false; 
 	if (mode == 'filtered')  return filtered_mode_allowed_host(host);
 	if (mode == 'relaxed')   return relaxed_mode_allowed_host(host); 
@@ -826,12 +834,18 @@ function(){   // fake line, keep_editor_happy
 	extension_button = status;
     }
     
-    function extension_message_handler(e)
+    function extension_message_handler(e, m)
     {
-	var m = e.data;
-	debug_log("message from extension !");
+	debug_log("message from extension: " + m);
 	check_init();
-	update_extension_button(true);
+	if (m == "clear temp list")
+	{
+	    clear_temp_list();
+	    window.postMessage({scriptweeder:true, header:"temp list cleared"}, '*');
+	    return;
+	}
+	
+	//update_extension_button(true);
     }
 
     
