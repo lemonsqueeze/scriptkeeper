@@ -79,7 +79,15 @@
   function messaged(e)
   {
       var m = e.data;
+
+      if (m.header == "temp list cleared")
+      {
+	  need_clear_templist = false;
+	  return;
+      }
+      
       debug = m.debug;
+      /*
       if (m.button && !button)
 	  create_button();
       if (!m.button && button)
@@ -90,6 +98,7 @@
       
       change_icon(m.mode, m.icon);
       set_button_disabled(m.disabled);
+       */
   }
 
   function request_mode(dest)
@@ -118,17 +127,21 @@
 
   function connected(e)
   {
+      var tab = get_current_tab();
       debug_log("connected");
       // how do we find out if this is coming from the current tab ??
       // (get_current_tab() == e.source) doesn't work.
+      if (!tab)
+	  return;
 
-      if (get_current_tab())
-      {
-	  debug_log("requesting mode from current tab ...");	  
-	  request_mode(get_current_tab());
-      }
+      if (need_clear_templist)
+	  tab.postMessage("scriptweeder background process:clear temp list");      
+
+      debug_log("requesting mode from current tab ...");	  
+      request_mode(get_current_tab());
   }
 
+  var need_clear_templist = true;
   function loaded()
   {
       debug_log("loaded");

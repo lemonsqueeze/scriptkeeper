@@ -838,6 +838,8 @@ function(){   // fake line, keep_editor_happy
     var extension_button;
     function update_extension_button(force)
     {
+	return;	// for now
+	
 	if (!bgproc)
 	    return;
 	
@@ -856,9 +858,8 @@ function(){   // fake line, keep_editor_happy
     }
 
     var bgproc;    
-    function extension_message_handler(e) 
+    function extension_message_handler(e, m) 
     {
-	var m = e.data;
 	debug_log("message from background process: " + m);
 	if (!bgproc)
 	    bgproc = e.source;
@@ -866,6 +867,7 @@ function(){   // fake line, keep_editor_happy
 	if (m == "clear temp list")
 	{
 	    clear_temp_list();
+	    debug_log("temp list cleared");	    
 	    bgproc.postMessage({header:"temp list cleared"});
 	    return;
 	}
@@ -947,7 +949,9 @@ function(){   // fake line, keep_editor_happy
 	document.addEventListener('DOMContentLoaded',		domcontentloaded_handler,	false);
 	window.opera.addEventListener('BeforeEvent.message',		before_message_handler,		false);	
 	window.setTimeout(check_document_ready, 50);
-	opera.extension.onmessage = extension_message_handler; // regular msg handler fires also	
+	
+	opera.extension.onmessage = function(e){}; // so we get an event, and catch it with beforeEvent
+	message_handlers["scriptweeder background process:"] = extension_message_handler;
     }
 
 
