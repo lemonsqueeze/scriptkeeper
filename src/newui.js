@@ -21,11 +21,10 @@ function(){   // fake line, keep_editor_happy
     // called on script startup, no ui available at this stage.
     function register_ui()
     {
-	disable_main_button = false;
+	disable_main_button = true;
 	
 	// window.opera.scriptweeder.toggle_menu() api for opera buttons etc...
 	message_handlers['scriptweeder_toggle_menu'] = api_toggle_menu;
-	window.opera.scriptweeder.toggle_menu = function() { window.postMessage('scriptweeder_toggle_menu', '*'); };
     }
 
     // normal case : called only once after document_ready.

@@ -64,29 +64,20 @@
 	
         // first run setup
         if ((location.href == start_page || quiet) && global_setting('mode') == '')
-        {
-            set_global_setting('mode', default_mode);
-            set_global_setting('version_number', version_number);
-            set_global_setting('version_type', version_type);               
-            set_global_setting('whitelist',             serialize_name_hash(default_global_whitelist) );
-            set_global_setting('blacklist',             serialize_name_hash(default_global_blacklist) );	    
-            set_global_setting('helper_blacklist',      serialize_name_hash(default_helper_blacklist) );
-        }
-	
-        // first run, send to start page
-        if (global_setting('mode') == '') // will work with old settings
-	    location.href = start_page;	
-	
-	// upgrade from 1.44 or before
-	if (global_setting('version_number') == '')
 	{
+	    set_global_setting('mode', default_mode);
 	    set_global_setting('version_number', version_number);
 	    set_global_setting('version_type', version_type);
-	    // didn't exist:
+	    set_global_setting('whitelist',		serialize_name_hash(default_global_whitelist) );
+            set_global_setting('blacklist',             serialize_name_hash(default_global_blacklist) );
 	    set_global_setting('helper_blacklist',	serialize_name_hash(default_helper_blacklist) );
 	}
-
-	// upgrade from previous version
+	
+        // first run, send to start page
+	if (global_setting('mode') == '') // will work with old settings
+	    location.href = start_page;
+	
+	// upgrade from 1.5.0
 	if (global_setting('version_number') != version_number)
 	    set_global_setting('version_number', version_number);
 
@@ -95,24 +86,26 @@
 	    convert_old_list_settings();
     }
 
-    // to run safely as extension, only thing that can be done here is event registration.
+    // to run safely as extension, only thing that should be done here is event registration.
     // see http://my.opera.com/community/forums/topic.dml?id=1621542
     // for userjs doesn't matter, we could init() here no problem.
     function boot()
     {
 	// scriptweeder ui's iframe, don't run in there !
 	if (window != window.top && window.name == 'scriptweeder_iframe')	// TODO better way of id ?
-	    return;
+	    return; 
 	if (location.hostname == "")	// bad url, opera's error page. 
 	    return;
 	
 	setup_event_handlers();
-	// userjs registers right away so extension can detect it
-	window.opera.scriptweeder = new Object();	// external api
-	window.opera.scriptweeder.version = version_number;
-	debug_log("start");	
     }
+    
+    debug_log("start");
+    
+    // userjs detected, let it takeover and forward messages to it.
+    if (forward_to_userjs())
+	return;
     
     boot();
 
-})(window.document, window.location, window.opera, window.opera.scriptStorage);
+})(window.document, window.location, opera, widget.preferences);
