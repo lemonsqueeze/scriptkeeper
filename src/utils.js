@@ -228,7 +228,7 @@ function(){   // fake line, keep_editor_happy
     
     function unset_class(n, klass)
     {
-	n.className = n.className.replace(' ' + klass, '');
+	n.className = n.className.replace(RegExp(' ' + klass, 'g'), '');
     }
 
     function set_unset_class(n, klass, set)

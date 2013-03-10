@@ -162,10 +162,8 @@ function(){   // fake line, keep_editor_happy
     {
 	var s = w.querySelector('.slider');
 	slider_init(s, hn);
-	if (hn.name == current_host)
-	    set_class(w, 'top-level');
 	if (mode_adjusted_host(hn))
-	    set_class(w, 'mode-adjusted');
+	    set_class(w, 'top-level');
     }
 
     function mode_adjusted_host(hn)
@@ -217,7 +215,8 @@ function(){   // fake line, keep_editor_happy
 	    b.className = 'revoke';
 	}
     }
-        
+
+    // hack, also sets item class !
     function set_slider_class(s)
     {
 	var allowed = allowed_host(s.host);
@@ -229,6 +228,9 @@ function(){   // fake line, keep_editor_happy
 	    s.className = 'slider left';
 	if (allowed || blacklisted)
 	    set_class(s, 'clicked');
+
+	var item = s.parentNode;
+	set_unset_class(item, 'mode-adjusted', !host_allowed_globally(s.hn.name));
     }
 
     function allow_once_or_revoke(e)
@@ -243,7 +245,7 @@ function(){   // fake line, keep_editor_happy
 	else
 	    allow_host(host);
 	allow_once_init(this, host);
-	toggle_class(s, 'clicked');	
+	set_slider_class(s);	
 	e.stopPropagation();
     }
     

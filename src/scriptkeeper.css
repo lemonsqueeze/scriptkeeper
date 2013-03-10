@@ -9,7 +9,7 @@ body                {
 
 @font-face          {
                         font-family: 'entypo';
-                        src: url('entypo.woff') format('woff');
+                        src: url('../img/entypo.woff') format('woff');
                         font-weight: normal;
                         font-style: normal;
                     }
