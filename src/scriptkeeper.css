@@ -1,5 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 25/02/13) */
-
+/* JSArmor CSS by laurenbacall (last update: 10/03/13) */
 
 body                {
 			background: rgba(0,0,0,0.3);                        
@@ -379,8 +378,8 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 
 /* Opacity adjusted when overridden in a Mode */
 
-.mode-adjusted div[class$='-bg']          { background: hsla(197,63%,59%,0.5); }
-.mode-adjusted div[class$='-bg']:hover    { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+.mode-adjusted .allow-bg          { background: hsla(197,63%,59%,0.5); }
+.mode-adjusted .allow-bg:hover    { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
 
 
 /*------------Icons----------------*/
