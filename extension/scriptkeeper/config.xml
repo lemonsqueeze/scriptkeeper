@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" version="0.0.4"
+<widget xmlns="http://www.w3.org/ns/widgets" version="0.0.5"
 	id="https://github.com/lemonsqueeze/scriptkeeper">
     <name>scriptkeeper</name>
     <description>Block unwanted scripts. Noscript on steroids for opera !</description>

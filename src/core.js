@@ -838,8 +838,6 @@ function(){   // fake line, keep_editor_happy
     var extension_button;
     function update_extension_button(force)
     {
-	return;	// for now
-	
 	if (!bgproc)
 	    return;
 	
@@ -852,8 +850,8 @@ function(){   // fake line, keep_editor_happy
 	if (!force && extension_button == status) // already in the right state
 	    return;
 
-	bgproc.postMessage({debug:debug_mode,
-		            mode:mode, disabled:!needed);
+	bgproc.postMessage({ debug:debug_mode, mode:mode, disabled:!needed});
+	debug_log("sent mode to bgproc");
 	extension_button = status;
     }
 

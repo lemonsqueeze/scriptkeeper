@@ -11,7 +11,7 @@
 	  opera.postError("scriptweeder (bgprc): " + m);
   }
 
-  function change_icon(mode, icon)
+  function change_icon(mode)
   {
       if (!button)
 	  return;
@@ -20,15 +20,13 @@
       //button.disabled = false;
 
       // this works but throws (?!)
+      var icon = "img/" + mode + ".png";
       try { button.icon = icon; }
       catch(e) {}
   }
 
   function set_button_disabled(disabled)
   {
-      //
-      return;
-      //
       if (!button)
 	  return;
       if (disabled)
@@ -92,20 +90,16 @@
 	  create_button();
       if (!m.button && button)
 	  destroy_button();
-      
       if (m.disabled_icon != '')
 	  disabled_icon = m.disabled_icon;
-      
-      change_icon(m.mode, m.icon);
+       */              
+
+      change_icon(m.mode);
       set_button_disabled(m.disabled);
-       */
   }
 
   function request_mode(dest)
   {
-      //
-      return;
-      //
       try
       {
 	  // can get DOMException: INVALID_STATE_ERR if tab's in a weird state
@@ -138,7 +132,7 @@
 	  tab.postMessage("scriptweeder background process:clear temp list");      
 
       debug_log("requesting mode from current tab ...");	  
-      request_mode(get_current_tab());
+      request_mode(tab);
   }
 
   var need_clear_templist = true;
