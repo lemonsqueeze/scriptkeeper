@@ -106,7 +106,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /*-------------Containers----------------*/
 
-#main-container     {
+#main-container,
+#style_editor     {
                         width: 187px;
                         background-color: #fff;
                         padding: 9px;
@@ -310,9 +311,11 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
 .slider:hover b:hover,
 .slider b.revoke  { color: inherit; opacity: 0.8; } /* Solid when hovered on actual icon */
 
+/* Hide 'Allow Once' icon when mode-adjusted, whitelisted or blacklisted */
 .mode-adjusted .slider b,
 .slider.left.clicked b,
-.slider.right.clicked b      { display: none; } /* Hide 'Allow Once' icon when mode-adjusted, whitelisted or blacklisted */
+.slider.right.clicked b				{ display: none; } 
+#items-container .allowed-once .slider b	{ display: inherit }
 
 
 /*-------------Sliding grab movement demo----------------*/
@@ -507,3 +510,12 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
 
 .paginated li.current,
 .paginated li:hover         { background: hsla(0,0%,7%,0.70); }
+
+
+
+/*************************************************************************/
+
+/* style editor */
+#style_editor			 { position:absolute; width:auto; height:auto;  }
+#style_editor textarea           { width: 800px; height: 300px; }
+

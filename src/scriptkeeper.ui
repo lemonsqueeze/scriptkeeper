@@ -29,7 +29,7 @@
 	<li title="Page 2"></li>
       </ol>
       
-      <div id="about-button" title="About"></div>
+      <div id="about-button" title="About" onclick="style_editor"></div>
     </footer>
     
   </div>
@@ -43,8 +43,8 @@
     <mode_menu></mode_menu>
 
     <div id="allow-toolbar">
-      <span class="button allow-all" title="Allow all">All</span>
-      <span class="button temp-allow-all" title="Allow all once">All</span>
+      <span class="button allow-all" title="Allow all" onclick="allow_all_clicked">All</span>
+      <span class="button temp-allow-all" title="Allow all once" onclick="temp_allow_all_clicked">All</span>
       <span class="button undo" title="Undo last change"></span>
     </div>
 
@@ -67,7 +67,6 @@
 <!-- items_container -->
 <widget name="items_container" init>
   <div id="items-container">
-
 <!--
     <div class="item top-level mode-adjusted">
       <div class="allow-bg" title="Allow permanently"></div>
@@ -75,9 +74,6 @@
       <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
     </div>
 -->
-
-
-    
   </div>
 </widget>
 
@@ -190,6 +186,30 @@
        </div>
 
   </section> -->
+
+
+<!-- editor window -->
+<widget name="editor_window" title text default_setting save_callback init>
+  <div class="menu editor" >
+    <h1 id="menu_title" >Editor</h1>
+    <editor></editor>
+  </div>
+</widget>
+
+<widget name="editor" text default_setting save_callback init>
+  <div class="editor">
+    <div><my_textarea></my_textarea></div>
+    <div class="inactive">
+      <button class="save">Save</button>
+      <button onclick="close_menu">Cancel</button>
+      <button class="default">Default</button>
+    </div>
+  </div>
+</widget>
+
+<widget name="my_textarea">
+  <textarea class="textarea" spellcheck="false"></textarea>
+</widget>
 
 
 </widgets>

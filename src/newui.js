@@ -30,8 +30,6 @@ function(){   // fake line, keep_editor_happy
     
     var menu_request = false;		// external api request while not ready yet (opera button ...)
     var using_opera_button = false;	// seen external api request
-    var submenu = null;
-    var nsmenu = null;
     
     // called on script startup, no ui available at this stage.
     function register_ui()
@@ -91,8 +89,7 @@ function(){   // fake line, keep_editor_happy
 	menu_display_logic = global_setting('menu_display_logic', default_menu_display_logic);
 	show_scripts_in_main_menu = global_bool_setting('show_scripts_in_main_menu', default_show_scripts_in_main_menu);
 	
-	if (menu_display_logic == 'click')
-	    window.addEventListener('click',  function (e) { close_menu(); }, false);
+	window.addEventListener('click',  function (e) { close_menu(); }, false);
 	
 	//set_class(idoc.body, ui_hpos);
 	//set_class(idoc.body, ui_vpos);
@@ -132,7 +129,7 @@ function(){   // fake line, keep_editor_happy
 	    init_ui();	// safe to call multiple times
 	    return;
 	}
-	if (nsmenu)
+	if (main_ui)
 	    close_menu();
 	else	    
 	    show_hide_menu(true);
@@ -157,10 +154,10 @@ function(){   // fake line, keep_editor_happy
 
     function item_init(w, hn)
     {
+	w.hn = hn;
 	var s = w.querySelector('.slider');
 	slider_init(s, hn);
-	if (hn.name == current_host)
-	    set_class(w, 'top-level');
+	set_unset_class(w, 'top-level', (hn.name == current_host));
     }
     
     function slider_init(w, hn)
@@ -229,8 +226,9 @@ function(){   // fake line, keep_editor_happy
 	else
 	    temp_allow_host(host);
 	allow_once_init(this, host);
-	set_slider_class(s);	
-	e.stopPropagation();
+	set_slider_class(s);
+	need_reload = true;
+	e.stopPropagation();	
     }
     
     function slider_onclick(e)
@@ -260,6 +258,7 @@ function(){   // fake line, keep_editor_happy
 	
 	set_slider_class(this);
 	allow_once_init(this.querySelector('b'), host);
+	need_reload = true;
     }
 
     function mode_menu_init(w)
@@ -285,6 +284,128 @@ function(){   // fake line, keep_editor_happy
     {
 	set_mode(this.mode);
     }
+
+    function allow_all_clicked(e)
+    {
+	foreach_host_node(function(hn, dn)
+	{
+	    var host = hn.name;
+	    if (!allowed_host(host) && !host_blacklisted(host))
+		global_allow_host(host);
+	});
+	update_items();		// update ui
+	need_reload = true;
+    }
+
+
+    function temp_allow_all_clicked(e)
+    {
+	foreach_host_node(function(hn, dn)
+	{
+	    var host = hn.name;
+	    if (!allowed_host(host) && !host_blacklisted(host))
+		temp_allow_host(host);
+	});
+	update_items();		// update ui
+	need_reload = true;
+    }
+
+    function update_items()
+    {
+	var c = main_ui.querySelector('#items-container');
+	foreach(c.children, function(item)
+	{
+	    item_init(item, item.hn);
+	});
+    }
+    
+    
+    /***************************** Menu logic ******************************/
+
+    function switch_menu(menu)
+    {
+	main_ui.parentNode.removeChild(main_ui);
+	main_ui = menu;
+	idoc.body.appendChild(menu);
+	resize_iframe();
+    }
+
+    function close_menu()
+    {
+	show_hide_menu(false);
+	main_ui.parentNode.removeChild(main_ui);
+	main_ui = null;
+	
+	if (need_reload)
+            reload_page();
+        if (need_repaint)
+        {
+            need_repaint = false;
+            repaint_ui_now();
+        }	
+    }
+
+    function show_hide_menu(show)
+    {
+	if (!main_ui)
+	    repaint_ui_now();
+        var d = (show ? 'inline-block' : 'none');
+        main_ui.style.display = d;
+        resize_iframe();
+    }
+    
+    /***************************** CSS Editor ******************************/
+  
+    function style_editor()
+    {
+        var w = new_editor_window("Style Editor",
+                                  get_style(),
+                                  builtin_style,
+                                  function(text)
+        {
+           set_global_setting('css', text);
+           need_reload = true;
+           close_menu();
+        });
+        w.id = 'style_editor';
+        switch_menu(w);
+    }
+
+    function editor_window_init(w, title, text, default_setting, save_callback)
+    {
+        w.querySelector('#menu_title').innerText = title;
+        var editor = w.querySelector('.editor');
+        editor_init(editor, text, default_setting, save_callback);
+    }
+   
+    // setting text works fine the first time but that's about it, so ...   
+    function replace_textarea(t, text)
+    {
+        var n = new_widget("my_textarea");
+        n.innerText = text;
+        t.parentNode.replaceChild(n, t);
+    }
+
+    function editor_init(w, text, default_setting, save_callback)
+    {
+        function get_textarea() { return w.querySelector('textarea'); }
+        
+        replace_textarea(get_textarea(), text);
+        w.querySelector('button.save').onclick = function()
+        {
+            // note: textarea.textContent doesn't change after edits !
+            save_callback(get_textarea().innerText);
+        };
+        
+        var b = w.querySelector('button.default');
+        if (!default_setting)
+            b.style = "display:none";
+        else
+        {
+            b.style = "display:auto";       
+            b.onclick = function(){  replace_textarea(get_textarea(), default_setting)  };
+        }
+    }    
     
     
     /***************************** Repaint logic ******************************/
