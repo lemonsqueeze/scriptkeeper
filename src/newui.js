@@ -34,7 +34,7 @@ function(){   // fake line, keep_editor_happy
     // called on script startup, no ui available at this stage.
     function register_ui()
     {
-	disable_main_button = global_bool_setting('disable_main_button', false);
+	disable_main_button = false;
 	
 	// window.opera.scriptweeder.toggle_menu() api for opera buttons etc...
 	message_handlers['scriptweeder_toggle_menu'] = api_toggle_menu;
@@ -47,7 +47,7 @@ function(){   // fake line, keep_editor_happy
     function init_ui()
     {
 	update_extension_button();
-	if (init_ui_done || !document_ready || !ui_needed())
+	if (!init_ui_needed())
             return;
 	debug_log("init_ui()");	
 	
@@ -59,8 +59,10 @@ function(){   // fake line, keep_editor_happy
 	init_ui_done = true;
     }
     
-    function ui_needed()
+    function init_ui_needed()
     {
+	if (init_ui_done || !document_ready)
+	    return false;
 	if (element_tag_is(document.body, 'frameset')) // frames, can't show ui in there !
 	    return false;
         if (!there_is_work_todo &&			// no scripts ?
@@ -76,6 +78,11 @@ function(){   // fake line, keep_editor_happy
 	
 	var not_needed = disable_main_button && !menu_request;		
 	return (rescue_mode() || force_page_ui || !not_needed);
+    }
+
+    function ui_needed()
+    {
+	return (iframe || init_ui_needed());
     }
     
     // called only once when the injected iframe is ready to display stuff.
@@ -104,12 +111,6 @@ function(){   // fake line, keep_editor_happy
     {
 	debug_log("create_main_ui");
 	main_ui = new_widget("main");
-	return;
-	
-	main_ui = idoc.createElement('div');
-	main_ui.id = 'main';
-	main_ui.className = '';
-	main_ui.innerText = 'foooo';	
     }
 
     function parent_main_ui()
@@ -123,15 +124,13 @@ function(){   // fake line, keep_editor_happy
     {
 	debug_log("api_toggle_menu");
 	using_opera_button = true;
-	if (!main_ui)
-	{
-	    menu_request = true;	    
-	    init_ui();	// safe to call multiple times
+	menu_request = true;	 
+	init_ui();
+	if (!iframe)
 	    return;
-	}
 	if (main_ui)
 	    close_menu();
-	else	    
+	else
 	    show_hide_menu(true);
     }
 

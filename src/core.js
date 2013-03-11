@@ -733,7 +733,7 @@ function(){   // fake line, keep_editor_happy
 	    loaded_external++;
 	script.loaded = 1;
 
-	if (nsmenu)
+	if (main_ui)
 	    repaint_ui();
     }
 
