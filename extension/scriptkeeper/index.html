@@ -115,7 +115,8 @@
       var tab = get_current_tab();
       if (!tab)
 	  return;
-      debug_log("tab_switched(), requesting mode");      
+      debug_log("tab_switched(), requesting mode");
+      tab.postMessage("scriptweeder background process:tab switch");
       request_mode(tab);
   }
 
