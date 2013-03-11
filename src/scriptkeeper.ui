@@ -54,7 +54,7 @@
 
 <widget name="mode_menu" init>
   <nav class="menu main">
-    <div class="button dropdown">Relaxed mode</div>
+    <div class="button dropdown">Relaxed mode</div>     <!-- js sets mode-... classes -->
     <ul class="menu">
       <li mode="allow_all" onclick="mode_menu_clicked">Globally enable all</li>
       <li mode="relaxed"   onclick="mode_menu_clicked">Relaxed mode</li>

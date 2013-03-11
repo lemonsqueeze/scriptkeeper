@@ -255,39 +255,20 @@ function(){   // fake line, keep_editor_happy
 
     function resize_iframe()
     {
-	// can't just idoc.body.firstChild with things like modern scroll extension adding their stuff in ...
-	var content = idoc.body.querySelector('#main-container');
-
-	var width = content.scrollWidth;
-	var height = content.scrollHeight;
-	
-	// submenu uses absolute positioning, need to take it into account.
-	if (submenu)
-	{
-	    var e = submenu;
-	    if (e.offsetLeft < main_ui.offsetLeft) // left clipped
-		width += main_ui.offsetLeft - e.offsetLeft;
-	    if (e.offsetLeft + e.realwidth > main_ui.offsetLeft + main_ui.scrollWidth) // right clipped
-		width += e.offsetLeft + e.realwidth - (main_ui.offsetLeft + main_ui.scrollWidth);
-	    	    
-	    if (e.offsetTop < main_ui.offsetTop) // top clipped 
-		height += main_ui.offsetTop - e.offsetTop;
-	    if (e.offsetTop + e.realheight > main_ui.offsetTop + main_ui.scrollHeight) // bottom clipped
-		height += e.offsetTop + e.realheight - (main_ui.offsetTop + main_ui.scrollHeight);
-	}
-
-	// extra space for menu shadows
-	if (ui_hpos == 'left')
-	    width += 30;
-	if (ui_vpos == 'top')
-	    height += 30;
-
-	width = document.body.offsetWidth;
-	height = document.body.offsetHeight;
-	debug_log("resize_iframe");
-	iframe.style.width = width + 'px';
-	iframe.style.height = height + 'px';
-    }    	    
+        var width = 0;
+        var height = 0;
+        if (main_ui.style.display != 'none')
+        {
+            //width = document.body.offsetWidth;
+            //height = document.body.offsetHeight;
+            width = main_ui.offsetWidth + 20;
+            height = main_ui.offsetHeight + 20;
+        }
+        debug_log("resize_iframe");
+        
+        iframe.style.width = width + 'px';
+        iframe.style.height = height + 'px';
+    }               
     
     var iframe;
     var idoc;

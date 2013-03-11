@@ -1,10 +1,10 @@
 /* JSArmor CSS by laurenbacall (last update: 10/03/13) */
 
 body                {
-			background: rgba(0,0,0,0.3);                        
+			background: transparent;
                         color: hsla(0,0%,7%,0.70);
                         font: normal 8pt 'Lucida Grande', sans-serif;
-                        margin: 100px auto;
+                        margin: 10px auto;
                     }
 
 @font-face          {
@@ -37,7 +37,7 @@ footer *,
 .slider b,
 .slider u,
 .item.block-animation-show,
-.mode-adjusted div[class$='-bg'],
+div[class$='-bg'],
 footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 
@@ -185,6 +185,38 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .button.add,
 .button.delete      { display: inline-block; }
 
+/*------------Menu modes dropdown button coloring----------------*/
+
+.button.dropdown[class*='mode-']:not(.mode-standard)  { color: #fff; }
+.button.dropdown[class*='mode-']:not(.mode-standard):not(:hover):after  { color: hsla(0, 0%, 100%,0.8); } /* Menu drop-down icon */
+
+.button.dropdown.mode-enable-all:active { background: -o-linear-gradient(top, hsl(197,54%,58%), hsl(197,46%,52%)); }
+
+/*.button.dropdown.mode-relaxed
+                    {
+                        background: -o-linear-gradient(top, #81a5e2, #7a95c5);
+                        border: solid #6284be 1px;
+                    }
+
+.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(218,52%,67%), hsl(218,28%,60%)); }*/
+
+/*.button.dropdown.mode-relaxed
+                    {
+                        background: -o-linear-gradient(top, hsl(230,85%,69%), hsl(230,58%,60%));
+                        border: solid #4d61c9 1px;
+                    }
+
+.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(230,74%,66%), hsl(230,47%,57%)); }*/
+
+.button.dropdown.mode-disable-all
+                    {
+                        background: -o-linear-gradient(top, #e56262, #d85351);
+                        border: solid #ba3838 1px;
+                    }
+
+.button.dropdown.mode-disable-all:active { background: -o-linear-gradient(top, hsl(0,61%,62%), hsl(1,52%,55%)); }
+
+
 
 /*------------The 'Allow' toolbar buttons----------------*/
 
@@ -208,7 +240,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 /* Colored hover background */ 
 
 .allow-all:hover,
-.temp-allow-all:hover
+.temp-allow-all:hover,
+.button.dropdown.mode-enable-all
                     {
                         background: -o-linear-gradient(top, #5ab7dc, #4aa8ce);
                         color: #fff;
@@ -277,6 +310,10 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
 .slider:hover b:hover,
 .slider b.revoke  { color: inherit; opacity: 0.8; } /* Solid when hovered on actual icon */
 
+.mode-adjusted .slider b,
+.slider.left.clicked b,
+.slider.right.clicked b      { display: none; } /* Hide 'Allow Once' icon when mode-adjusted, whitelisted or blacklisted */
+
 
 /*-------------Sliding grab movement demo----------------*/
 /* .slider.right has a bug where numeric
@@ -285,6 +322,7 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
     but that's what we need for the CSS
     transition to work). Quickfix: add '&lrm;'
     before the list item names. */
+
 
 
 .slider.left.clicked             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
@@ -376,10 +414,12 @@ div[class$='-bg']   {   /* Targets all div classes ending with '-bg' */
 
 div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 
-/* Opacity adjusted when overridden in a Mode */
+/* Opacity adjusted when overridden in a Mode & when Allowed Once */
 
-.mode-adjusted .allow-bg          { background: hsla(197,63%,59%,0.5); }
-.mode-adjusted .allow-bg:hover    { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+.mode-adjusted .allow-bg,
+.allowed-once .allow-bg           { background: hsla(197,63%,59%,0.5); }
+.mode-adjusted .allow-bg:hover,
+.allowed-once .allow-bg:hover     { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
 
 
 /*------------Icons----------------*/
@@ -414,7 +454,6 @@ span[class$='-all']:before,
 .checkbox .button.checked:before { content: '✓'; } /* Tick */
 .slider b,
 span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
-.slider b.disabled		{ content:inherit }
 span.temp-allow-all.revoke:before,
 .slider b.revoke                { content: ''; } /* Allow once revoke */
 .undo:before                    { content: ''; } /* Undo */
@@ -427,7 +466,6 @@ div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' *
 .button.delete:before           { content: '-'; } /* Delete '-' */
 .button.reset:before            { content: '⟲'; margin-left: -5px; } /* Reset */
 
-#main-interface .menu.main ul li.selected:before    { content: '⚑'; } /* Flag for selected main-interface menu item */
 
 :hover:after,
 :active:after       { color: inherit; }
@@ -439,13 +477,22 @@ footer div,
 footer ol li        { display: inline-block; opacity: 0.25; }
 footer div:hover,
 footer ol li:hover  { opacity: 0.5; }
+footer div          { position: relative; z-index: 1; } /* To display above .paginated */
 #options-button     { margin-right: 5px; }
 #display-blocked    { visibility: visible; } /* Change to 'hidden' when no items are blocked */
-#about-button       { float: right; }
+#about-button       { float: right; position: relative; top: -28px; }
 
 /* Paginated icons */
 
-.paginated          { width: 100%; text-align: center; display: inline-block; margin: 0 -35px; }
+.paginated          {
+                        width: 100%;
+                        text-align: center;
+                        display: inline-block;
+                        position: relative;
+                        top: -14px;
+                        float: left;
+                        z-index: 0;
+                    }
 
 .paginated li       {
                         width: 8px;

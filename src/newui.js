@@ -55,7 +55,7 @@ function(){   // fake line, keep_editor_happy
 	
 	ui_position = global_setting('ui_position', default_ui_position);
 	ui_vpos = 'top';
-	ui_hpos = 'left';
+	ui_hpos = 'right';
 	
 	create_iframe();	// calls start_ui() when ready
 	init_ui_done = true;
@@ -159,14 +159,8 @@ function(){   // fake line, keep_editor_happy
     {
 	var s = w.querySelector('.slider');
 	slider_init(s, hn);
-	if (mode_adjusted_host(hn))
+	if (hn.name == current_host)
 	    set_class(w, 'top-level');
-    }
-
-    function mode_adjusted_host(hn)
-    {
-	return ((mode == 'relaxed' && hn.helper_host) ||
-		(mode == 'filtered' && hn.name == current_host));
     }
     
     function slider_init(w, hn)
@@ -180,12 +174,6 @@ function(){   // fake line, keep_editor_happy
 	
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
-	//if (hn.helper_host)
-	//{
-	//w.innerHTML = "<i>" + h + "</i>" + d;
-	//return;
-	//}
-
 	var n = hn.scripts.length;
 	w.innerHTML = "&lrm;<b></b><i>" + h + "</i>" + d + "<u>(" + n + ")</u>";
 	var b = w.querySelector('b');
@@ -194,15 +182,7 @@ function(){   // fake line, keep_editor_happy
 
     function allow_once_init(b, host)
     {
-	b.onclick = null;
-	b.className = 'disabled';
-	b.title = '';
-	var hn = b.parentNode.hn;
-	if (mode_adjusted_host(hn) ||
-	    host_allowed_globally(host) ||
-	    host_blacklisted(host))
-	    return;
-	
+	// css hides it when not needed
 	b.onclick = allow_once_or_revoke;
 	b.className = '';	
 	b.title = "Allow once";
@@ -227,9 +207,16 @@ function(){   // fake line, keep_editor_happy
 	    set_class(s, 'clicked');
 
 	var item = s.parentNode;
-	set_unset_class(item, 'mode-adjusted', !host_allowed_globally(s.hn.name));
+	set_unset_class(item, 'mode-adjusted', mode_adjusted_host(s.hn));
+	set_unset_class(item, 'allowed-once', host_temp_allowed(s.host));	
     }
 
+    function mode_adjusted_host(hn)
+    {
+	return ((mode == 'relaxed' && hn.helper_host) ||
+		(mode == 'filtered' && hn.name == current_host));
+    }
+    
     function allow_once_or_revoke(e)
     {
 	var s = this.parentNode;
@@ -279,6 +266,10 @@ function(){   // fake line, keep_editor_happy
     {
 	var button = w.querySelector('.button');
 	var menu = w.querySelector('.menu');
+	set_unset_class(button, 'mode-enable-all', (mode == 'allow_all'));
+	set_unset_class(button, 'mode-standard', (mode == 'filtered'));
+	set_unset_class(button, 'mode-relaxed', (mode == 'relaxed'));
+	set_unset_class(button, 'mode-disable-all', (mode == 'block_all'));
 	foreach(menu.children, function(li)
 	{
 	    li.mode = li.getAttribute('mode');
@@ -287,8 +278,7 @@ function(){   // fake line, keep_editor_happy
 		button.innerText = li.innerText;
 		li.className = 'selected';
 	    }
-	});
-	
+	});	
     }
 
     function mode_menu_clicked(e)
