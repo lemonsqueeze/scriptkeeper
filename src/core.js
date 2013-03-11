@@ -825,12 +825,8 @@ function(){   // fake line, keep_editor_happy
 	if (!force && extension_button == status) // already in the right state
 	    return;
 
-	// when button is not disabled, extension still needs disabled icon for next tab switch
-	var disabled_icon = get_icon_from_css('disabled', false);	
-	var icon = (needed ? get_icon_from_css(mode, true) : disabled_icon);
-	window.postMessage({scriptweeder:true, debug:debug_mode,
-		            mode:mode, icon:icon, button:disable_main_button,
-		            disabled:!needed, disabled_icon:disabled_icon}, '*');
+	window.postMessage({ scriptweeder:true, debug:debug_mode,
+		             mode:mode, disabled:!needed } , '*');
 	extension_button = status;
     }
     
@@ -845,7 +841,7 @@ function(){   // fake line, keep_editor_happy
 	    return;
 	}
 	
-	//update_extension_button(true);
+	update_extension_button(true);
     }
 
     

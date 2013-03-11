@@ -49,8 +49,8 @@ function(){   // fake line, keep_editor_happy
     function init_ui()
     {
 	update_extension_button();
-	if (!ui_needed())
-	    return;
+	if (init_ui_done || !document_ready || !ui_needed())
+            return;
 	debug_log("init_ui()");	
 	
 	ui_position = global_setting('ui_position', default_ui_position);
@@ -63,9 +63,6 @@ function(){   // fake line, keep_editor_happy
     
     function ui_needed()
     {
-	if (init_ui_done || !document_ready)
-	    return false;
-	
 	if (element_tag_is(document.body, 'frameset')) // frames, can't show ui in there !
 	    return false;
         if (!there_is_work_todo &&			// no scripts ?
