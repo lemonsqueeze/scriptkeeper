@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 10/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 14/03/13) */
 
 body                {
 			background: transparent;
@@ -193,21 +193,13 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .button.dropdown.mode-enable-all:active { background: -o-linear-gradient(top, hsl(197,54%,58%), hsl(197,46%,52%)); }
 
-/*.button.dropdown.mode-relaxed
+.button.dropdown.mode-relaxed
                     {
-                        background: -o-linear-gradient(top, #81a5e2, #7a95c5);
-                        border: solid #6284be 1px;
+                        background: -o-linear-gradient(top, #8c9bef, #7c8ce6);
+                        border: solid #6377df 1px;
                     }
 
-.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(218,52%,67%), hsl(218,28%,60%)); }*/
-
-/*.button.dropdown.mode-relaxed
-                    {
-                        background: -o-linear-gradient(top, hsl(230,85%,69%), hsl(230,58%,60%));
-                        border: solid #4d61c9 1px;
-                    }
-
-.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(230,74%,66%), hsl(230,47%,57%)); }*/
+.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(231,65%,71%), hsl(231,57%,66%)); }
 
 .button.dropdown.mode-disable-all
                     {
@@ -255,12 +247,12 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 /* Targets the middle button so it doesn't have double-borders */
 /* Duplicates some existing button code */
 
-temp-allow-all,
-temp-allow-all:hover,
-temp-allow-all:active { border-left: none; border-right: none; }
-temp-allow-all:hover,
-temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, 0 1px 1px hsla(0,0%,0%,0.1); }
-temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1px 2px hsla(0,0%,0%,0.3); }
+.temp-allow-all,
+.temp-allow-all:hover,
+.temp-allow-all:active { border-left: none; border-right: none; }
+.temp-allow-all:hover,
+.temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, 0 1px 1px hsla(0,0%,0%,0.1); }
+.temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1px 2px hsla(0,0%,0%,0.3); }
 
 
 /*------------Script items slider styling----------------*/
@@ -315,7 +307,7 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
 .mode-adjusted .slider b,
 .slider.left.clicked b,
 .slider.right.clicked b				{ display: none; } 
-#items-container .allowed-once .slider b	{ display: inherit }
+#items-container .temp-allowed .slider b	{ display: inherit }
 
 
 /*-------------Sliding grab movement demo----------------*/
@@ -346,7 +338,7 @@ temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1
 
 .item.block-animation-show      {   /* The 'Display untrusted' animation */
                                     animation: blockshow 500ms 3s;
-                                    -o-animation: blockshow 500ms 5s;
+                                    -o-animation: blockshow 500ms 3s;
                                     opacity: 0.5;
                                     z-index: 0;
                                 }
@@ -420,9 +412,9 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 /* Opacity adjusted when overridden in a Mode & when Allowed Once */
 
 .mode-adjusted .allow-bg,
-.allowed-once .allow-bg           { background: hsla(197,63%,59%,0.5); }
+.temp-allowed .allow-bg           { background: hsla(197,63%,59%,0.5); }
 .mode-adjusted .allow-bg:hover,
-.allowed-once .allow-bg:hover     { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+.temp-allowed .allow-bg:hover     { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
 
 
 /*------------Icons----------------*/

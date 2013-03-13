@@ -204,13 +204,14 @@ function(){   // fake line, keep_editor_happy
 
 	var item = s.parentNode;
 	set_unset_class(item, 'mode-adjusted', mode_adjusted_host(s.hn));
-	set_unset_class(item, 'allowed-once', host_temp_allowed(s.host));	
+	set_unset_class(item, 'temp-allowed', host_temp_allowed(s.host));	
     }
 
     function mode_adjusted_host(hn)
     {
 	return ((mode == 'relaxed' && hn.helper_host) ||
-		(mode == 'filtered' && hn.name == current_host));
+		(mode == 'filtered' && hn.name == current_host) ||
+	        mode == 'allow_all');
     }
     
     function allow_once_or_revoke(e)
