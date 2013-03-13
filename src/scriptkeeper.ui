@@ -45,7 +45,7 @@
     <div id="allow-toolbar">
       <span class="button allow-all" title="Allow all" onclick="allow_all_clicked">All</span>
       <span class="button temp-allow-all" title="Allow all once" onclick="temp_allow_all_clicked">All</span>
-      <span class="button undo" title="Undo last change"></span>
+      <span class="button undo" title="Undo last change" onclick="undo_clicked"></span>
     </div>
 
     <items_container></items_container>

@@ -126,7 +126,7 @@ function(){   // fake line, keep_editor_happy
 	using_opera_button = true;
 	menu_request = true;	 
 	init_ui();
-	if (!iframe)
+	if (!idoc)  // ui not ready yet
 	    return;
 	if (main_ui)
 	    close_menu();
@@ -217,6 +217,7 @@ function(){   // fake line, keep_editor_happy
     {
 	var s = this.parentNode;
 	var host = s.host;
+	save_prev_settings(); // for undo
 	if (allowed_host(host))
 	{
 	    global_remove_host(host);
@@ -234,6 +235,7 @@ function(){   // fake line, keep_editor_happy
     {
 	var host = this.host;
 
+	save_prev_settings(); // for undo
 	if (e.ctrlKey || host_blacklisted(host)) // blacklisting
 	{
 	    if (host_blacklisted(host))
@@ -286,6 +288,7 @@ function(){   // fake line, keep_editor_happy
 
     function allow_all_clicked(e)
     {
+	save_prev_settings();  // for undo	
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
@@ -299,6 +302,7 @@ function(){   // fake line, keep_editor_happy
 
     function temp_allow_all_clicked(e)
     {
+	save_prev_settings();  // for undo		
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
@@ -307,6 +311,14 @@ function(){   // fake line, keep_editor_happy
 	});
 	update_items();		// update ui
 	need_reload = true;
+    }
+
+    function undo_clicked(e)
+    {
+	if (!have_prev_settings())
+	    return;
+	load_prev_settings();
+	update_items();		// update ui	
     }
 
     function update_items()
@@ -319,8 +331,44 @@ function(){   // fake line, keep_editor_happy
     }
     
     
+    /***************************** Undo api *****************************/    
+
+    function save_prev_settings()
+    {
+	var settings = { whitelist:whitelist, blacklist:blacklist, templist:templist };
+	set_global_setting('prev_settings', window.JSON.stringify(settings));
+    }
+
+    function load_prev_settings()
+    {
+	var settings = 	global_setting('prev_settings');
+	save_prev_settings();
+	assert(settings != '', 'load_prev_settings() called but no prev settings exists !');
+	settings = window.JSON.parse(settings);
+	whitelist = settings.whitelist;
+	blacklist = settings.blacklist;
+	templist = settings.templist;
+	set_global_setting('whitelist', serialize_name_hash(whitelist));
+	set_global_setting('blacklist', serialize_name_hash(blacklist));
+	set_global_setting('templist', serialize_name_hash(templist));
+	need_reload = true;
+    }
+
+    function clear_prev_settings()
+    {
+	set_global_setting('prev_settings', '');	
+    }
+    
+    function have_prev_settings()
+    {
+	return (global_setting('prev_settings') != '');
+    }
+    
     /***************************** Menu logic ******************************/
 
+    var need_reload;
+    var need_repaint;
+    
     function switch_menu(menu)
     {
 	main_ui.parentNode.removeChild(main_ui);

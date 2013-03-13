@@ -358,9 +358,9 @@ function(){   // fake line, keep_editor_happy
     }
     
     // TODO show iframe placeholder ?
-        
+    
     /***************************** Host filtering *****************************/    
-
+    
     function host_blacklisted(host)
     {
 	if (blacklist[host])
@@ -840,7 +840,13 @@ function(){   // fake line, keep_editor_happy
 	    window.postMessage({scriptweeder:true, header:"temp list cleared"}, '*');
 	    return;
 	}
-	
+
+	if (m == "tab switch")
+	{
+	    clear_prev_settings();
+	    return;
+	}
+    
 	update_extension_button(true);
     }
 
