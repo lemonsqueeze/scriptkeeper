@@ -236,10 +236,14 @@ function(){   // fake line, keep_editor_happy
 	(set ? set_class(n, klass) : unset_class(n, klass));
     }
 
+    function has_class(n, klass)
+    {
+	return n.className.match(RegExp('(^| )' + klass + '($| )'));
+    }
+    
     function toggle_class(n, klass)
     {
-	var matches = n.className.match(RegExp('(^| )' + klass + '($| )'));
-	set_unset_class(n, klass, !matches);
+	set_unset_class(n, klass, !has_class(n, klass));
     }
 
     

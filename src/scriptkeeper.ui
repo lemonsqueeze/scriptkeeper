@@ -21,7 +21,7 @@
     <main_interface></main_interface>
     
     <footer>
-      <div id="options-button" title="Options"></div>
+      <div id="options-button" title="Options" onclick="options_clicked"></div>
       <div id="display-blocked" title="Display blocked"></div>
       
       <ol class="paginated">
@@ -91,102 +91,111 @@
   </div>
 </widget>
 
-  <!-- <section id="options">
+<widget name="options" section init>
+  <section id="options">
+    <options_menu></options_menu>
+    <!-- options sections go here -->
+  </section>
+</widget>
 
-       <nav class="menu main">
-         <div class="button dropdown">General</div>
-         <ul>
-           <li class="selected">General</li>
-           <li>Allowed sites</li>
-           <li>Blocked sites</li>
-           <li>Import/Export</li>
-         </ul>
-       </nav>
-
-       <div id="options-general">
-
-         <div class="option">
-           <strong class="title">Appearance:</strong>
-           <em class="label">Show:</em>
-           <div class="menu">
-             <div class="button dropdown">Full sites</div>
-             <ul>
-               <li class="selected">Full sites</li>
-               <li>Domains</li>
-             </ul>
-           </div>
-         </div>
-
-         <div class="option">
-           <strong class="title">Script reload:</strong>
-           <em class="label">Method:</em>
-           <div class="menu">
-             <div class="button dropdown">Normal</div>
-             <ul>
-               <li class="selected">Normal</li>
-               <li>Cached</li>
-             </ul>
-           </div>
-         </div>
-
-         <div class="option">
-           <strong class="title">IFrames:</strong>
-           <em class="label">Scripts:</em>
-           <div class="menu">
-             <div class="button dropdown">Inherit</div>
-             <ul>
-               <li>Allow</li>
-               <li class="selected">Inherit</li>
-               <li>Disable</li>
-             </ul>
-           </div>
-           <em class="label">Show:</em>
-           <div class="checkbox">
-             <div class="button checked"></div><span class="label">Controls</span>
-           </div>
-         </div>
-         
-         <div class="option">
-           <strong class="title">Globally disable all:</strong>
-           <div class="checkbox standalone">
-             <div class="button checked"></div><span class="label">Imitate true disabling</span>
-           </div>
-         </div>
-
-       </div>
+<widget name="options_menu">
+  <nav class="menu main">
+    <div class="button dropdown">General</div>
+    <ul>
+      <li onclick="options_menu_onclick">General</li>
+      <li onclick="options_menu_onclick">Allowed sites</li>
+      <li onclick="options_menu_onclick">Blocked sites</li>
+      <li onclick="options_menu_onclick">Import/Export</li>
+    </ul>
+  </nav>
+</widget>
 
 
-       <div id="options-whitelist">
+<widget name="options_general">
+  <div id="options-general">
 
-         <ul class="list">
-           <li><i>connect.</i>facebook.com</li>
-           <li><i>www.</i>github.com</li>
-           <li><i>my.</i>opera.com</li>
-         </ul>
+    <div class="option">
+      <strong class="title">Appearance:</strong>
+      <em class="label">Show:</em>
+      <div class="menu">
+        <div class="button dropdown">Full sites</div>
+        <ul>
+          <li class="selected">Full sites</li>
+          <li>Domains</li>
+        </ul>
+      </div>
+    </div>
 
-         <span class="button add">Add</span>
-         <span class="button delete">Remove</span>
+    <div class="option">
+      <strong class="title">Script reload:</strong>
+      <em class="label">Method:</em>
+      <div class="menu">
+        <div class="button dropdown">Normal</div>
+        <ul>
+          <li class="selected">Normal</li>
+          <li>Cached</li>
+        </ul>
+      </div>
+    </div>
 
-       </div>
+    <div class="option">
+      <strong class="title">IFrames:</strong>
+      <em class="label">Scripts:</em>
+      <div class="menu">
+        <div class="button dropdown">Inherit</div>
+        <ul>
+          <li>Allow</li>
+          <li class="selected">Inherit</li>
+          <li>Disable</li>
+        </ul>
+      </div>
+      <em class="label">Show:</em>
+      <div class="checkbox">
+        <div class="button checked"></div><span class="label">Controls</span>
+      </div>
+    </div>
+    
+    <div class="option">
+      <strong class="title">Globally disable all:</strong>
+      <div class="checkbox standalone">
+        <div class="button checked"></div><span class="label">Imitate true disabling</span>
+      </div>
+    </div>
+
+  </div>
+</widget>
 
 
-       <div id="options-import-export">
+<widget name="options_whitelist" init>
+  <div id="options-whitelist">   
+    <ul class="list">
+      <!-- list_items -->
+    </ul>    
+    <span class="button add">Add</span>
+    <span class="button delete" onclick="options_whitelist_remove">Remove</span>    
+  </div>
+</widget>
 
-         <div class="option">
-           <strong class="title">Settings:</strong>
-           <div class="button save">Save...</div>
-           <div class="button save">Load...</div>
-         </div>
+<widget name="list_item" host init>
+  <li onclick><i>connect.</i>facebook.com</li>
+</widget>
 
-         <div class="option">
-           <strong class="title">Reset to defaults:</strong>
-           <div class="button reset">Reset</div>
-         </div>
+<widget name="options_import_export">
+  <div id="options-import-export">
 
-       </div>
+    <div class="option">
+      <strong class="title">Settings:</strong>
+      <div class="button save">Save...</div>
+      <div class="button save">Load...</div>
+    </div>
 
-  </section> -->
+    <div class="option">
+      <strong class="title">Reset to defaults:</strong>
+      <div class="button reset">Reset</div>
+    </div>
 
+  </div>
+</widget>
 
 <!-- editor window -->
 <widget name="editor_window" title text default_setting save_callback init>

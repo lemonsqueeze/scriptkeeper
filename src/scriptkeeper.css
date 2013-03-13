@@ -100,14 +100,15 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /* Styling for selection - would normally stay selected until clicking elsewhere */
 
-.list li:active,
-.list li:active i   { background: #55b3d9; color: #fff; }
+.list li.clicked,
+.list li.clicked i   { background: #55b3d9; color: #fff; }
 
 
 /*-------------Containers----------------*/
 
 #main-container,
-#style_editor     {
+#style_editor,
+#options            {
                         width: 187px;
                         background-color: #fff;
                         padding: 9px;

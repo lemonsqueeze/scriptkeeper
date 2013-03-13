@@ -58,6 +58,8 @@
     {
 	var start_page = "https://github.com/lemonsqueeze/scriptweeder/wiki/scriptweeder-userjs-installed-!";
 	
+	quiet = true; // for now ...
+	
         // first run setup
         if ((location.href == start_page || quiet) && global_setting('mode') == '')
         {

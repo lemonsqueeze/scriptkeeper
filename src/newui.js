@@ -364,7 +364,79 @@ function(){   // fake line, keep_editor_happy
     {
 	return (global_setting('prev_settings') != '');
     }
+
     
+    /***************************** Options menu ******************************/
+    
+    function options_clicked(e, section)
+    {
+	var w = new_options(section);
+        switch_menu(w);	
+    }
+    
+    var options_sections = ["general", "whitelist", "blacklist", "import_export"];
+    
+    function options_init(w, section)
+    {
+	if (!section)
+	    section = "general";
+	var s = new_widget("options_" + section);
+	w.appendChild(s);
+
+	// set selected menu item
+	var menu_items = w.querySelector('.menu ul').children;
+	var i = options_sections.indexOf(section);
+	set_class(menu_items[i], 'selected');
+    }
+
+    function options_menu_onclick(e)
+    {
+	// get parent index
+	for (var i = 0; i < this.parentNode.children.length; i++)
+	    if (this.parentNode.children[i] == this)
+		break;
+	options_clicked(null, options_sections[i]);
+    }
+
+    function options_whitelist_init(w)
+    {
+	var l = w.querySelector('ul');
+	foreach(get_keys(whitelist).sort(), function(host)
+	{
+	    var li = new_list_item(host);
+	    l.appendChild(li);
+	});
+    }
+
+    // remove selected items
+    function options_whitelist_remove(e)
+    {
+	var l = this.parentNode.querySelector('ul');
+	foreach(l.children, function(li)
+	{
+	    if (!has_class(li, 'clicked'))
+		return;
+	    global_remove_host(li.host);
+	    need_reload = true;
+	});
+	options_clicked(null, "whitelist"); // refresh ui
+    }
+
+    /***************************** List items ******************************/
+    
+    function list_item_init(w, host)
+    {
+	var d = get_domain(host);
+	var h = host.slice(0, host.length - d.length);
+	w.host = host;
+	w.innerHTML = "<i>" + h + "</i>" + d;
+    }
+
+    function list_item_onclick(e)
+    {
+	toggle_class(this, 'clicked');
+    }
+
     /***************************** Menu logic ******************************/
 
     var need_reload;
