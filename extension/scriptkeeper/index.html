@@ -42,7 +42,7 @@
       var tab = get_current_tab()
       if (!tab)
 	  return;
-      tab.postMessage('scriptweeder_toggle_menu');
+      post_message(tab, "scriptweeder_toggle_menu");
   }
 
   var button;
@@ -98,15 +98,19 @@
       set_button_disabled(m.disabled);
   }
 
-  function request_mode(dest)
+  function post_message(dest, msg)
   {
       try
-      {
-	  // can get DOMException: INVALID_STATE_ERR if tab's in a weird state
-	  dest.postMessage("scriptweeder bgproc to injected script:");
-	  dest.postMessage("scriptweeder background process:");
+      {   // can get DOMException: INVALID_STATE_ERR if tab's in a weird state	  
+	  dest.postMessage(msg);
       }
       catch(e) {}      
+  }
+
+  function request_mode(dest)
+  {
+      post_message(dest, "scriptweeder bgproc to injected script:");
+      post_message(dest, "scriptweeder background process:");
   }
 
   function tab_switched(e)
@@ -116,7 +120,7 @@
       if (!tab)
 	  return;
       debug_log("tab_switched(), requesting mode");
-      tab.postMessage("scriptweeder background process:tab switch");
+      post_message(tab, "scriptweeder background process:tab switch");
       request_mode(tab);
   }
 
@@ -130,7 +134,7 @@
 	  return;
 
       if (need_clear_templist)
-	  tab.postMessage("scriptweeder background process:clear temp list");      
+	  post_message(tab, "scriptweeder background process:clear temp list");      
 
       debug_log("requesting mode from current tab ...");	  
       request_mode(tab);
