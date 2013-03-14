@@ -238,7 +238,7 @@ function(){   // fake line, keep_editor_happy
 
     function has_class(n, klass)
     {
-	return n.className.match(RegExp('(^| )' + klass + '($| )'));
+	return (n.className.match(RegExp('(^| )' + klass + '($| )')) != null);
     }
     
     function toggle_class(n, klass)
@@ -246,6 +246,11 @@ function(){   // fake line, keep_editor_happy
 	set_unset_class(n, klass, !has_class(n, klass));
     }
 
+    function comp_style(n)
+    {
+	return iwin.getComputedStyle(n)
+    }
+    
     
     /**************************** List utils *******************************/
 

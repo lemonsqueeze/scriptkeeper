@@ -15,6 +15,46 @@ body                {
                     }
 
 
+/*-------------Large font option styling (apply ID on body element)----------------*/
+
+body#large-font,
+#large-font .slider,
+#large-font #add-whitelist,
+#large-font #add-blacklist      { font-size: 10pt; }
+
+/* Dropdown menu */
+
+#large-font .menu.main ul li.selected        { font-weight: bold; } /* Using bold font for selected menu item */
+#large-font .menu.main ul li.selected:before { content: ''; } /* Because the tick overlaps the text */
+
+/* Checkboxes */
+
+#large-font .checkbox           { white-space: nowrap; text-overflow: ellipsis; overflow-x: hidden; }
+#large-font .checkbox .button   { width: 20px; height: 20px; top: 0; }
+
+ /* White/blacklist list styling */
+
+#large-font .list               { max-height: 250px; background-size: 52px 52px; }
+
+/* Sliders */
+
+#large-font #add-whitelist,
+#large-font #add-blacklist,
+#large-font .item,
+#large-font .slider             { height: 31px; }
+#large-font div.block-bg        { margin-top: -31px; }
+
+/* Icons */
+
+.dropdown:after                 { line-height: 11pt; }
+
+/* Footer */
+
+#large-font #about-button       { top: -32px; }
+#large-font .paginated          { top: -16px; }
+#large-font .paginated li       { width: 10px; height: 10px; }
+
+
 /*-------------Generic----------------*/
 
 *                   { box-sizing: border-box; cursor: default; } /* Auto-calculates padding/width */
@@ -34,9 +74,11 @@ footer *,
 .disabled           { background: hsl(0,0%,98%) !important; color: hsla(0,0%,0%,0.5) !important; cursor: default; } /* Disabled button style, order class before other classes */
 .disabled:hover,
 .disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
+.disabled.temp-allow-all { border-left: none !important; border-right: none !important; }
 .slider b,
 .slider u,
 .item.block-animation-show,
+.button.add.confirm,
 div[class$='-bg'],
 footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
@@ -74,9 +116,9 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .option .menu .button.dropdown
                     {
                         width: 100%;
-                        height: 22px;
+                        /*height: 22px;*/
                         text-align: left;
-                        padding-top: 3px;
+                        padding: 3px 8px;
                     }
 
 .option .menu ul    { width: 91px; text-align: left; } /* Must change with any #main-container width  */
@@ -88,20 +130,79 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .list               {   
                         min-height: 120px;
+                        max-height: 300px;
                         background-image: -o-linear-gradient(transparent 50%, #F3F3F3 50%, #F3F3F3);
                         background-size: 48px 48px; /* Double the height of the li */
+                        background-attachment: local; /* Scrolls with content */
+                        overflow-y: auto;
                         border-radius: 4px;
                         border: solid #E5E5E5 1px; /* A solid color so the background doesn't show through */
                         padding-bottom: 24px;
                         margin-bottom: 8px;
                     }
 
-.list li            { padding: 5px 10px; }
+.list li            {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        padding: 5px 10px;
+                    }
 
 /* Styling for selection - would normally stay selected until clicking elsewhere */
 
 .list li.clicked,
 .list li.clicked i   { background: #55b3d9; color: #fff; }
+
+
+/*-------------White/blacklist 'Add' input box & animations----------------*/
+/* Note: the animation-delay (the '2s' value) should
+   be removed in the final output, it's only there so
+   the animation doesn't load immediately in the demo */
+
+#add-whitelist,
+#add-blacklist      { width: 100%; height: 24px; display: none; margin-bottom: 8px; }
+
+#add-whitelist.static,
+#add-blacklist.static { display: block; }
+
+#add-whitelist.show,
+#add-blacklist.show,
+#add-whitelist.hide,
+#add-blacklist.hide {
+                        display: block;
+                        visibility: hidden;
+                        opacity: 0;
+                        margin-top: -32px;
+                        animation: show-textbox 500ms;
+                        -o-animation: show-textbox 500ms;
+                    }
+
+#add-whitelist.hide,
+#add-blacklist.hide { animation: hide-textbox 500ms; -o-animation: hide-textbox 500ms; }
+
+@keyframes show-textbox
+                    {
+                        from    { opacity: 0; visibility: hidden; margin-top: -32px }
+                        to      { opacity: 1; visibility: visible; margin-top: 0; }
+                    }
+
+@-o-keyframes show-textbox
+                    {
+                        from    { opacity: 0; visibility: hidden; margin-top: -32px }
+                        to      { opacity: 1; visibility: visible; margin-top: 0; }
+                    }
+
+@keyframes hide-textbox
+                    {
+                        from    { opacity: 1; visibility: visible; margin-top: 0 }
+                        to      { opacity: 0; visibility: hidden; margin-top: -32px; }
+                    }
+
+@-o-keyframes hide-textbox
+                    {
+                        from    { opacity: 1; visibility: visible; margin-top: 0 }
+                        to      { opacity: 0; visibility: hidden; margin-top: -32px; }
+                    }
 
 
 /*-------------Containers----------------*/
@@ -130,24 +231,32 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                                 font-style: normal;
                                 text-align: right;
                                 display: inline-block;
-                                margin-right: 10px;
+                                margin: 3px 10px 0 0;
+                                vertical-align: top;
                             }
 
-.checkbox                   { display: inline-block; }
+.checkbox                   { width: 64%; display: inline-block; }
+
+.checkbox.no-label          { padding-left: 14px; margin-left: 30%; }
 
 /* Standalone version - creates centered 'block' alignment (proper width varies by font used) */
 
-.checkbox.standalone        { width: 140px; text-align: left; display: block; margin: 0 auto; }
+.checkbox.standalone        {
+                                width: 140px;
+                                text-align: left;
+                                display: block;
+                                margin: 0 auto;
+                            }
 
 
 /*-------------Button/item slider----------------*/
 
 .button,
 .slider             {
-                        height: 29px;
+                        /*height: 29px;*/
                         background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1);
                         color: #444;
-                        padding: 6px 8px;
+                        padding: 6px 8px 7px;
                         border-radius: 4px;
                         border: solid hsla(0,0%,0%,0.1) 1px;
                         margin-bottom: 8px;
@@ -189,7 +298,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /*------------Menu modes dropdown button coloring----------------*/
 
-.button.dropdown[class*='mode-']:not(.mode-standard)  { color: #fff; }
+.button.dropdown[class*='mode-']:not(.mode-standard),
+#options-blacklist .button.add.confirm  { color: #fff; }
 .button.dropdown[class*='mode-']:not(.mode-standard):not(:hover):after  { color: hsla(0, 0%, 100%,0.8); } /* Menu drop-down icon */
 
 .button.dropdown.mode-enable-all:active { background: -o-linear-gradient(top, hsl(197,54%,58%), hsl(197,46%,52%)); }
@@ -202,7 +312,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(231,65%,71%), hsl(231,57%,66%)); }
 
-.button.dropdown.mode-disable-all
+.button.dropdown.mode-disable-all,
+#options-blacklist .button.add.confirm
                     {
                         background: -o-linear-gradient(top, #e56262, #d85351);
                         border: solid #ba3838 1px;
@@ -235,7 +346,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .allow-all:hover,
 .temp-allow-all:hover,
-.button.dropdown.mode-enable-all
+.button.dropdown.mode-enable-all,
+#options-whitelist .button.add.confirm
                     {
                         background: -o-linear-gradient(top, #5ab7dc, #4aa8ce);
                         color: #fff;
@@ -243,7 +355,9 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                     }
 
 .allow-all:active,
-.temp-allow-all:active   { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.3); }
+.temp-allow-all:active,
+#options-whitelist .button.add.confirm:active,
+#options-blacklist .button.add.confirm:active  { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.3); }
 
 /* Targets the middle button so it doesn't have double-borders */
 /* Duplicates some existing button code */
@@ -269,7 +383,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         overflow: hidden;
                         padding: 6px 10px;
                         position: relative;
-                        top: -29px;
+                        top: -100%;
                         transition: all 500ms ease-in;
                         -o-transition: all 500ms ease-in;
                     }
@@ -447,7 +561,8 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 .allow-bg:before,
 span[class$='-all']:before,
 .menu ul li.selected:before,
-.checkbox .button.checked:before { content: '✓'; } /* Tick */
+.checkbox .button.checked:before,
+.button.add.confirm:before { content: '✓'; } /* Tick */
 .slider b,
 span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
 span.temp-allow-all.revoke:before,
@@ -472,10 +587,12 @@ div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' *
 footer div,
 footer ol li        { display: inline-block; opacity: 0.25; }
 footer div:hover,
-footer ol li:hover  { opacity: 0.5; }
+footer ol li:hover,
+footer .static      { opacity: 0.5; } /* Use the 'static' class to show icons in their active state */
+footer .static:hover{ opacity: 0.7; }
 footer div          { position: relative; z-index: 1; } /* To display above .paginated */
 #options-button     { margin-right: 5px; }
-#display-blocked    { visibility: visible; } /* Change to 'hidden' when no items are blocked */
+#display-blocked    { visibility: hidden; } /* Change to 'hidden' when no items are blacklisted or when Options are shown */
 #about-button       { float: right; position: relative; top: -28px; }
 
 /* Paginated icons */
@@ -484,6 +601,7 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
                         width: 100%;
                         text-align: center;
                         display: inline-block;
+                        visibility: hidden; /* Change to 'hidden' when the Options are shown */
                         position: relative;
                         top: -14px;
                         float: left;
@@ -503,6 +621,13 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
 
 .paginated li.current,
 .paginated li:hover         { background: hsla(0,0%,7%,0.70); }
+
+
+/* file input form styling: http://www.quirksmode.org/dom/inputfile.html */
+#import_settings
+        { display:inline-block; position:relative; overflow:hidden; vertical-align:text-bottom }
+#import_settings input
+        { display:block; position:absolute; top:0; right:0; margin:0; border:0; opacity:0 }
 
 
 

@@ -3,12 +3,7 @@ function(){   // fake line, keep_editor_happy
     /********************************* Builtin ui *********************************/
 
     var default_ui_position = 'bottom_right';
-    var default_autohide_main_button = false;
-    var default_transparent_main_button = true;
-    var default_fat_icons = false;
     var default_font_size = 'normal';
-    var default_menu_display_logic = 'auto';
-    var default_show_scripts_in_main_menu = true;
     
     // can be used to display stuff in scriptweeder menu from outside scripts.
     var enable_plugin_api = false;
@@ -16,17 +11,13 @@ function(){   // fake line, keep_editor_happy
     /********************************* UI Init *********************************/
 
     var main_ui = null;
-    var autohide_main_button;
-    var transparent_main_button;
-    var fat_icons;
-    var font_size;
     var disable_main_button;
-    var menu_display_logic;		// auto   delay   click
     var menu_display_timer = null;
-    var show_scripts_in_main_menu;
     var ui_position;
     var ui_hpos;
     var ui_vpos;
+    
+    var large_font;
     
     var menu_request = false;		// external api request while not ready yet (opera button ...)
     var using_opera_button = false;	// seen external api request
@@ -89,17 +80,14 @@ function(){   // fake line, keep_editor_happy
     function start_ui()
     {
 	debug_log("start_ui()");
-	autohide_main_button = global_bool_setting('autohide_main_button', default_autohide_main_button);
-	transparent_main_button = global_bool_setting('transparent_main_button', default_transparent_main_button);
-	fat_icons = global_bool_setting('fat_icons', default_fat_icons);
-	font_size = global_setting('font_size', default_font_size);
-	menu_display_logic = global_setting('menu_display_logic', default_menu_display_logic);
-	show_scripts_in_main_menu = global_bool_setting('show_scripts_in_main_menu', default_show_scripts_in_main_menu);
+	large_font = global_bool_setting('large_font', false);
 	
 	window.addEventListener('click',  function (e) { close_menu(); }, false);
 	
 	//set_class(idoc.body, ui_hpos);
 	//set_class(idoc.body, ui_vpos);
+	if (large_font)
+	    idoc.body.id = 'large-font';
 	
 	repaint_ui_now();
 	
@@ -211,7 +199,7 @@ function(){   // fake line, keep_editor_happy
     {
 	return ((mode == 'relaxed' && hn.helper_host) ||
 		(mode == 'filtered' && hn.name == current_host) ||
-	        mode == 'allow_all');
+	        mode == 'allow_all' || mode == 'block_all');
     }
     
     function allow_once_or_revoke(e)
@@ -246,8 +234,7 @@ function(){   // fake line, keep_editor_happy
 	}
 	else // whitelisting
 	{
-	    if (mode == 'relaxed' && relaxed_mode_helper_host(host) ||
-		mode == 'allow_all' || mode == 'block_all')
+	    if (mode_adjusted_host(this.hn))
 		return; // FIXME
 	    if (allowed_host(host))
 	    {
@@ -287,8 +274,34 @@ function(){   // fake line, keep_editor_happy
 	set_mode(this.mode);
     }
 
+    function allow_toolbar_init(w)
+    {
+	if (mode != 'allow_all' && mode != 'block_all')
+	    return;   // no need to disable anything
+	foreach(w.children, function(n)
+	{
+	    set_class(n, 'disabled');
+	    n.onclick = null;
+	});
+    }
+    
+    // for top buttons logic
+    function something_to_allow()
+    {
+	var ret = false;
+	foreach_host_node(function(hn, dn)
+	{
+	    var host = hn.name;
+	    if (!allowed_host(host) && !host_blacklisted(host))
+		ret = true;
+	});
+	return ret;
+    }
+
     function allow_all_clicked(e)
     {
+	if (!something_to_allow())
+	    return;	
 	save_prev_settings();  // for undo	
 	foreach_host_node(function(hn, dn)
 	{
@@ -303,6 +316,8 @@ function(){   // fake line, keep_editor_happy
 
     function temp_allow_all_clicked(e)
     {
+	if (!something_to_allow())
+	    return;
 	save_prev_settings();  // for undo		
 	foreach_host_node(function(hn, dn)
 	{
@@ -370,6 +385,11 @@ function(){   // fake line, keep_editor_happy
     
     function options_clicked(e, section)
     {
+	if (e && main_ui.id == 'options') // dismiss
+	{
+	    repaint_ui_now();
+	    return;
+	}
 	var w = new_options(section);
         switch_menu(w);	
     }
@@ -381,12 +401,17 @@ function(){   // fake line, keep_editor_happy
 	if (!section)
 	    section = "general";
 	var s = new_widget("options_" + section);
-	w.appendChild(s);
+	w.insertBefore(s, w.lastChild);
 
 	// set selected menu item
+	var button = w.querySelector('.button');	
 	var menu_items = w.querySelector('.menu ul').children;
 	var i = options_sections.indexOf(section);
 	set_class(menu_items[i], 'selected');
+	button.innerText = menu_items[i].innerText;	
+
+	var icon = w.querySelector('#options-button');
+	set_class(icon, 'static');
     }
 
     function options_menu_onclick(e)
@@ -398,6 +423,17 @@ function(){   // fake line, keep_editor_happy
 	options_clicked(null, options_sections[i]);
     }
 
+    /***************************** Options general ******************************/
+
+    function toggle_large_font(checked)
+    {
+	large_font = checked;
+	set_global_bool_setting('large_font', large_font);
+	need_reload = true;
+    }
+    
+    /***************************** Options whitelist ******************************/
+    
     function options_whitelist_init(w)
     {
 	var l = w.querySelector('ul');
@@ -422,6 +458,91 @@ function(){   // fake line, keep_editor_happy
 	options_clicked(null, "whitelist"); // refresh ui
     }
 
+    function options_whitelist_add(e)
+    {
+	var entry = this.previousSibling;
+	//set_class(entry, 'show');
+	set_class(entry, 'static');
+	set_class(this, 'confirm');
+	this.onclick = options_whitelist_confirm;
+	resize_iframe();
+    }
+
+    function options_whitelist_confirm(e)
+    {
+	var entry = this.previousSibling;
+	if (entry.value != '')
+	{
+	    global_allow_host(entry.value);
+	    need_reload = true;
+	}
+	options_clicked(null, 'whitelist');
+
+	/*
+	entry.value = ''; // clear it
+	//set_class(entry, 'hide');	
+	unset_class(entry, 'static');
+	unset_class(this, 'confirm');
+	this.onclick = options_whitelist_add;	
+	resize_iframe();
+	 */
+    }
+
+    function whitelist_entry_onchange(e)
+    {
+	// onchange fires twice with enter key, ignore 2nd one
+	if (this.ignore)
+	    return;
+	this.ignore = true;
+	this.nextSibling.onclick(null);
+    }
+
+    /***************************** Options import export ******************************/    
+
+    function export_settings_onclick(e)
+    {
+        if (e.shiftKey)
+            export_settings(null, true);
+        else
+            export_settings();
+    }
+
+    function import_settings_init()
+    {   this.onchange = file_loader(parse_settings_file); }    
+
+    
+    /***************************** Checkbox items ******************************/
+    
+    function checkbox_item_init(wrapper, id, title, label, state, callback, klass)
+    {
+	var div = wrapper.children[0];
+	var span = wrapper.children[1];
+        div.id = id;
+        if (klass)
+	    set_class(div, klass);
+        span.title = title;
+        span.innerHTML = label;
+	
+        span.div = div;
+	set_unset_class(div, 'checked', state);
+	div.f = callback;
+    }
+
+    function checkbox_item_onclick(e)
+    {
+	var div = this;
+	if (element_tag_is(this, 'span'))
+	    div = this.div;
+	toggle_class(div, 'checked');
+	div.f(has_class(div, 'checked'));
+    }
+
+    function disable_checkbox(w)
+    {
+        w.querySelector('input').disabled = true;
+        w.onclick = null;
+    }
+    
     /***************************** List items ******************************/
     
     function list_item_init(w, host)
@@ -469,7 +590,7 @@ function(){   // fake line, keep_editor_happy
     {
 	if (!main_ui)
 	    repaint_ui_now();
-        var d = (show ? 'inline-block' : 'none');
+        var d = (show ? 'block' : 'none');
         main_ui.style.display = d;
         resize_iframe();
     }

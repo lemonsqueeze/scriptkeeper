@@ -17,37 +17,32 @@
 
 <widget name="main">
   <div id="main-container">
-
-    <main_interface></main_interface>
-    
-    <footer>
-      <div id="options-button" title="Options" onclick="options_clicked"></div>
-      <div id="display-blocked" title="Display blocked"></div>
-      
-      <ol class="paginated">
-	<li class="current" title="Page 1"></li>
-	<li title="Page 2"></li>
-      </ol>
-      
-      <div id="about-button" title="About" onclick="style_editor"></div>
-    </footer>
-    
+    <main_interface></main_interface>    
+    <main_footer></main_footer>    
   </div>
 </widget>
 
 
+<widget name="main_footer">
+  <footer>
+    <!-- set static class to highlight active items -->
+    <div id="options-button" title="Options" onclick="options_clicked"></div>
+    <div id="display-blocked" title="Display blocked"></div>
+    
+    <ol class="paginated">
+      <li class="current" title="Page 1"></li>
+      <li title="Page 2"></li>
+    </ol>
+    
+    <div id="about-button" title="About" onclick="style_editor"></div>
+  </footer>
+</widget>
+
 <!-- main-interface -->
 <widget name="main_interface">
-  <section id="main-interface">
-    
+  <section id="main-interface">    
     <mode_menu></mode_menu>
-
-    <div id="allow-toolbar">
-      <span class="button allow-all" title="Allow all" onclick="allow_all_clicked">All</span>
-      <span class="button temp-allow-all" title="Allow all once" onclick="temp_allow_all_clicked">All</span>
-      <span class="button undo" title="Undo last change" onclick="undo_clicked"></span>
-    </div>
-
+    <allow_toolbar></allow_toolbar>
     <items_container></items_container>
   </section>
 </widget>
@@ -62,6 +57,14 @@
       <li mode="block_all" onclick="mode_menu_clicked">Globally disable all</li>
     </ul>
   </nav>
+</widget>
+
+<widget name="allow_toolbar" init>
+  <div id="allow-toolbar">
+    <span class="button allow-all" title="Allow all" onclick="allow_all_clicked">All</span>
+    <span class="button temp-allow-all" title="Allow all once" onclick="temp_allow_all_clicked">All</span>
+    <span class="button undo" title="Undo last change" onclick="undo_clicked"></span>
+  </div>
 </widget>
 
 <!-- items_container -->
@@ -95,6 +98,7 @@
   <section id="options">
     <options_menu></options_menu>
     <!-- options sections go here -->
+    <main_footer></main_footer>
   </section>
 </widget>
 
@@ -124,6 +128,9 @@
           <li>Domains</li>
         </ul>
       </div>
+      <div class="checkbox no-label">        
+	<checkbox_item label="Large font" state="`large_font" callback="`toggle_large_font"></checkbox_item>
+      </div>
     </div>
 
     <div class="option">
@@ -149,16 +156,12 @@
           <li>Disable</li>
         </ul>
       </div>
-      <em class="label">Show:</em>
-      <div class="checkbox">
-        <div class="button checked"></div><span class="label">Controls</span>
-      </div>
     </div>
     
     <div class="option">
       <strong class="title">Globally disable all:</strong>
       <div class="checkbox standalone">
-        <div class="button checked"></div><span class="label">Imitate true disabling</span>
+        <div class="button checked"></div><span class="label" title="Imitate true disabling">Imitate true disabling</span>
       </div>
     </div>
 
@@ -170,8 +173,10 @@
   <div id="options-whitelist">   
     <ul class="list">
       <!-- list_items -->
-    </ul>    
-    <span class="button add">Add</span>
+    </ul>
+    <input name="add-whitelist" id="add-whitelist" class=""
+	   onchange="whitelist_entry_onchange" placeholder="Website address"/>
+    <span class="button add" onclick="options_whitelist_add">Add</span>
     <span class="button delete" onclick="options_whitelist_remove">Remove</span>    
   </div>
 </widget>
@@ -185,17 +190,35 @@
 
     <div class="option">
       <strong class="title">Settings:</strong>
-      <div class="button save">Save...</div>
-      <div class="button save">Load...</div>
+      <div class="button save" onclick="export_settings_onclick">Save...</div>
+      <import_settings/>
+      <!-- <div class="button save">Load...</div> -->
     </div>
 
     <div class="option">
       <strong class="title">Reset to defaults:</strong>
-      <div class="button reset">Reset</div>
+      <div class="button reset" onclick="reset_settings">Reset</div>
     </div>
 
   </div>
 </widget>
+
+<def macro="import_settings">
+  <form id="import_settings">
+      <input type="file" autocomplete="off" oninit="import_settings_init"/>
+      <button class="">Load...</button>
+  </form>
+</def>
+
+
+<!-- low level stuff -->
+
+<widget name="checkbox_item" id title label state callback klass init>
+  <div class="button checked" onclick></div>
+  <span class="label" onclick>Label</span>
+</widget>
+
+
 
 <!-- editor window -->
 <widget name="editor_window" title text default_setting save_callback init>
