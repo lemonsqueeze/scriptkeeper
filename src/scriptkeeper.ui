@@ -206,7 +206,7 @@
 <def macro="import_settings">
   <form id="import_settings">
       <input type="file" autocomplete="off" oninit="import_settings_init"/>
-      <button class="">Load...</button>
+      <button class="button load">Load...</button>
   </form>
 </def>
 

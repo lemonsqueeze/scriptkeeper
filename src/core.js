@@ -444,6 +444,7 @@ function(){   // fake line, keep_editor_happy
     function filtered_mode_allowed_host(host)
     {
 	return (
+	    host == current_host ||
 	    host_allowed_globally(host) ||
 	    host_temp_allowed(host));
     }

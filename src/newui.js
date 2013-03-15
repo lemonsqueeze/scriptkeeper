@@ -192,7 +192,8 @@ function(){   // fake line, keep_editor_happy
 
 	var item = s.parentNode;
 	set_unset_class(item, 'mode-adjusted', mode_adjusted_host(s.hn));
-	set_unset_class(item, 'temp-allowed', host_temp_allowed(s.host));	
+	set_unset_class(item, 'temp-allowed', host_temp_allowed(s.host));
+	set_unset_class(item, 'whitelisted', host_allowed_globally(s.host));
     }
 
     function mode_adjusted_host(hn)
@@ -274,25 +275,45 @@ function(){   // fake line, keep_editor_happy
 	set_mode(this.mode);
     }
 
+    function disable_toolbar_button(b)
+    {
+	set_class(b, 'disabled');
+	b.onclick = null;
+    }
+
+    function enable_toolbar_button(b)
+    {
+	unset_class(b, 'disabled');
+	b.onclick = b.onclickhandler;
+    }
+    
     function allow_toolbar_init(w)
     {
-	if (mode != 'allow_all' && mode != 'block_all')
-	    return;   // no need to disable anything
-	foreach(w.children, function(n)
+	var allow_all = w.children[0];
+	var temp_allow_all = w.children[1];
+	var undo = w.children[2];
+	undo.onclickhandler = undo.onclick; // save it
+	
+	if (mode == 'allow_all')	// can still allow all and undo
+	    disable_toolbar_button(temp_allow_all);
+	if (mode == 'block_all')	// can just undo (after blacklisting)
 	{
-	    set_class(n, 'disabled');
-	    n.onclick = null;
-	});
+	    disable_toolbar_button(allow_all);
+	    disable_toolbar_button(temp_allow_all);
+	}
+	if (!have_prev_settings())
+	    disable_toolbar_button(undo);
     }
     
     // for top buttons logic
-    function something_to_allow()
+    function something_to_allow(globally)
     {
 	var ret = false;
+	var allowed = (globally ? host_allowed_globally : allowed_host);
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (!allowed_host(host) && !host_blacklisted(host))
+	    if (!allowed(host) && !host_blacklisted(host))
 		ret = true;
 	});
 	return ret;
@@ -300,13 +321,13 @@ function(){   // fake line, keep_editor_happy
 
     function allow_all_clicked(e)
     {
-	if (!something_to_allow())
+	if (!something_to_allow(true))
 	    return;	
 	save_prev_settings();  // for undo	
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (!allowed_host(host) && !host_blacklisted(host))
+	    if (!host_allowed_globally(host) && !host_blacklisted(host))
 		global_allow_host(host);
 	});
 	update_items();		// update ui
@@ -353,6 +374,9 @@ function(){   // fake line, keep_editor_happy
     {
 	var settings = { whitelist:whitelist, blacklist:blacklist, templist:templist };
 	set_global_setting('prev_settings', window.JSON.stringify(settings));
+
+	var b = main_ui.querySelector('#allow-toolbar .undo');
+	enable_toolbar_button(b);		// enable undo button
     }
 
     function load_prev_settings()
@@ -372,7 +396,13 @@ function(){   // fake line, keep_editor_happy
 
     function clear_prev_settings()
     {
-	set_global_setting('prev_settings', '');	
+	set_global_setting('prev_settings', '');
+
+	try {
+	    var b = main_ui.querySelector('#allow-toolbar .undo');
+	    disable_toolbar_button(b);		// disable undo button
+	}
+	catch(e) {}
     }
     
     function have_prev_settings()
@@ -437,6 +467,7 @@ function(){   // fake line, keep_editor_happy
     function options_whitelist_init(w)
     {
 	var l = w.querySelector('ul');
+	l.innerHTML = "";  // throw children away if any
 	foreach(get_keys(whitelist).sort(), function(host)
 	{
 	    var li = new_list_item(host);
@@ -461,8 +492,9 @@ function(){   // fake line, keep_editor_happy
     function options_whitelist_add(e)
     {
 	var entry = this.previousSibling;
-	//set_class(entry, 'show');
-	set_class(entry, 'static');
+	entry.ignore = false;  // for onchange
+	unset_class(entry, 'hide');
+	set_class(entry, 'show');
 	set_class(this, 'confirm');
 	this.onclick = options_whitelist_confirm;
 	resize_iframe();
@@ -476,16 +508,17 @@ function(){   // fake line, keep_editor_happy
 	    global_allow_host(entry.value);
 	    need_reload = true;
 	}
-	options_clicked(null, 'whitelist');
+	// that'd be the easy way =)
+	// options_clicked(null, 'whitelist');
+	// return;
 
-	/*
 	entry.value = ''; // clear it
-	//set_class(entry, 'hide');	
-	unset_class(entry, 'static');
+	unset_class(entry, 'show');
+	set_class(entry, 'hide');
 	unset_class(this, 'confirm');
-	this.onclick = options_whitelist_add;	
-	resize_iframe();
-	 */
+	this.onclick = options_whitelist_add;
+	options_whitelist_init(this.parentNode); // update list
+	//resize_iframe();
     }
 
     function whitelist_entry_onchange(e)

@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 14/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 15/03/13) */
 
 body                {
 			background: transparent;
@@ -29,7 +29,6 @@ body#large-font,
 
 /* Checkboxes */
 
-#large-font .checkbox           { white-space: nowrap; text-overflow: ellipsis; overflow-x: hidden; }
 #large-font .checkbox .button   { width: 20px; height: 20px; top: 0; }
 
  /* White/blacklist list styling */
@@ -75,6 +74,15 @@ footer *,
 .disabled:hover,
 .disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
 .disabled.temp-allow-all { border-left: none !important; border-right: none !important; }
+#large-font .checkbox,
+.list li,
+.slider,
+.option .menu .button.dropdown
+                    {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
 .slider b,
 .slider u,
 .item.block-animation-show,
@@ -141,12 +149,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         margin-bottom: 8px;
                     }
 
-.list li            {
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                        padding: 5px 10px;
-                    }
+.list li            { padding: 5px 10px; }
 
 /* Styling for selection - would normally stay selected until clicking elsewhere */
 
@@ -159,26 +162,32 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
    be removed in the final output, it's only there so
    the animation doesn't load immediately in the demo */
 
-#add-whitelist,
-#add-blacklist      { width: 100%; height: 24px; display: none; margin-bottom: 8px; }
-
-#add-whitelist.static,
-#add-blacklist.static { display: block; }
-
-#add-whitelist.show,
-#add-blacklist.show,
-#add-whitelist.hide,
-#add-blacklist.hide {
-                        display: block;
-                        visibility: hidden;
-                        opacity: 0;
-                        margin-top: -32px;
-                        animation: show-textbox 500ms;
-                        -o-animation: show-textbox 500ms;
+[id^='add-']        {
+                        width: 100%;
+                        height: 24px;
+                        background: #fff;
+                        display: none;
+                        padding: 3px;
+                        border: solid #E5E5E5 1px;
+                        border-top: solid #d4d4d4 1px;
+                        margin-bottom: 8px;
                     }
 
-#add-whitelist.hide,
-#add-blacklist.hide { animation: hide-textbox 500ms; -o-animation: hide-textbox 500ms; }
+[id^='add-']:focus  { box-shadow: 0 0 2px 1px #55b3d9; }
+
+[id^='add-'].show,
+[id^='add-'].hide   {
+                        display: block;
+                        animation: show-textbox 500ms 0.1s;
+                        -o-animation: show-textbox 500ms 0.1s;
+                    }
+
+[id^='add-'].hide   {
+                        visibility: hidden;
+                        margin-top: -32px;
+                        animation: hide-textbox 500ms 0.1s;
+                        -o-animation: hide-textbox 500ms 0.1s;
+                    }
 
 @keyframes show-textbox
                     {
@@ -235,9 +244,9 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                                 vertical-align: top;
                             }
 
-.checkbox                   { width: 64%; display: inline-block; }
+.checkbox                   { width: 60%; display: inline-block; position: relative; top: 3px; }
 
-.checkbox.no-label          { padding-left: 14px; margin-left: 30%; }
+.checkbox.no-label          { padding-left: 14px; margin-left: 30%; } /* Use for secondary options under a single label */
 
 /* Standalone version - creates centered 'block' alignment (proper width varies by font used) */
 
@@ -246,6 +255,18 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                                 text-align: left;
                                 display: block;
                                 margin: 0 auto;
+                            }
+
+/* Load settings button */
+
+/* file input form styling: http://www.quirksmode.org/dom/inputfile.html */
+
+#import_settings input[type=file]   { height: 29px; width: 100%; opacity: 0; }
+.load                       {
+                                width: 100%;
+                                font: normal 8pt 'Lucida Grande', sans-serif; /* Duplicated from body */
+                                display: block;
+                                margin-top: -29px;
                             }
 
 
@@ -378,9 +399,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         height: 29px;
                         font-size: 8pt; /* Fixes font-enlargement issue in animation */ 
                         cursor: move;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
                         padding: 6px 10px;
                         position: relative;
                         top: -100%;
@@ -529,7 +547,8 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 .mode-adjusted .allow-bg,
 .temp-allowed .allow-bg           { background: hsla(197,63%,59%,0.5); }
 .mode-adjusted .allow-bg:hover,
-.temp-allowed .allow-bg:hover     { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+.temp-allowed .allow-bg:hover,
+.whitelisted .allow-bg            { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
 
 
 /*------------Icons----------------*/
@@ -559,7 +578,7 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 
 .dropdown:after                 { content: ''; color: hsl(0,0%,47%); font-size: 100%; } /* Menu arrows */
 .allow-bg:before,
-span[class$='-all']:before,
+span.allow-all:before,
 .menu ul li.selected:before,
 .checkbox .button.checked:before,
 .button.add.confirm:before { content: '✓'; } /* Tick */
@@ -621,14 +640,6 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
 
 .paginated li.current,
 .paginated li:hover         { background: hsla(0,0%,7%,0.70); }
-
-
-/* file input form styling: http://www.quirksmode.org/dom/inputfile.html */
-#import_settings
-        { display:inline-block; position:relative; overflow:hidden; vertical-align:text-bottom }
-#import_settings input
-        { display:block; position:absolute; top:0; right:0; margin:0; border:0; opacity:0 }
-
 
 
 /*************************************************************************/
