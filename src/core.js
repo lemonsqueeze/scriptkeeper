@@ -17,6 +17,9 @@ function(){   // fake line, keep_editor_happy
 
     // 'normal'  or  'cache'
     var default_reload_method = 'normal';
+
+    // whether current host is allowed in filtered mode
+    var default_allow_current_host = true;
     
     /********************************* Globals *********************************/
 
@@ -31,6 +34,7 @@ function(){   // fake line, keep_editor_happy
     var blacklist;
     var templist;
     var helper_blacklist;
+    var allow_current_host;
     var block_inline_scripts = false;
     var handle_noscript_tags = false;
     var reload_method;
@@ -103,6 +107,7 @@ function(){   // fake line, keep_editor_happy
 	blacklist = deserialize_name_hash(global_setting('blacklist'));
 	templist = deserialize_name_hash(global_setting('templist'));
 	helper_blacklist = deserialize_name_hash(global_setting('helper_blacklist'));
+	allow_current_host = global_bool_setting('allow_current_host', default_allow_current_host);
     }
 
     
@@ -444,7 +449,7 @@ function(){   // fake line, keep_editor_happy
     function filtered_mode_allowed_host(host)
     {
 	return (
-	    host == current_host ||
+	    (host == current_host && allow_current_host) ||
 	    host_allowed_globally(host) ||
 	    host_temp_allowed(host));
     }

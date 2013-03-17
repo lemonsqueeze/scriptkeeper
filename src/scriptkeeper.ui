@@ -116,58 +116,71 @@
 
 
 <widget name="options_general">
-  <div id="options-general">
+  <div id="options-general" extra_height="20">
 
     <div class="option">
       <strong class="title">Appearance:</strong>
       <em class="label">Show:</em>
-      <div class="menu">
-        <div class="button dropdown">Full sites</div>
-        <ul>
-          <li class="selected">Full sites</li>
-          <li>Domains</li>
-        </ul>
-      </div>
-      <div class="checkbox no-label">        
+      <div class="checkbox">
 	<checkbox_item label="Large font" state="`large_font" callback="`toggle_large_font"></checkbox_item>
       </div>
     </div>
 
     <div class="option">
-      <strong class="title">Script reload:</strong>
-      <em class="label">Method:</em>
-      <div class="menu">
-        <div class="button dropdown">Normal</div>
-        <ul>
-          <li class="selected">Normal</li>
-          <li>Cached</li>
-        </ul>
-      </div>
+      <strong class="title">Scripting:</strong>
+      <select_reload_method/>
+      <select_allow_current_host/>
     </div>
 
     <div class="option">
       <strong class="title">IFrames:</strong>
-      <em class="label">Scripts:</em>
-      <div class="menu">
-        <div class="button dropdown">Inherit</div>
-        <ul>
-          <li>Allow</li>
-          <li class="selected">Inherit</li>
-          <li>Disable</li>
-        </ul>
-      </div>
+      <select_iframe_logic/>
     </div>
     
     <div class="option">
       <strong class="title">Globally disable all:</strong>
       <div class="checkbox standalone">
-        <div class="button checked"></div><span class="label" title="Imitate true disabling">Imitate true disabling</span>
+	<checkbox_item label="Imitate true disabling" title="Imitate true disabling"
+		       state="`stored_handle_noscript_tags" callback="`toggle_handle_noscript_tags"></checkbox_item>
       </div>
     </div>
 
   </div>
 </widget>
 
+<def macro="select_reload_method">
+  <em class="label">Reload:</em>
+  <div class="menu" oninit="select_reload_method_init">
+    <div class="button dropdown">Normallll</div>
+    <ul>
+      <li value="normal">Normal</li>
+      <li value="cache">Cached</li>
+    </ul>
+  </div>
+</def>
+
+<def macro="select_allow_current_host">
+      <em class="label">Enable top-level:</em>
+      <div class="menu" oninit="select_allow_current_host_init">
+        <div class="button dropdown">Always</div>
+        <ul>
+          <li value="y">Always</li>
+          <li value="n">Relaxed only</li>
+        </ul>
+      </div>      
+</def>
+
+<def macro="select_iframe_logic">
+  <em class="label">Scripts:</em>
+  <div class="menu" oninit="select_iframe_logic_init">
+    <div class="button dropdown">Inherit</div>
+    <ul>
+      <li value="allow">Allow</li>
+      <li value="filter">Inherit</li>
+      <li value="block_all">Disable</li>
+    </ul>
+  </div>
+</def>
 
 <widget name="options_whitelist" init>
   <div id="options-whitelist">   

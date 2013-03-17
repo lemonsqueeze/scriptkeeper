@@ -81,6 +81,7 @@ function(){   // fake line, keep_editor_happy
     {
 	debug_log("start_ui()");
 	large_font = global_bool_setting('large_font', false);
+	stored_handle_noscript_tags = global_bool_setting('nstags', default_handle_noscript_tags);	
 	
 	window.addEventListener('click',  function (e) { close_menu(); }, false);
 	
@@ -199,7 +200,7 @@ function(){   // fake line, keep_editor_happy
     function mode_adjusted_host(hn)
     {
 	return ((mode == 'relaxed' && hn.helper_host) ||
-		(mode == 'filtered' && hn.name == current_host) ||
+		(mode == 'filtered' && hn.name == current_host && allow_current_host) ||
 	        mode == 'allow_all' || mode == 'block_all');
     }
     
@@ -431,6 +432,8 @@ function(){   // fake line, keep_editor_happy
 	if (!section)
 	    section = "general";
 	var s = new_widget("options_" + section);
+	if (s.hasAttribute("extra_height"))
+	    w.extra_height = parseInt(s.getAttribute("extra_height"));
 	w.insertBefore(s, w.lastChild);
 
 	// set selected menu item
@@ -460,6 +463,41 @@ function(){   // fake line, keep_editor_happy
 	large_font = checked;
 	set_global_bool_setting('large_font', large_font);
 	need_reload = true;
+    }
+
+    // this one is special, value depends on mode ...
+    var stored_handle_noscript_tags;
+    function toggle_handle_noscript_tags(checked)
+    {
+	set_global_bool_setting('nstags', checked);
+	need_reload = true;
+    }
+
+    function select_reload_method_init(w)
+    {
+	setup_dropdown(w, reload_method, function(value)
+        {
+	    reload_method = value;
+	    set_global_setting('reload_method', reload_method);
+        });
+    }
+
+    function select_allow_current_host_init(w)
+    {
+	setup_dropdown(w, (allow_current_host ? 'y' : 'n'), function(value)
+        {
+	    set_global_bool_setting('allow_current_host', value == 'y');
+	    need_reload = true;
+        });
+    }
+    
+    function select_iframe_logic_init(w)
+    {
+	setup_dropdown(w, iframe_logic, function(value)
+        {
+	    set_global_setting('iframe_logic', value);
+	    need_reload = true;
+        });
     }
     
     /***************************** Options whitelist ******************************/
@@ -496,8 +534,9 @@ function(){   // fake line, keep_editor_happy
 	unset_class(entry, 'hide');
 	set_class(entry, 'show');
 	set_class(this, 'confirm');
+	iwin.setTimeout(function(){entry.focus()}, 500);
 	this.onclick = options_whitelist_confirm;
-	resize_iframe();
+	resize_iframe(0, 35); // guys, we need extra height
     }
 
     function options_whitelist_confirm(e)
@@ -508,7 +547,7 @@ function(){   // fake line, keep_editor_happy
 	    global_allow_host(entry.value);
 	    need_reload = true;
 	}
-	// that'd be the easy way =)
+	// that'd be the easy way...
 	// options_clicked(null, 'whitelist');
 	// return;
 
@@ -575,6 +614,28 @@ function(){   // fake line, keep_editor_happy
         w.querySelector('input').disabled = true;
         w.onclick = null;
     }
+
+    /***************************** dropdowns ******************************/
+
+    function setup_dropdown(w, current, callback)
+    {
+	var button = w.querySelector('.button');
+	var menu = w.querySelector('ul');
+	foreach(menu.children, function(li)
+	{
+	    assert(li.hasAttribute("value"), "dropdown content with no value attribute set !");
+	    li.val = li.getAttribute("value"); // can't use value
+	    li.onclick = function()
+	    {
+	        callback(this.val);
+		setup_dropdown(w, this.val, callback);  // update ui
+	    };
+	    if (li.val == current)
+		button.innerText = li.innerText;
+	    set_unset_class(li, 'selected', li.val == current);
+	});	
+    }
+    
     
     /***************************** List items ******************************/
     

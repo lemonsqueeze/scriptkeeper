@@ -253,21 +253,24 @@ function(){   // fake line, keep_editor_happy
 	start_ui();
     }
 
-    function resize_iframe()
+    function resize_iframe(extra_width, extra_height)
     {
+	extra_width = (extra_width ? extra_width : 0);
+	extra_height = (extra_height ? extra_height : 0);
         var width = 0;
         var height = 0;
         if (main_ui.style.display != 'none')
         {
-            //width = document.body.offsetWidth;
-            //height = document.body.offsetHeight;
             width = main_ui.offsetWidth + 20;
             height = main_ui.offsetHeight + 20;
-        }
+	    if (main_ui.extra_height)
+		height += main_ui.extra_height;
+	    height = max(height, 200); // for mode menu display
+        }	
         debug_log("resize_iframe");
         
-        iframe.style.width = width + 'px';
-        iframe.style.height = height + 'px';
+        iframe.style.width = (width + extra_width) + 'px';
+	iframe.style.height = (height + extra_height) + 'px';
     }               
     
     var iframe;
