@@ -125,8 +125,10 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
+    var items_parent_selector = '#scroller-content';
     function items_container_init(w)
     {
+	var parent = w.querySelector(items_parent_selector);
 	var i = 0;
 	sort_domains();
 	foreach_host_node(function(hn, dn)
@@ -135,9 +137,14 @@ function(){   // fake line, keep_editor_happy
 	    var h = hn.name;
 
 	    var item = new_item(hn);
-	    w.appendChild(item);
+	    parent.appendChild(item);
 	    i++;
 	});
+	if (i == 10)	// just exceed max-height by one item, allow it to display without scrolling
+	{	        // otherwise gradient won't show up (first and last items have higher z-order)
+	    var scroller = w.querySelector('#scroller');
+	    scroller.style = 'max-height:inherit';
+	}
     }
 
     function item_init(w, hn)
@@ -361,7 +368,7 @@ function(){   // fake line, keep_editor_happy
 
     function update_items()
     {
-	var c = main_ui.querySelector('#items-container');
+	var c = main_ui.querySelector(items_parent_selector);
 	foreach(c.children, function(item)
 	{
 	    item_init(item, item.hn);

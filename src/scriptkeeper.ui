@@ -70,13 +70,11 @@
 <!-- items_container -->
 <widget name="items_container" init>
   <div id="items-container">
-<!--
-    <div class="item top-level mode-adjusted">
-      <div class="allow-bg" title="Allow permanently"></div>
-      <div class="block-bg"></div>
-      <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
+    <div id="scroller">
+      <div id="scroller-content">
+	<!-- items go here-->
+      </div>
     </div>
--->
   </div>
 </widget>
 

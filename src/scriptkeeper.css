@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 16/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 18/03/13) */
 
 body                {
 			background: transparent;
@@ -105,7 +105,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         padding: 5px 0;
                         margin: -9px 0 0;
                         position: absolute;
-                        z-index: 2;
+                        z-index: 4;
                     }
 
 .menu:hover ul, .menu.main:hover ul     { display: block; }
@@ -124,9 +124,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .option .menu .button.dropdown
                     {
                         width: 100%;
-                        /*height: 22px;*/
                         text-align: left;
-                        padding: 3px 8px;
+                        padding: 3px 14px 3px 8px; /* Added extra right-side padding to force ellipsis sooner */
                     }
 
 .option .menu ul    { width: 91px; text-align: left; } /* Must change with any #main-container width  */
@@ -204,6 +203,14 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         margin: 0 auto;
                     }
 
+#options            { position: relative; z-index: 3; } /* To cover fade-out gradient */
+
+#items-container    { width: 167px; overflow: hidden; } /* Overall items container */
+
+#scroller           { width: 200px; max-height: 352px; overflow-y: auto; } /* Scrolling container, max-height */
+
+#scroller-content   { width: 167px; } /* Actual inner items container */
+
 
 /*-------------Options specific styling----------------*/
 
@@ -250,7 +257,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .button,
 .slider             {
-                        /*height: 29px;*/
                         background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1);
                         color: #444;
                         padding: 6px 8px 7px;
@@ -382,6 +388,12 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         -o-transition: all 500ms ease-in;
                     }
 
+/* Targets first/last .item, removes margin-bottom (so footer can use it instead)
+   and raises it above the fade-out gradient so it's not covering it  */
+
+.item:first-child,
+.item:last-child    { z-index: 3 !important; }
+.item:last-child    { margin-bottom: 0; }
 
 .top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
 
@@ -442,8 +454,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .item.block-animation-undo      { animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; /* The 'Undo' animation if the last action was to block an item */
                                   -o-animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; }
 
-.item.block-animation-undo .slider    { animation: blockundo-p3 1s 2s;
-                                        -o-animation: blockundo-p3 1s 2s; }
+.item.block-animation-undo .slider    { animation: blockundo-p3 1s 2s; -o-animation: blockundo-p3 1s 2s; }
 
 .item.block-animation-show      {   /* The 'Display untrusted' animation */
                                     animation: blockshow 500ms 3s;
@@ -553,6 +564,7 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 .option .menu ul li:before      { margin-left: 9px; position: absolute; } /* Targets .option drop-down menus */
 
 .dropdown:after                 { content: ''; color: hsl(0,0%,47%); font-size: 100%; } /* Menu arrows */
+.option .menu .button.dropdown:after  { margin-right: -6px; } /* For the increased right-side padding of .option text */
 .allow-bg:before,
 span.allow-all:before,
 .menu ul li.selected:before,
@@ -577,7 +589,28 @@ div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' *
 :active:after       { color: inherit; }
 
 
+/*------------Fade-out gradients for overflowing scrolling items----------------*/
+
+footer:before,
+#items-container:before
+                    {
+                        height: 12px;
+                        background: -o-linear-gradient(top, transparent, #fff);
+                        content: '';
+                        pointer-events: none; /* Would allow click-through but it's not supported in Opera! */
+                        display: block;
+                        margin-bottom: -12px;
+                        position: relative;
+                        top: -20px; /* Height + 8px */
+                        z-index: 2;
+                    }
+
+#items-container:before { background: -o-linear-gradient(bottom, transparent, #fff); top: 0; z-index: 3;  }
+
+
 /*------------Footer icons/buttons----------------*/
+
+footer              { margin-top: 8px; } /* Creates margin between last item and footer */
 
 footer div,
 footer ol li        { display: inline-block; opacity: 0.25; }
@@ -596,7 +629,7 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
                         width: 100%;
                         text-align: center;
                         display: inline-block;
-                        visibility: visible; /* Change to 'hidden' when the Options are shown */
+                        visibility: hidden; /* Change to 'hidden' when the Options are shown */
                         position: relative;
                         top: -14px;
                         float: left;
