@@ -43,6 +43,8 @@
       'codysherman.com':1
     };
 
+    var default_global_blacklist = {};
+    
     // Stuff we don't want to allow in relaxed mode which would otherwise be.
     var default_helper_blacklist =     // FIXME add ui to edit ?
     { 'apis.google.com':1,	// only used for google plus one
@@ -67,6 +69,7 @@
             set_global_setting('version_number', version_number);
             set_global_setting('version_type', version_type);               
             set_global_setting('whitelist',             serialize_name_hash(default_global_whitelist) );
+            set_global_setting('blacklist',             serialize_name_hash(default_global_blacklist) );	    
             set_global_setting('helper_blacklist',      serialize_name_hash(default_helper_blacklist) );
         }
 	

@@ -188,9 +188,21 @@
       <!-- list_items -->
     </ul>
     <input name="add-whitelist" id="add-whitelist" class=""
-	   onchange="whitelist_entry_onchange" placeholder="Website address"/>
+	   onchange="list_entry_onchange" placeholder="Website address"/>
     <span class="button add" onclick="options_whitelist_add">Add</span>
     <span class="button delete" onclick="options_whitelist_remove">Remove</span>    
+  </div>
+</widget>
+
+<widget name="options_blacklist" init>
+  <div id="options-blacklist">   
+    <ul class="list">
+      <!-- list_items -->
+    </ul>
+    <input name="add-blacklist" id="add-blacklist" class=""
+	   onchange="list_entry_onchange" placeholder="Website address"/>
+    <span class="button add" onclick="options_blacklist_add">Add</span>
+    <span class="button delete" onclick="options_blacklist_remove">Remove</span>    
   </div>
 </widget>
 

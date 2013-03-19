@@ -560,7 +560,7 @@ function(){   // fake line, keep_editor_happy
 	//resize_iframe();
     }
 
-    function whitelist_entry_onchange(e)
+    function list_entry_onchange(e)
     {
 	// onchange fires twice with enter key, ignore 2nd one
 	if (this.ignore)
@@ -569,6 +569,67 @@ function(){   // fake line, keep_editor_happy
 	this.nextSibling.onclick(null);
     }
 
+    /***************************** Options blacklist ******************************/
+    
+    function options_blacklist_init(w)
+    {
+	var l = w.querySelector('ul');
+	l.innerHTML = "";  // throw children away if any
+	foreach(get_keys(blacklist).sort(), function(host)
+	{
+	    var li = new_list_item(host);
+	    l.appendChild(li);
+	});
+    }
+
+    // remove selected items
+    function options_blacklist_remove(e)
+    {
+	var l = this.parentNode.querySelector('ul');
+	foreach(l.children, function(li)
+	{
+	    if (!has_class(li, 'clicked'))
+		return;
+	    unblacklist_host(li.host);
+	    need_reload = true;
+	});
+	options_clicked(null, "blacklist"); // refresh ui
+    }
+
+    function options_blacklist_add(e)
+    {
+	var entry = this.previousSibling;
+	entry.ignore = false;  // for onchange
+	unset_class(entry, 'hide');
+	set_class(entry, 'show');
+	set_class(this, 'confirm');
+	iwin.setTimeout(function(){entry.focus()}, 500);
+	this.onclick = options_blacklist_confirm;
+	resize_iframe(0, 35); // guys, we need extra height
+    }
+
+    function options_blacklist_confirm(e)
+    {
+	var entry = this.previousSibling;
+	if (entry.value != '')
+	{
+	    blacklist_host(entry.value);
+	    need_reload = true;
+	}
+	// that'd be the easy way...
+	// options_clicked(null, 'blacklist');
+	// return;
+
+	entry.value = ''; // clear it
+	unset_class(entry, 'show');
+	set_class(entry, 'hide');
+	unset_class(this, 'confirm');
+	this.onclick = options_blacklist_add;
+	options_blacklist_init(this.parentNode); // update list
+	//resize_iframe();
+    }
+
+    
     /***************************** Options import export ******************************/    
 
     function export_settings_onclick(e)

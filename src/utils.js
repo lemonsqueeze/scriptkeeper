@@ -276,7 +276,8 @@ function(){   // fake line, keep_editor_happy
 	var h = new Object();	
 	foreach(s.split(' '), function(key)
 	{
-	    h[key] = 1;
+	    if (key != '')  // "".split(' ') = [""] ...
+		h[key] = 1;
 	});
 	return h;
     }
