@@ -345,14 +345,15 @@ function(){   // fake line, keep_editor_happy
 
     function temp_allow_all_clicked(e)
     {
-	if (!something_to_allow())
-	    return;
+	var allow = (something_to_allow() ? true : false);
 	save_prev_settings();  // for undo		
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (!allowed_host(host) && !host_blacklisted(host))
+	    if (allow && !allowed_host(host) && !host_blacklisted(host))
 		temp_allow_host(host);
+	    if (!allow && host_temp_allowed(host))
+		temp_remove_host(host);	   
 	});
 	update_items();		// update ui
 	need_reload = true;

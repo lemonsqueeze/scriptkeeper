@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 18/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 20/03/13) */
 
 body                {
 			background: transparent;
@@ -21,6 +21,10 @@ body#large-font,
 #large-font .slider,
 #large-font #add-whitelist,
 #large-font #add-blacklist      { font-size: 10pt; }
+
+/* Max-height scolling container */
+
+#large-font #scroller           { max-height: 372px; }
 
 /* Dropdown menu */
 
@@ -66,7 +70,8 @@ i                   { color: #9d9d9d; font-style: normal; cursor: move; } /* Tar
 .slider, .slider b,
 .menu ul li,
 footer *,
-.checkbox .label    { cursor: pointer; } /* Changes the buttons/menus cursor */
+.checkbox .label,
+#import_settings input[type=file]    { cursor: pointer; } /* Changes the buttons/menus cursor */
 .button,
 .menu,
 .slider             { text-align: center; } /* Center aligns text for these selectors */
@@ -334,6 +339,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         table-layout: fixed;
                         border-radius: 4px;
                         margin-bottom: 8px;
+                        position: relative;
+                        z-index: 3; /* Raises it above the footer fade-out gradient when no items are present */
                     }
 
 .allow-all,
