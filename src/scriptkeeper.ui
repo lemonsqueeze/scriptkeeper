@@ -15,7 +15,7 @@
 
 <widgets>
 
-<widget name="main">
+<widget name="main" init>
   <div id="main-container">
     <main_interface></main_interface>    
     <main_footer></main_footer>    
@@ -27,7 +27,7 @@
   <footer>
     <!-- set static class to highlight active items -->
     <div id="options-button" title="Options" onclick="options_clicked"></div>
-    <div id="display-blocked" title="Display blocked"></div>
+    <div id="display-blocked" title="Display blocked" onclick="display_blocked_onclick"></div>
     
     <ol class="paginated">
       <li class="current" title="Page 1"></li>

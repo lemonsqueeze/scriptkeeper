@@ -125,6 +125,22 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
+    var display_blocked = false;
+    function main_init(w)
+    {
+	if (display_blocked)
+	{
+	    var icon = w.querySelector('#display-blocked');
+	    set_class(icon, 'static');
+	}
+    }
+
+    function display_blocked_onclick(e)
+    {
+	display_blocked = !display_blocked;
+	repaint_ui_now();
+    }
+    
     var items_parent_selector = '#scroller-content';
     function items_container_init(w)
     {
@@ -136,9 +152,12 @@ function(){   // fake line, keep_editor_happy
 	    var d = dn.name;
 	    var h = hn.name;
 
-	    var item = new_item(hn);
-	    parent.appendChild(item);
-	    i++;
+	    if (display_blocked || allowed_host(h))
+	    {
+		var item = new_item(hn);
+		parent.appendChild(item);
+		i++;
+	    }
 	});
 	if (i == 10)	// just exceed max-height by one item, allow it to display without scrolling
 	{	        // otherwise gradient won't show up (first and last items have higher z-order)
