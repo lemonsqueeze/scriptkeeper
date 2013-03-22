@@ -451,13 +451,13 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 /*-------------Special animations----------------*/
 /* The final version would not have any animation-delays (the 2nd timing value) */
 
-.item.block-animation:hover     { animation: blockedout 1s 1s; z-index: 2; /* Used after slider is set to 'block/untrust' */
-                                  -o-animation: blockedout 1s 1s; z-index: 2; } /* z-index so it travels over */
+.item.block-animation     { animation: blockedout 1s 500ms; z-index: 2; /* Used after slider is set to 'block/untrust' */
+                                  -o-animation: blockedout 1s 500ms; z-index: 2; } /* z-index so it travels over */
 
-.item.block-animation-undo      { animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; /* The 'Undo' animation if the last action was to block an item */
-                                  -o-animation: blockundo-p1 250ms 2s, blockundo-p2 500ms 2s; }
+.item.block-animation-undo      { animation: blockundo-p1 250ms, blockundo-p2 500ms; /* The 'Undo' animation if the last action was to block an item */
+                                  -o-animation: blockundo-p1 250ms, blockundo-p2 500ms; }
 
-.item.block-animation-undo .slider    { animation: blockundo-p3 1s 2s; -o-animation: blockundo-p3 1s 2s; }
+.item.block-animation-undo .slider    { animation: blockundo-p3 1s; -o-animation: blockundo-p3 1s; }
 
 .item.block-animation-show      {   /* The 'Display untrusted' animation */
                                     animation: blockshow 500ms 3s;
@@ -653,6 +653,8 @@ footer div          { position: relative; z-index: 1; } /* To display above .pag
 .paginated li.current,
 .paginated li:hover         { background: hsla(0,0%,7%,0.70); }
 
+
+.hidden			{ display:none }
 
 /*************************************************************************/
 

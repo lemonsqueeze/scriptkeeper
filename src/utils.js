@@ -228,7 +228,14 @@ function(){   // fake line, keep_editor_happy
     
     function unset_class(n, klass)
     {
-	n.className = n.className.replace(RegExp(' ' + klass, 'g'), '');
+	var re = RegExp(' ' + klass + '( |$)', 'g'); // crap, 'g' doesn't work here
+	var old;
+	do
+	{
+	    old = n.className;	    
+	    n.className = n.className.replace(re, '$1');
+	}
+	while(old != n.className);
     }
 
     function set_unset_class(n, klass, set)

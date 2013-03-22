@@ -2,22 +2,18 @@ function(){   // fake line, keep_editor_happy
 
     /********************************* Builtin ui *********************************/
 
-    var default_ui_position = 'bottom_right';
-    var default_font_size = 'normal';
-    
-    // can be used to display stuff in scriptweeder menu from outside scripts.
-    var enable_plugin_api = false;
+    var default_display_blacklisted = false;
 
     /********************************* UI Init *********************************/
 
     var main_ui = null;
     var disable_main_button;
     var menu_display_timer = null;
-    var ui_position;
     var ui_hpos;
     var ui_vpos;
     
     var large_font;
+    var display_blacklisted;
     
     var menu_request = false;		// external api request while not ready yet (opera button ...)
     var using_opera_button = false;	// seen external api request
@@ -42,7 +38,6 @@ function(){   // fake line, keep_editor_happy
             return;
 	debug_log("init_ui()");	
 	
-	ui_position = global_setting('ui_position', default_ui_position);
 	ui_vpos = 'top';
 	ui_hpos = 'right';
 	
@@ -81,6 +76,7 @@ function(){   // fake line, keep_editor_happy
     {
 	debug_log("start_ui()");
 	large_font = global_bool_setting('large_font', false);
+	display_blacklisted = global_bool_setting('display_blacklisted', default_display_blacklisted);
 	stored_handle_noscript_tags = global_bool_setting('nstags', default_handle_noscript_tags);	
 	
 	window.addEventListener('click',  function (e) { close_menu(); }, false);
@@ -125,22 +121,22 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
-    var display_blocked = false;
-    function main_init(w)
-    {
-	if (display_blocked)
-	{
-	    var icon = w.querySelector('#display-blocked');
-	    set_class(icon, 'static');
-	}
-    }
 
-    function display_blocked_onclick(e)
+    function display_blacklisted_init(w)
     {
-	display_blocked = !display_blocked;
-	repaint_ui_now();
+	set_unset_class(w, 'static', display_blacklisted);
     }
     
+    function display_blacklisted_onclick(e)
+    {
+	display_blacklisted = !display_blacklisted;
+	set_global_bool_setting('display_blacklisted', display_blacklisted);
+	//repaint_ui_now();    // nono, that'd be too easy ...
+	
+	display_blacklisted_init(this);
+	display_blacklisted_animations();
+    }
+        
     var items_parent_selector = '#scroller-content';
     function items_container_init(w)
     {
@@ -152,12 +148,10 @@ function(){   // fake line, keep_editor_happy
 	    var d = dn.name;
 	    var h = hn.name;
 
-	    if (display_blocked || allowed_host(h))
-	    {
-		var item = new_item(hn);
-		parent.appendChild(item);
+	    var item = new_item(hn);
+	    if (comp_style(item).display != 'none')
 		i++;
-	    }
+	    parent.appendChild(item);
 	});
 	if (i == 10)	// just exceed max-height by one item, allow it to display without scrolling
 	{	        // otherwise gradient won't show up (first and last items have higher z-order)
@@ -169,6 +163,8 @@ function(){   // fake line, keep_editor_happy
     function item_init(w, hn)
     {
 	w.hn = hn;
+	if (!has_class(w, 'block-animation') && !has_class(w, 'block-animation-undo')) // don't interfere with animations
+	    set_unset_class(w, 'hidden', !display_blacklisted && host_blacklisted(hn.name));
 	var s = w.querySelector('.slider');
 	slider_init(s, hn);
 	set_unset_class(w, 'top-level', (hn.name == current_host));
@@ -258,7 +254,7 @@ function(){   // fake line, keep_editor_happy
 	    if (host_blacklisted(host))
 		unblacklist_host(host);
 	    else
-		blacklist_host(host);
+		blacklist_animation(this.parentNode);
 	}
 	else // whitelisting
 	{
@@ -278,6 +274,84 @@ function(){   // fake line, keep_editor_happy
 	need_reload = true;
     }
 
+    // blacklist host + blacklist animation
+    function blacklist_animation(item, ui_only)
+    {
+	var host = item.hn.name;
+	if (!ui_only)
+	    blacklist_host(host);
+	if (display_blacklisted)
+	    return;
+	set_class(item, 'block-animation');
+	iwin.setTimeout(function()
+	{
+	    set_class(item, 'hidden');
+	    unset_class(item, 'block-animation');
+	    resize_iframe();	    
+	}, 1500);
+    }
+
+    function unblacklist_animation(item)
+    {
+	var host = item.hn.name;
+	unblacklist_host(host);
+	if (display_blacklisted)
+	    return;
+	resize_iframe(0, 500);
+	unset_class(item, 'hidden');
+	// it doesn't work if we try right away...
+	iwin.setTimeout(function(){ set_class(item, 'block-animation-undo'); }, 10);
+	iwin.setTimeout(function()
+	{
+	    unset_class(item, 'block-animation-undo');
+	    resize_iframe();
+	}, 1000);
+    }
+    
+    // unblacklist animation
+    function check_blacklist_animations(was_blacklisted)
+    {
+	foreach(was_blacklisted, function(item)
+	{
+	    var host = item.hn.name;
+	    if (!host_blacklisted(host)) // change from blacklisted -> not blacklisted
+		unblacklist_animation(item);
+	});
+	foreach_item(function(item, host)
+	{
+	    var was = (was_blacklisted.indexOf(item) != -1);
+	    if (host_blacklisted(host) && !was)
+		blacklist_animation(item);
+	});
+    }
+
+    function display_blacklisted_animation(item)
+    {
+	var host = item.hn.name;
+	resize_iframe(0, 500);
+	unset_class(item, 'hidden');
+	// it doesn't work if we try right away...
+	iwin.setTimeout(function(){ set_class(item, 'block-animation-show'); }, 10);
+	iwin.setTimeout(function()
+	{
+	    unset_class(item, 'block-animation-show');
+	    resize_iframe();
+	}, 1000);
+    }
+    
+    function display_blacklisted_animations()
+    {
+	foreach_item(function(item, host)
+	{
+	    if (!host_blacklisted(host))
+		return;
+	    if (!display_blacklisted)
+		blacklist_animation(item, true);
+	    else
+		display_blacklisted_animation(item);
+	});
+    }    
+    
     function mode_menu_init(w)
     {
 	var button = w.querySelector('.button');
@@ -348,14 +422,15 @@ function(){   // fake line, keep_editor_happy
 
     function allow_all_clicked(e)
     {
-	if (!something_to_allow(true))
-	    return;	
+	var allow = (something_to_allow(true) ? true : false);	
 	save_prev_settings();  // for undo	
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (!host_allowed_globally(host) && !host_blacklisted(host))
+	    if (allow && !host_allowed_globally(host) && !host_blacklisted(host))
 		global_allow_host(host);
+	    if (!allow && host_allowed_globally(host))
+		global_remove_host(host);
 	});
 	update_items();		// update ui
 	need_reload = true;
@@ -382,17 +457,36 @@ function(){   // fake line, keep_editor_happy
     {
 	if (!have_prev_settings())
 	    return;
+	
+	var blacklisted = get_blacklisted_items();
 	load_prev_settings();
+	check_blacklist_animations(blacklisted);
 	update_items();		// update ui	
     }
 
     function update_items()
     {
-	var c = main_ui.querySelector(items_parent_selector);
-	foreach(c.children, function(item)
+	foreach_item(function(item)
 	{
 	    item_init(item, item.hn);
 	});
+    }
+
+    function get_blacklisted_items()
+    {
+	var blacklisted = [];
+	foreach_item(function(item, host)
+	{
+	    if (host_blacklisted(host))
+		blacklisted.push(item);
+	});
+	return blacklisted;
+    }
+
+    function foreach_item(f)
+    {
+	var c = main_ui.querySelector(items_parent_selector);
+	foreach(c.children, function(item){ f(item, item.hn.name); });
     }
     
     
