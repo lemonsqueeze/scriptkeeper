@@ -337,13 +337,20 @@ function(){   // fake line, keep_editor_happy
 	}
 	if (!have_prev_settings())
 	    disable_toolbar_button(undo);
+	
+	// .revoke for allow_all and temp_allow_all
+	if (!has_class(allow_all, 'disabled'))
+	    set_unset_class(allow_all, 'revoke',  !something_to_allow(true));
+	if (!has_class(temp_allow_all, 'disabled'))
+	    set_unset_class(temp_allow_all, 'revoke',  !something_to_allow());       
     }
     
     // for top buttons logic
     function something_to_allow(globally)
     {
 	var ret = false;
-	var allowed = (globally ? host_allowed_globally : allowed_host);
+	var can_temp_allow = function(h){ return allowed_host(h) && !host_allowed_globally(h); };
+	var allowed = (globally ? host_allowed_globally : can_temp_allow);
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
@@ -365,6 +372,7 @@ function(){   // fake line, keep_editor_happy
 	    if (!allow && host_allowed_globally(host))
 		global_remove_host(host);
 	});
+	set_unset_class(this, 'revoke',  !something_to_allow(true));
 	update_items();		// update ui
 	need_reload = true;
     }
@@ -382,6 +390,7 @@ function(){   // fake line, keep_editor_happy
 	    if (!allow && host_temp_allowed(host))
 		temp_remove_host(host);	   
 	});
+	set_unset_class(this, 'revoke',  !something_to_allow());
 	update_items();		// update ui
 	need_reload = true;
     }

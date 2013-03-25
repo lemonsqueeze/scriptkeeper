@@ -378,6 +378,7 @@ function(){   // fake line, keep_editor_happy
     {
 	blacklist[host] = 1;
 	set_global_setting('blacklist', serialize_name_hash(blacklist));
+	temp_remove_host(host);  // don't cumulate temp + blacklist
     }
 
     function unblacklist_host(host)
@@ -392,6 +393,7 @@ function(){   // fake line, keep_editor_happy
     {
 	whitelist[host] = 1;
 	set_global_setting('whitelist', serialize_name_hash(whitelist));
+	temp_remove_host(host);  // don't cumulate temp + global
     }
     
     function global_remove_host(host)

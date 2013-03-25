@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 24/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 25/03/13) */
 
 body                {
 			background: transparent;
@@ -91,9 +91,7 @@ footer *,
                     }
 .slider b,
 .slider u,
-.item.block-animation-show,
 .button.add.confirm,
-.item.blocked.show,
 div[class$='-bg'],
 footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
@@ -380,7 +378,18 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /*------------Script items slider styling----------------*/
 
-.item               { height: 29px; overflow: hidden; margin-bottom: 8px; position: relative; z-index: 1; }
+.item               {
+                        height: 29px;
+                        max-height: 31px;
+                        opacity: 1;
+                        visibility: visible;
+                        overflow: hidden;
+                        margin-bottom: 8px;
+                        position: relative;
+                        z-index: 1;
+                        transition: all 500ms; /* For 'Display blocked' transition */
+                        -o-transition: all 500ms;
+                    }
 
 .slider             {   
                         height: 29px;
@@ -452,13 +461,9 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /*-------------'Display blocked' transitions----------------*/
 
-.item.blacklisted               { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition: all 500ms; -o-transition: all 500ms; }
+.item.hide          { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition-delay: 1s; -o-transition-delay: 1s; }
 
-/* Item hide/show */
-
-.item.hide:hover                { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; }
-
-.item.show                      { max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: inherit; }
+.item.show          { max-height: 31px; opacity: 0.5; visibility: visible;  }
 
 .item.show:hover                { opacity: 1; } /* Solid on hover */
 
