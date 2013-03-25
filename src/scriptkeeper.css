@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 21/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 24/03/13) */
 
 body                {
 			background: transparent;
@@ -45,6 +45,7 @@ body#large-font,
 #large-font #add-blacklist,
 #large-font .item,
 #large-font .slider             { height: 31px; }
+#large-font .slider             { top: -31px; }
 #large-font div.block-bg        { margin-top: -31px; }
 
 /* Icons */
@@ -92,6 +93,7 @@ footer *,
 .slider u,
 .item.block-animation-show,
 .button.add.confirm,
+.item.blocked.show,
 div[class$='-bg'],
 footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
@@ -386,7 +388,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         cursor: move;
                         padding: 6px 10px;
                         position: relative;
-                        top: -100%;
+                        top: -29px; /* Changed from '-100%' for blacklist hide transition */
                         transition: all 500ms ease-in;
                         -o-transition: all 500ms ease-in;
                     }
@@ -448,71 +450,17 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .slider.right.clicked            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
 
 
-/*-------------Special animations----------------*/
-/* The final version would not have any animation-delays (the 2nd timing value) */
+/*-------------'Display blocked' transitions----------------*/
 
-.item.block-animation     { animation: blockedout 1s 500ms; z-index: 2; /* Used after slider is set to 'block/untrust' */
-                                  -o-animation: blockedout 1s 500ms; z-index: 2; } /* z-index so it travels over */
+.item.blacklisted               { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition: all 500ms; -o-transition: all 500ms; }
 
-.item.block-animation-undo      { animation: blockundo-p1 250ms, blockundo-p2 500ms; /* The 'Undo' animation if the last action was to block an item */
-                                  -o-animation: blockundo-p1 250ms, blockundo-p2 500ms; }
+/* Item hide/show */
 
-.item.block-animation-undo .slider    { animation: blockundo-p3 1s; -o-animation: blockundo-p3 1s; }
+.item.hide:hover                { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; }
 
-.item.block-animation-show      {   /* The 'Display untrusted' animation */
-                                    animation: blockshow 500ms 3s;
-                                    -o-animation: blockshow 500ms 3s;
-                                    opacity: 0.5;
-                                    z-index: 0;
-                                }
+.item.show                      { max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: inherit; }
 
-.item.block-animation-show:hover      { opacity: 1; }
-
-@keyframes blockedout           {
-                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
-                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
-                                }
-
-@keyframes blockundo-p1         {
-                                    from    { height: 0; visibility: hidden; }
-                                    to      { height: 29px; visibility: visible; }
-                                }
-
-@keyframes blockundo-p2         {
-                                    from    { opacity: 0; transform: translate(-100px,0); }
-                                    to      { opacity: 1; transform: translate(0,0); }
-                                }
-
-@keyframes blockundo-p3         {   from    { margin-right: 35px; } to { margin-right: 0; } }
-
-@keyframes blockshow            {
-                                    from    { opacity: 0; margin-top: -29px; }
-                                    to      { opacity: 0.5; margin-top: 0; }
-                                }
-
-/* Dupes for older Opera versions: */
-
-@-o-keyframes blockedout        {
-                                    from    { opacity: 1; margin-bottom: inherit; transform: translate(0,0); }
-                                    to      { opacity: 0; margin-bottom: -29px; transform: translate(0,100px); }
-                                }
-
-@-o-keyframes blockundo-p1      {
-                                    from    { height: 0; visibility: hidden; }
-                                    to      { height: 29px; visibility: visible; }
-                                }
-
-@-o-keyframes blockundo-p2      {
-                                    from    { opacity: 0; transform: translate(-100px,0); }
-                                    to      { opacity: 1; transform: translate(0,0); }
-                                }
-
-@-o-keyframes blockundo-p3      {   from    { margin-right: 35px; } to { margin-right: 0; } }
-
-@-o-keyframes blockshow         {
-                                    from    { opacity: 0; margin-top: -29px; }
-                                    to      { opacity: 0.5; margin-top: 0; }
-                                }
+.item.show:hover                { opacity: 1; } /* Solid on hover */
 
 
 /*-------------Slider hidden colored backgrounds----------------*/

@@ -134,8 +134,16 @@ function(){   // fake line, keep_editor_happy
 	//repaint_ui_now();    // nono, that'd be too easy ...
 	
 	display_blacklisted_init(this);
-	display_blacklisted_animations();
+	update_items();	
+	blacklisted_animations_sizing();
     }
+
+    function blacklisted_animations_sizing()
+    {
+	resize_iframe(0, 500);
+	iwin.setTimeout(function(){  resize_iframe();  }, 1000);
+	return;
+    }    
         
     var items_parent_selector = '#scroller-content';
     function items_container_init(w)
@@ -162,12 +170,15 @@ function(){   // fake line, keep_editor_happy
 
     function item_init(w, hn)
     {
+	if (!hn)
+	    return;	
 	w.hn = hn;
-	if (!has_class(w, 'block-animation') && !has_class(w, 'block-animation-undo')) // don't interfere with animations
-	    set_unset_class(w, 'hidden', !display_blacklisted && host_blacklisted(hn.name));
 	var s = w.querySelector('.slider');
 	slider_init(s, hn);
 	set_unset_class(w, 'top-level', (hn.name == current_host));
+	set_unset_class(w, 'blacklisted', host_blacklisted(hn.name));
+	set_unset_class(w, 'show', host_blacklisted(hn.name) && display_blacklisted);
+	set_unset_class(w, 'hide', host_blacklisted(hn.name) && !display_blacklisted);
     }
     
     function slider_init(w, hn)
@@ -254,7 +265,7 @@ function(){   // fake line, keep_editor_happy
 	    if (host_blacklisted(host))
 		unblacklist_host(host);
 	    else
-		blacklist_animation(this.parentNode);
+		blacklist_host(host);
 	}
 	else // whitelisting
 	{
@@ -269,88 +280,10 @@ function(){   // fake line, keep_editor_happy
 		global_allow_host(host);
 	}
 	
-	set_slider_class(this);
+	item_init(this.parentNode, this.parentNode.hn);
 	allow_once_init(this.querySelector('b'), host);
 	need_reload = true;
     }
-
-    // blacklist host + blacklist animation
-    function blacklist_animation(item, ui_only)
-    {
-	var host = item.hn.name;
-	if (!ui_only)
-	    blacklist_host(host);
-	if (display_blacklisted)
-	    return;
-	set_class(item, 'block-animation');
-	iwin.setTimeout(function()
-	{
-	    set_class(item, 'hidden');
-	    unset_class(item, 'block-animation');
-	    resize_iframe();	    
-	}, 1500);
-    }
-
-    function unblacklist_animation(item)
-    {
-	var host = item.hn.name;
-	unblacklist_host(host);
-	if (display_blacklisted)
-	    return;
-	resize_iframe(0, 500);
-	unset_class(item, 'hidden');
-	// it doesn't work if we try right away...
-	iwin.setTimeout(function(){ set_class(item, 'block-animation-undo'); }, 10);
-	iwin.setTimeout(function()
-	{
-	    unset_class(item, 'block-animation-undo');
-	    resize_iframe();
-	}, 1000);
-    }
-    
-    // unblacklist animation
-    function check_blacklist_animations(was_blacklisted)
-    {
-	foreach(was_blacklisted, function(item)
-	{
-	    var host = item.hn.name;
-	    if (!host_blacklisted(host)) // change from blacklisted -> not blacklisted
-		unblacklist_animation(item);
-	});
-	foreach_item(function(item, host)
-	{
-	    var was = (was_blacklisted.indexOf(item) != -1);
-	    if (host_blacklisted(host) && !was)
-		blacklist_animation(item);
-	});
-    }
-
-    function display_blacklisted_animation(item)
-    {
-	var host = item.hn.name;
-	resize_iframe(0, 500);
-	unset_class(item, 'hidden');
-	// it doesn't work if we try right away...
-	iwin.setTimeout(function(){ set_class(item, 'block-animation-show'); }, 10);
-	iwin.setTimeout(function()
-	{
-	    unset_class(item, 'block-animation-show');
-	    resize_iframe();
-	}, 1000);
-    }
-    
-    function display_blacklisted_animations()
-    {
-	foreach_item(function(item, host)
-	{
-	    if (!host_blacklisted(host))
-		return;
-	    if (!display_blacklisted)
-		blacklist_animation(item, true);
-	    else
-		display_blacklisted_animation(item);
-	});
-    }    
     
     function mode_menu_init(w)
     {
@@ -460,8 +393,8 @@ function(){   // fake line, keep_editor_happy
 	
 	var blacklisted = get_blacklisted_items();
 	load_prev_settings();
-	check_blacklist_animations(blacklisted);
-	update_items();		// update ui	
+	update_items();		// update ui
+	blacklisted_animations_sizing();
     }
 
     function update_items()
