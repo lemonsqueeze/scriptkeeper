@@ -95,7 +95,7 @@ function(){   // fake line, keep_editor_happy
     function create_main_ui()
     {
 	debug_log("create_main_ui");
-	main_ui = new_widget("main");
+	main_ui = new_widget("main_menu");
     }
 
     function parent_main_ui()
@@ -121,7 +121,11 @@ function(){   // fake line, keep_editor_happy
 
     /****************************** widget handlers *****************************/
 
-
+    function main_menu_init(w)
+    {
+	set_unset_class(w, 'display-blocked', display_blacklisted);
+    }
+    
     function display_blacklisted_init(w)
     {
 	set_unset_class(w, 'static', display_blacklisted);
@@ -349,12 +353,12 @@ function(){   // fake line, keep_editor_happy
     function something_to_allow(globally)
     {
 	var ret = false;
-	var can_temp_allow = function(h){ return allowed_host(h) && !host_allowed_globally(h); };
-	var allowed = (globally ? host_allowed_globally : can_temp_allow);
+	var temp_allowable = function(h){ return (!host_temp_allowed(h) && !host_allowed_globally(h)); };
+	var allowable = (globally ? not(host_allowed_globally) : temp_allowable);
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (!allowed(host) && !host_blacklisted(host))
+	    if (allowable(host) && !host_blacklisted(host))
 		ret = true;
 	});
 	return ret;

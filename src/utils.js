@@ -336,6 +336,11 @@ function(){   // fake line, keep_editor_happy
 
     function min(a, b) { return (a < b ? a : b); }
     function max(a, b) { return (a > b ? a : b); }
+
+    function not(f)
+    {
+	return function(x){ return !f(x); };
+    }
     
     function get_size_kb(x)
     {

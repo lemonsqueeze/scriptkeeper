@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 25/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 26/03/13) */
 
 body                {
 			background: transparent;
@@ -52,12 +52,6 @@ body#large-font,
 
 .dropdown:after                 { line-height: 11pt; }
 
-/* Footer */
-
-#large-font #about-button       { top: -32px; }
-#large-font .paginated          { top: -16px; }
-#large-font .paginated li       { width: 10px; height: 10px; }
-
 
 /*-------------Generic----------------*/
 
@@ -89,11 +83,15 @@ footer *,
                         text-overflow: ellipsis;
                         overflow: hidden;
                     }
+.item.show:hover,
 .slider b,
 .slider u,
 .button.add.confirm,
 div[class$='-bg'],
 footer div          { transition: all 200ms; -o-transition: all 200ms;}
+
+.item,
+[id^='add-']        { transition: all 500ms; -o-transition: all 500ms; }
 
 
 /*-------------Drop-down menus----------------*/
@@ -174,9 +172,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         border: solid #E5E5E5 1px;
                         border-top: solid #d4d4d4 1px;
                         margin: -32px 0 8px;
-                        transition: all 500ms;
-                        -o-transition: all 500ms;
-
                     }
 
 [id^='add-']:focus  { box-shadow: 0 0 2px 1px #55b3d9; }
@@ -300,7 +295,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                     }
 
 .button.add,
-.button.delete      { display: inline-block; margin-right: 3px; }
+.button.delete      { display: inline-block; margin-right: 3px; margin-bottom: 0; }
 
 /*------------Menu modes dropdown button coloring----------------*/
 
@@ -387,8 +382,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         margin-bottom: 8px;
                         position: relative;
                         z-index: 1;
-                        transition: all 500ms; /* For 'Display blocked' transition */
-                        -o-transition: all 500ms;
                     }
 
 .slider             {   
@@ -465,7 +458,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .item.show          { max-height: 31px; opacity: 0.5; visibility: visible;  }
 
-.item.show:hover                { opacity: 1; } /* Solid on hover */
+.item.show:hover    { opacity: 1; transition-delay: 0; -o-transition-delay: 0; } /* Solid on hover */
 
 
 /*-------------Slider hidden colored backgrounds----------------*/
@@ -572,39 +565,15 @@ footer div,
 footer ol li        { display: inline-block; opacity: 0.25; }
 footer div:hover,
 footer ol li:hover,
-footer .static      { opacity: 0.5; } /* Use the 'static' class to show icons in their active state */
-footer .static:hover{ opacity: 0.7; }
-footer div          { position: relative; z-index: 1; } /* To display above .paginated */
-#options-button     { margin-right: 5px; }
-#display-blocked    { visibility: visible; } /* Change to 'hidden' when no items are blacklisted or when Options are shown */
-#about-button       { float: right; position: relative; top: -28px; }
-
-/* Paginated icons */
-
-.paginated          {
-                        width: 100%;
-                        text-align: center;
-                        display: inline-block;
-                        visibility: hidden; /* Change to 'hidden' when the Options are shown */
-                        position: relative;
-                        top: -14px;
-                        float: left;
-                        z-index: 0;
-                    }
-
-.paginated li       {
-                        width: 8px;
-                        height: 8px;
-                        border-radius: 99pt;
-                        border: solid 1px;
-                        border-color: inherit;
-                        margin-right: 5px;
-                    }
-
-.paginated li:last-child    { margin-right: 0; }
-
-.paginated li.current,
-.paginated li:hover         { background: hsla(0,0%,7%,0.70); }
+footer .static,
+#display-blocked.show:hover,
+ #display-blocked.show.static   { opacity: 0.5; } /* Use the 'static' class to show icons in their active state */
+footer .static:hover,
+#display-blocked.static:hover   { opacity: 0.7; }
+#options-button                 { margin-right: 7px; } /* It's okay, in the demo it just appears to have more whitespace */
+#display-blocked.hide           { visibility: hidden; opacity: 0; }
+#display-blocked.show           { visibility: visible; opacity: 0.25; }
+#about-button                   { float: right; }
 
 
 .hidden			{ display:none }

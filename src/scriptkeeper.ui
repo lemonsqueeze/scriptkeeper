@@ -15,7 +15,7 @@
 
 <widgets>
 
-<widget name="main">
+<widget name="main_menu" init>
   <div id="main-container">
     <main_interface></main_interface>    
     <main_footer></main_footer>    
@@ -27,14 +27,8 @@
   <footer>
     <!-- set static class to highlight active items -->
     <div id="options-button" title="Options" onclick="options_clicked"></div>
-    <div id="display-blocked" title="Display blocked" 
+    <div id="display-blocked" class="show" title="Display blocked" 
 	 oninit="display_blacklisted_init" onclick="display_blacklisted_onclick"></div>
-    
-    <ol class="paginated">
-      <li class="current" title="Page 1"></li>
-      <li title="Page 2"></li>
-    </ol>
-    
     <div id="about-button" title="About" onclick="style_editor"></div>
   </footer>
 </widget>
