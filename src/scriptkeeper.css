@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 26/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 28/03/13) */
 
 body                {
 			background: transparent;
@@ -180,12 +180,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         opacity: 1;
                         visibility: visible;
                         margin-top: 0;
-                    }
-
-[id^='add-'].hide   {
-                        opacity: 0;
-                        visibility: hidden;
-                        margin-top: -32px;
                     }
 
 
@@ -454,12 +448,14 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 /*-------------'Display blocked' transitions----------------*/
 
-.item.hide          { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition-delay: 1s; -o-transition-delay: 1s; }
+.item.blacklisted   { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition-delay: 1s; -o-transition-delay: 1s; }
 
-.item.show          { max-height: 31px; opacity: 0.5; visibility: visible;  }
+/* Remove transition delay when switching back from display-blocked */
+.display-blocked-trans .item.blacklisted 	{ transition-delay: 0; -o-transition-delay: 0; } 
 
-.item.show:hover    { opacity: 1; transition-delay: 0; -o-transition-delay: 0; } /* Solid on hover */
+.display-blocked .item.blacklisted	{ max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: 8px; }
 
+.display-blocked .item.blacklisted:hover    { opacity: 1; transition-delay: 0; -o-transition-delay: 0; } /* Solid on hover */
 
 /*-------------Slider hidden colored backgrounds----------------*/
 
@@ -571,7 +567,7 @@ footer .static,
 footer .static:hover,
 #display-blocked.static:hover   { opacity: 0.7; }
 #options-button                 { margin-right: 7px; } /* It's okay, in the demo it just appears to have more whitespace */
-#display-blocked.hide           { visibility: hidden; opacity: 0; }
+#display-blocked                { visibility: hidden; opacity: 0; }
 #display-blocked.show           { visibility: visible; opacity: 0.25; }
 #about-button                   { float: right; }
 

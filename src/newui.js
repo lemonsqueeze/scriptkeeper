@@ -136,9 +136,12 @@ function(){   // fake line, keep_editor_happy
 	display_blacklisted = !display_blacklisted;
 	set_global_bool_setting('display_blacklisted', display_blacklisted);
 	//repaint_ui_now();    // nono, that'd be too easy ...
-	
+
+	set_class(main_ui, 'display-blocked-trans');  // so css can unset transition delay
+	iwin.setTimeout(function(){ unset_class(main_ui, 'display-blocked-trans'); }, 10);
+
 	display_blacklisted_init(this);
-	update_items();	
+	main_menu_init(main_ui);
 	blacklisted_animations_sizing();
     }
 
@@ -181,8 +184,6 @@ function(){   // fake line, keep_editor_happy
 	slider_init(s, hn);
 	set_unset_class(w, 'top-level', (hn.name == current_host));
 	set_unset_class(w, 'blacklisted', host_blacklisted(hn.name));
-	set_unset_class(w, 'show', host_blacklisted(hn.name) && display_blacklisted);
-	set_unset_class(w, 'hide', host_blacklisted(hn.name) && !display_blacklisted);
     }
     
     function slider_init(w, hn)
@@ -598,7 +599,6 @@ function(){   // fake line, keep_editor_happy
     {
 	var entry = this.previousSibling;
 	entry.ignore = false;  // for onchange
-	unset_class(entry, 'hide');
 	set_class(entry, 'show');
 	set_class(this, 'confirm');
 	iwin.setTimeout(function(){entry.focus()}, 500);
@@ -620,7 +620,6 @@ function(){   // fake line, keep_editor_happy
 
 	entry.value = ''; // clear it
 	unset_class(entry, 'show');
-	set_class(entry, 'hide');
 	unset_class(this, 'confirm');
 	this.onclick = options_whitelist_add;
 	options_whitelist_init(this.parentNode); // update list
@@ -667,7 +666,6 @@ function(){   // fake line, keep_editor_happy
     {
 	var entry = this.previousSibling;
 	entry.ignore = false;  // for onchange
-	unset_class(entry, 'hide');
 	set_class(entry, 'show');
 	set_class(this, 'confirm');
 	iwin.setTimeout(function(){entry.focus()}, 500);
@@ -689,7 +687,6 @@ function(){   // fake line, keep_editor_happy
 
 	entry.value = ''; // clear it
 	unset_class(entry, 'show');
-	set_class(entry, 'hide');
 	unset_class(this, 'confirm');
 	this.onclick = options_blacklist_add;
 	options_blacklist_init(this.parentNode); // update list
