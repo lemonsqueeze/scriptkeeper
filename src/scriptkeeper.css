@@ -392,9 +392,9 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 /* Targets first/last .item, removes margin-bottom (so footer can use it instead)
    and raises it above the fade-out gradient so it's not covering it  */
 
-.item:first-child,
-.item:last-child    { z-index: 3 !important; }
-.item:last-child    { margin-bottom: 0; }
+.first-item,
+.last-item    { z-index: 3 !important; }
+.last-item    { margin-bottom: 0; }
 
 .top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
 

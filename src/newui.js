@@ -142,6 +142,7 @@ function(){   // fake line, keep_editor_happy
 
 	display_blacklisted_init(this);
 	main_menu_init(main_ui);
+	update_items();
 	blacklisted_animations_sizing();
     }
 
@@ -152,27 +153,19 @@ function(){   // fake line, keep_editor_happy
 	return;
     }    
         
-    var items_parent_selector = '#scroller-content';
+    var items_parent;
+    var scroller;
     function items_container_init(w)
     {
-	var parent = w.querySelector(items_parent_selector);
-	var i = 0;
+	items_parent = w.querySelector('#scroller-content');
+	scroller = w.querySelector('#scroller');
 	sort_domains();
 	foreach_host_node(function(hn, dn)
         {
-	    var d = dn.name;
-	    var h = hn.name;
-
 	    var item = new_item(hn);
-	    if (comp_style(item).display != 'none')
-		i++;
-	    parent.appendChild(item);
+	    items_parent.appendChild(item);
 	});
-	if (i == 10)	// just exceed max-height by one item, allow it to display without scrolling
-	{	        // otherwise gradient won't show up (first and last items have higher z-order)
-	    var scroller = w.querySelector('#scroller');
-	    scroller.style = 'max-height:inherit';
-	}
+	update_items(); // init position dependent stuff
     }
 
     function item_init(w, hn)
@@ -184,6 +177,8 @@ function(){   // fake line, keep_editor_happy
 	slider_init(s, hn);
 	set_unset_class(w, 'top-level', (hn.name == current_host));
 	set_unset_class(w, 'blacklisted', host_blacklisted(hn.name));
+	unset_class(w, 'first-item');
+	unset_class(w, 'last-item');
     }
     
     function slider_init(w, hn)
@@ -285,7 +280,7 @@ function(){   // fake line, keep_editor_happy
 		global_allow_host(host);
 	}
 	
-	item_init(this.parentNode, this.parentNode.hn);
+	update_items();		// update position dependent stuff
 	allow_once_init(this.querySelector('b'), host);
 	need_reload = true;
     }
@@ -413,10 +408,23 @@ function(){   // fake line, keep_editor_happy
 
     function update_items()
     {
+	var first, last, i = 0;
 	foreach_item(function(item)
 	{
 	    item_init(item, item.hn);
+	    if (display_blacklisted || !has_class(item, 'blacklisted'))
+	    {
+		i++;
+		last = item;
+		first = (first ? first : item);
+	    }
 	});
+	set_class(first, 'first-item');
+	set_class(last, 'last-item');
+	
+        // if just exceed max-height by one item, allow it to display without scrolling
+        // otherwise gradient won't show up (first and last items have higher z-order)
+	scroller.style = (i == 10 ? 'max-height:inherit' : '');
     }
 
     function get_blacklisted_items()
@@ -432,8 +440,7 @@ function(){   // fake line, keep_editor_happy
 
     function foreach_item(f)
     {
-	var c = main_ui.querySelector(items_parent_selector);
-	foreach(c.children, function(item){ f(item, item.hn.name); });
+	foreach(items_parent.children, function(item){ f(item, item.hn.name); });
     }
     
     
