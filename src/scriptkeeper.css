@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 28/03/13) */
+/* JSArmor CSS by laurenbacall (last update: 29/03/13) */
 
 body                {
 			background: transparent;
@@ -83,7 +83,7 @@ footer *,
                         text-overflow: ellipsis;
                         overflow: hidden;
                     }
-.item.show:hover,
+.display-blocked .item.blacklisted:hover,
 .slider b,
 .slider u,
 .button.add.confirm,
@@ -197,7 +197,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         margin: 0 auto;
                     }
 
-#items-container    { width: 167px; overflow: hidden; } /* Overall items container */
+#items-container    { width: 167px; overflow: hidden; margin-bottom: -8px; } /* Overall items container, margin-bottom to raise footer */
 
 #scroller           { width: 200px; max-height: 352px; overflow-y: auto; } /* Scrolling container, max-height */
 
@@ -394,7 +394,6 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .first-item,
 .last-item    { z-index: 3 !important; }
-.last-item    { margin-bottom: 0; }
 
 .top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
 
@@ -455,7 +454,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .display-blocked .item.blacklisted	{ max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: 8px; }
 
-.display-blocked .item.blacklisted:hover    { opacity: 1; transition-delay: 0; -o-transition-delay: 0; } /* Solid on hover */
+.display-blocked .item.blacklisted:hover    { opacity: 1; } /* Solid on hover */
 
 /*-------------Slider hidden colored backgrounds----------------*/
 

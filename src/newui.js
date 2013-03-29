@@ -349,12 +349,12 @@ function(){   // fake line, keep_editor_happy
     function something_to_allow(globally)
     {
 	var ret = false;
-	var temp_allowable = function(h){ return (!host_temp_allowed(h) && !host_allowed_globally(h)); };
-	var allowable = (globally ? not(host_allowed_globally) : temp_allowable);
 	foreach_host_node(function(hn, dn)
 	{
 	    var host = hn.name;
-	    if (allowable(host) && !host_blacklisted(host))
+	    var allowable = (globally ||
+			     (!host_temp_allowed(host) && !mode_adjusted_host(hn)));
+	    if (allowable && !host_allowed_globally(host) && !host_blacklisted(host))
 		ret = true;
 	});
 	return ret;
@@ -402,6 +402,7 @@ function(){   // fake line, keep_editor_happy
 	
 	var blacklisted = get_blacklisted_items();
 	load_prev_settings();
+	allow_toolbar_init(main_ui.querySelector('#allow-toolbar'));
 	update_items();		// update ui
 	blacklisted_animations_sizing();
     }
@@ -419,8 +420,11 @@ function(){   // fake line, keep_editor_happy
 		first = (first ? first : item);
 	    }
 	});
-	set_class(first, 'first-item');
-	set_class(last, 'last-item');
+	if (first)
+	{
+	    set_class(first, 'first-item');
+	    set_class(last, 'last-item');
+	}
 	
         // if just exceed max-height by one item, allow it to display without scrolling
         // otherwise gradient won't show up (first and last items have higher z-order)
