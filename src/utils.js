@@ -6,8 +6,7 @@ function(){   // fake line, keep_editor_happy
     {
 	if (is_prefix("file:", url))
 	    return "localhost";
-	if (url == "inline script" ||
-	    is_prefix("data:", url))  // following can't handle data: urls
+	if (is_prefix("data:", url))  // following can't handle data: urls
 	    return current_host;
 	
 	var p = split_url(url);

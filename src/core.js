@@ -98,7 +98,7 @@ function(){   // fake line, keep_editor_happy
 
 	init_filter();
 	if (!allowed_host(current_host))  // block inline scripts if current_host not allowed
-	    block_inline_scripts = true;
+            block_inline_scripts = true;	
     }
 
     
@@ -273,7 +273,7 @@ function(){   // fake line, keep_editor_happy
 	try {  return window.top.location.href;  } catch(e) { }
 	
 	// 2) try document.referrer. not available if referrer disabled in opera ...
-	if (document.referrer != "")
+	if (window.parent == window.top && document.referrer != "")
 	    return document.referrer;
 	
 	// 3) hack it. this will work unless loading multiple tabs with iframes simultaneously.
@@ -430,6 +430,8 @@ function(){   // fake line, keep_editor_happy
 	n.name = host;
 	n.scripts = [];
 	n.iframes = [];
+	n.inline = 0;
+	n.inline_size = 0;
 	n.helper_host = relaxed_mode_helper_host(host, domain_node); // caching
 	hosts.push(n);
 	return n;
@@ -440,14 +442,22 @@ function(){   // fake line, keep_editor_happy
 	domain_nodes = [];
     }
 
+    function add_inline_script(code)
+    {
+	stats.inline++;
+	stats.inline_size += code.length;
+	
+	var dn = get_domain_node(current_domain, true);
+	var hn = get_host_node(current_host, dn, true);		// ensure host node is created so it shows up in menu
+	hn.inline++;
+	hn.inline_size += code.length;
+    }
+    
     function add_script(url, host)
     {
-	if (url != "inline script")	// sk only
-	{
-	    stats.total++;
-	    if (!allowed_host(host))
-		stats.blocked++;
-	}
+	stats.total++;
+	if (!allowed_host(host))
+	    stats.blocked++;
 	
 	var domain = get_domain(host);
 	var s = new_script(url);
@@ -592,12 +602,7 @@ function(){   // fake line, keep_editor_happy
       }
 
       debug_log("beforescript");
-      stats.inline++;
-      stats.inline_size += e.element.text.length;
-      
-      // add fake scripts so current_host shows up in menu
-      if (!in_iframe())		// sk only, but not for iframes !
-	  add_script("inline script", current_host);
+      add_inline_script(e.element.text);      
       
       repaint_ui();
       

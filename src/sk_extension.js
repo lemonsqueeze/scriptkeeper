@@ -14,10 +14,9 @@ function(){   // fake line, keep_editor_happy
 	return m[m.length - 1].replace(re, '$1');
     }
     
-    var extension_button;
     function update_extension_button(force)
     {
-	if (!bgproc)
+	if (in_iframe() || !bgproc)
 	    return;
 	update_extension_button_icon(force);
 	update_extension_button_badge(force);
@@ -39,13 +38,15 @@ function(){   // fake line, keep_editor_happy
     var extension_button_badge;
     function update_extension_button_badge(force)
     {
-	var o = badge_object();
-	//var needed = (badge_logic != 'off');
-	var needed = icon_badge;
-	var status = (needed ? o.n + o.tooltip : 'off');
-	if (!force && extension_button_badge == status) // already in the right state
+	if (!something_to_display())
 	    return;
 
+	var o = update_badge_object();
+	var needed = o.needed;
+	var status = '' + o.needed + o.n + o.tooltip;
+	if (!force && extension_button_badge == status) // already in the right state
+	    return;
+	
 	var color = (!needed ? '#000' : get_css_prop('.badge_' + o.className, 'background-color', true));
 	bgproc.postMessage({
 	      tooltip: o.tooltip,
@@ -57,6 +58,7 @@ function(){   // fake line, keep_editor_happy
 		  textContent: o.n
 		}
 	    });
+	debug_log("sending badge: needed="+needed+" n="+o.n);	
 	extension_button_badge = status;
     }    
 

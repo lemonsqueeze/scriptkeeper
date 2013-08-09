@@ -36,7 +36,7 @@
 
   function update_badge(badge, tooltip)
   {
-      if (!button)
+      if (!button || button.is_disabled)
 	  return;
       button.badge.display = badge.display;
       button.badge.backgroundColor = badge.backgroundColor;
@@ -54,6 +54,7 @@
       {
 	  button.icon = disabled_icon;
 	  button.badge.display = 'none';
+	  button.title = default_tooltip;
       }
       button.is_disabled = disabled;
       //button.disabled = true;
@@ -71,12 +72,13 @@
 
   var button;
   var disabled_icon = "img/disabled.png";
+  var default_tooltip = "ScriptKeeper";
   function create_button()
   {
       var ToolbarUIItemProperties =
       {
         //disabled: true,
-	title: "ScriptKeeper",
+	title: default_tooltip,
 	icon: disabled_icon,
 	badge: {
 	    display: 'none',

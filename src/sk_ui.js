@@ -23,7 +23,7 @@ function(){   // fake line, keep_editor_happy
     function register_ui()
     {
 	disable_main_button = true;
-	icon_badge = global_bool_setting('icon_badge', true);	
+	icon_badge = global_bool_setting('icon_badge', true);
 	
 	// window.opera.scriptkeeper.toggle_menu() api for opera buttons etc...
 	message_handlers['scriptkeeper_toggle_menu:'] = api_toggle_menu;
@@ -48,8 +48,8 @@ function(){   // fake line, keep_editor_happy
     
     function init_ui_needed()
     {
-        if (init_ui_done || !document_ready)
-            return false;
+	if (init_ui_done || !document_ready)
+	    return false;
         if (element_tag_is(document.body, 'frameset')) // frames, can't show ui in there !
             return false;
         if (!there_is_work_todo &&                      // no scripts ?
@@ -115,12 +115,13 @@ function(){   // fake line, keep_editor_happy
     }
 
     var main_button;
+    var need_menu = false;    
     function update_main_button()
     {
 	if (!topwin_cant_display)
 	    return;
-	if (!main_button) // first time, hide menu
-	    toggle_menu();
+	if (!need_menu)
+	    close_menu();
 	if (main_button)
 	    main_button.parentNode.removeChild(main_button);
 	main_button = new_widget("main_button");
@@ -147,10 +148,11 @@ function(){   // fake line, keep_editor_happy
 
     function toggle_menu()
     {
+	need_menu = true;
 	if (main_ui)
 	    close_menu();
 	else
-	    show_hide_menu(true);
+	    repaint_ui_now();
     }
 
     /****************************** widget handlers *****************************/
@@ -275,7 +277,7 @@ function(){   // fake line, keep_editor_happy
 	
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
-	var n = hn.scripts.length;
+	var n = hn.scripts.length + hn.inline;
 	var iframes = iframes_info(hn);
 	set_unset_class(item, 'iframe', iframes);
 	var u = '<u>(' + n + ')</u>';	
@@ -981,7 +983,7 @@ function(){   // fake line, keep_editor_happy
 
     function close_menu()
     {
-	show_hide_menu(false);
+	need_menu = false;
 	main_ui.parentNode.removeChild(main_ui);
 	main_ui = null;
 	
@@ -994,14 +996,6 @@ function(){   // fake line, keep_editor_happy
         }	
     }
 
-    function show_hide_menu(show)
-    {
-	if (!main_ui)
-	    repaint_ui_now();
-        var d = (show ? 'block' : 'none');
-        main_ui.style.display = d;
-        resize_iframe();
-    }
     
     /***************************** CSS Editor ******************************/
   
@@ -1071,21 +1065,24 @@ function(){   // fake line, keep_editor_happy
     }
     
     // internal use
-    function badge_object()
+    var badge_obj;
+    function update_badge_object()
     {
 	var n = 0, s = null; // number and tooltip
 	var total = stats.total;
 	var klass = 'nblocked';
+	var needed = icon_badge;
 	
-	// if (badge_logic == 'nblocked')
-	n = stats.blocked + stats.iframes_blocked + (block_inline_scripts ? stats.inline : 0);
 	s = main_button_tooltip();
+	if (needed)
+	{
+	    n = stats.blocked + stats.iframes_blocked + (block_inline_scripts ? stats.inline : 0);
+	    if (n == 0)		// fix color for n == 0
+		klass = 'ok';
+	}
 	
-	// fix color for n == 0
-	if (n == 0)
-	    klass = 'ok';
-	
-	return { className: klass, n: n, tooltip: s };
+	badge_obj = { className:klass, n:n, tooltip:s, needed:needed };
+	return badge_obj;
     }    
 
     
