@@ -348,23 +348,30 @@ function(){   // fake line, keep_editor_happy
     {
 	return (str.slice(0, p.length) == p);
     }
+
+    // make "n items" messages, adding an 's' if needed
+    function item_count(n, name)
+    {
+	return n + " " + name + (n != 1 ? "s" : "");
+    }
     
     /**************************** Misc utils *******************************/
 
     function min(a, b) { return (a < b ? a : b); }
     function max(a, b) { return (a > b ? a : b); }
+    function to_int(s) { return parseInt(s); }
 
     function not(f)
     {
 	return function(x){ return !f(x); };
     }
     
-    function get_size_kb(x)
+    function get_size_kb(x, int_only)
     {
 	var k = new String(x / 1000);
 	var d = k.indexOf('.');
-	if (d)
-	    return k.slice(0, d + 2);
+	if (d != -1)
+	    return (x >= 1000 || int_only ? k.slice(0, d) : k.slice(0, d + 2));
 	return k;
     }
 

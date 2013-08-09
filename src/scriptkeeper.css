@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 24/04/13) */
+/* JSArmor CSS by laurenbacall (last update: 17/07/13) */
 
 body                {
 			background: transparent;
@@ -224,7 +224,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 
 .checkbox                   { width: 60%; display: inline-block; position: relative; top: 3px; }
 
-.checkbox.no-label          { padding-left: 14px; margin-left: 30%; } /* Use for secondary options under a single label */
+.checkbox.no-label          { padding-left: 10px; margin-left: 30%; } /* Use for secondary options under a single label */
 
 /* 'Scripting' option container extra bottom-margin */
 
@@ -638,3 +638,9 @@ footer .static:hover,
         color: #eee;
         box-shadow: 0 0 5px rgba(255,255,255,0.1) inset, 0 0 1px rgba(255,255,255,0.2), 0 0 4px rgba(0,0,0,0.4) inset, 0 10p
  }
+
+/********************************************************************************************************** 
+/* badge */
+
+.badge_nblocked					{ background-color:#d75f3a; }   /* red */
+.badge_ok					{ background-color:#55b3d9;  }  /* blue */

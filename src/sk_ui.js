@@ -13,6 +13,7 @@ function(){   // fake line, keep_editor_happy
     var ui_vpos;
     
     var large_font;
+    var icon_badge;    
     var display_blacklisted;
     
     var menu_request = false;		// external api request while not ready yet (opera button ...)
@@ -22,9 +23,10 @@ function(){   // fake line, keep_editor_happy
     function register_ui()
     {
 	disable_main_button = true;
+	icon_badge = global_bool_setting('icon_badge', true);	
 	
 	// window.opera.scriptkeeper.toggle_menu() api for opera buttons etc...
-	message_handlers['scriptkeeper_toggle_menu'] = api_toggle_menu;
+	message_handlers['scriptkeeper_toggle_menu:'] = api_toggle_menu;
     }
 
     // normal case : called only once after document_ready.
@@ -88,7 +90,7 @@ function(){   // fake line, keep_editor_happy
 	display_blacklisted = global_bool_setting('display_blacklisted', default_display_blacklisted);
 	stored_handle_noscript_tags = global_bool_setting('nstags', default_handle_noscript_tags);	
 	
-	window.addEventListener('click',  function (e) { close_menu(); }, false);
+	window.addEventListener('click',  function (e) { main_ui && close_menu(); }, false);
 	
 	//set_class(idoc.body, ui_hpos);
 	//set_class(idoc.body, ui_vpos);
@@ -250,20 +252,16 @@ function(){   // fake line, keep_editor_happy
 	s.onclick(e); // forward event
     }
     
-   function iframes_info(hn, allowed)
+   function iframes_info(hn)
     {
         if (!hn.iframes || !hn.iframes.length)
             return null;
         var n = hn.iframes.length;
         var title = n + " iframe" + (n>1 ? "s" : "");
         //if (iframe_logic != 'filter')
-	//   title += ". use 'filter' iframe setting to block/allow in the menu.";
+        //    title += ". use 'filter' iframe setting to block/allow in the menu.";
         
-        if (iframe_logic == 'block_all')
-            allowed = false;
-        if (iframe_logic == 'allow')
-            allowed = true;
-        return {count:n, title:title, allowed:allowed};
+        return {count:n, title:title, allowed:allowed_iframe(hn.name)};
     }
     
     function slider_init(w, hn, item)
@@ -278,11 +276,11 @@ function(){   // fake line, keep_editor_happy
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
 	var n = hn.scripts.length;
-	var iframes = iframes_info(hn, allowed_host(host));
+	var iframes = iframes_info(hn);
 	set_unset_class(item, 'iframe', iframes);
 	var u = '<u>(' + n + ')</u>';	
 	if (iframes)
-	    u = '<u title="' + iframes.title + '">(' + (n + iframes.count) + ')</u>';
+	    u = '<u title="' + iframes.title + '">(' + n + ')</u>';
 	w.innerHTML = '&lrm;<b></b><i>' + h + '</i>' + d + u;
 	var b = w.querySelector('b');
 	allow_once_init(b, host);
@@ -653,6 +651,13 @@ function(){   // fake line, keep_editor_happy
 	large_font = checked;
 	set_global_bool_setting('large_font', large_font);
 	need_reload = true;
+    }
+
+    function toggle_icon_badge(checked)
+    {
+	icon_badge = checked;
+	set_global_bool_setting('icon_badge', icon_badge);
+	need_repaint = true;
     }
 
     // this one is special, value depends on mode ...
@@ -1050,27 +1055,61 @@ function(){   // fake line, keep_editor_happy
             b.onclick = function(){  replace_textarea(get_textarea(), default_setting)  };
         }
     }    
+
+    /***************************** Badge stuff ******************************/    
+
+    function main_button_tooltip()
+    {
+	var total = stats.total;	
+	var s = "ScriptKeeper\n\n" + item_count(stats.blocked, "script");
+	if (block_inline_scripts && stats.inline)
+	    s += " (" + stats.inline + " inline)";
+	if (stats.iframes_blocked)
+	    s += " + " + item_count(stats.iframes_blocked, "iframe");
+	s += " disabled";
+	return s;
+    }
     
+    // internal use
+    function badge_object()
+    {
+	var n = 0, s = null; // number and tooltip
+	var total = stats.total;
+	var klass = 'nblocked';
+	
+	// if (badge_logic == 'nblocked')
+	n = stats.blocked + stats.iframes_blocked + (block_inline_scripts ? stats.inline : 0);
+	s = main_button_tooltip();
+	
+	// fix color for n == 0
+	if (n == 0)
+	    klass = 'ok';
+	
+	return { className: klass, n: n, tooltip: s };
+    }    
+
     
     /***************************** Repaint logic ******************************/
 
     var repaint_ui_timer = null;
     function repaint_ui()
     {
-	if (!main_ui)
-	{
-	    init_ui();
-	    return;
-	}	
 	if (repaint_ui_timer)
 	    return;
-	repaint_ui_timer = iwin.setTimeout(repaint_ui_now, 500);
+	repaint_ui_timer = window.setTimeout(repaint_ui_now, 500);
     }
 
     function repaint_ui_now()
     {
-	update_extension_button();
 	repaint_ui_timer = null;
+	if (!idoc)
+	{
+	    init_ui();
+	    return;
+	}
+	
+	update_extension_button();
+	
 	//   debug: (note: can't call plugins' add_item() here (recursion))
 	//   plugin_items.repaint_ui = "late events:" + repaint_ui_count;	
 

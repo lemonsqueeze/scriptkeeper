@@ -124,6 +124,9 @@
       <div class="checkbox">
 	<checkbox_item label="Large font" state="`large_font" callback="`toggle_large_font"></checkbox_item>
       </div>
+      <div class="checkbox no-label">
+	<checkbox_item label="Icon badge" state="`icon_badge" callback="`toggle_icon_badge"></checkbox_item>
+      </div>
     </div>
 
     <div class="option">
@@ -175,7 +178,7 @@
   <div class="menu" oninit="select_iframe_logic_init">
     <dropdown_button/>
     <ul>
-      <li value="allow">Allow</li>
+      <li value="allow">Enable</li>
       <li value="filter">Inherit</li>
       <li value="block_all">Disable</li>
     </ul>

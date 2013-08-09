@@ -17,7 +17,7 @@
 // but when running as an extension they're 2 different things, beware !
 (function(document, location, opera, scriptStorage)
 {
-    var version_number = "1.5.5";
+    var version_number = "1.5.8";
     var version_type = "userjs";
     var version_date = "$Date$";
     var version_full = "scriptkeeper " + version_type + " v" + version_number + ", " + version_date + ".";

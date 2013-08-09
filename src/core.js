@@ -292,9 +292,11 @@ function(){   // fake line, keep_editor_happy
     }
 
     // script loaded event from iframe, update menu
-    function message_iframe_script_loaded(e, url)
+    function message_iframe_script_loaded(e, o)
     {
-	var ev = { from_iframe:true, event:{ target:{ tagName:'script', src:url } } };
+	// FIXME: stats: main window doesn't know about iframes' inline script sizes ...
+	//alert("size:"+size+" url:"+url);
+	var ev = { from_iframe:true, size:o.size, event:{ target:{ tagName:'script', src:o.url } } };
 	beforeload_handler(ev);
     }
     
@@ -355,6 +357,10 @@ function(){   // fake line, keep_editor_happy
 	var domain = get_domain(host);
 	var i = new_script(url); // iframe really
 
+	stats.iframes++;
+	if (!allowed_iframe(host))
+	    stats.iframes_blocked++;
+	
 	var domain_node = get_domain_node(domain, true);
 	var host_node = get_host_node(host, domain_node, true);
 	host_node.iframes.push(i);
@@ -436,6 +442,13 @@ function(){   // fake line, keep_editor_happy
 
     function add_script(url, host)
     {
+	if (url != "inline script")	// sk only
+	{
+	    stats.total++;
+	    if (!allowed_host(host))
+		stats.blocked++;
+	}
+	
 	var domain = get_domain(host);
 	var s = new_script(url);
 
@@ -443,7 +456,9 @@ function(){   // fake line, keep_editor_happy
 	var host_node = get_host_node(host, domain_node, true);
 	host_node.scripts.push(s);
 
-	if (in_iframe()) 	// tell parent so it can display script in the menu.
+	// TODO: iframe scripts will show up in the menu only if it's allowed, but when toggling an iframe
+	//       update happens after reload. instant update would be really cool ...
+	if (in_iframe() && mode != 'block_all') 	// tell parent so it can display script in the menu.
 	    window.top.postMessage(msg_header_iframe_script + url, '*');
 	
 	return s;
@@ -507,6 +522,18 @@ function(){   // fake line, keep_editor_happy
 	});
     }
 
+    // call f(script, hn, dn) for every script (arbitrary order)
+    function foreach_script(f)
+    {
+	_foreach_host_node(function(hn, dn)
+	{
+	    foreach(hn.scripts, function(s)
+	    {
+		f(s, hn, dn);
+	    });
+	});
+    }
+    
     function sort_domains()
     {
 	domain_nodes.sort(function(d1,d2)
@@ -528,16 +555,15 @@ function(){   // fake line, keep_editor_happy
     
     /****************************** Handlers **********************************/
 
-    var blocked_current_host = 0;
-    var loaded_current_host = 0;
-    var total_current_host = 0;
-    
-    var blocked_external = 0;
-    var loaded_external = 0;
-    var total_external = 0;
-
-    var total_inline = 0;
-    var total_inline_size = 0;
+    var stats = { blocked: 0,        // no. ext scripts blocked 
+		  loaded: 0,	     // no. ext scripts loaded
+		  total: 0,	     // no. ext scripts
+		  total_size: 0,     // cummulated size of all external scripts
+                  inline: 0,         // no. inline scripts
+		  inline_size: 0,    // cummulated size of all inline scripts
+		  iframes: 0,
+		  iframes_blocked: 0
+                };
 
     var blocked_script_elements = []; // for reload_script()
 
@@ -565,12 +591,13 @@ function(){   // fake line, keep_editor_happy
 	  return;
       }
 
-      debug_log("beforescript");      
-      total_inline++;
-      total_inline_size += e.element.text.length;
-
+      debug_log("beforescript");
+      stats.inline++;
+      stats.inline_size += e.element.text.length;
+      
       // add fake scripts so current_host shows up in menu
-      add_script("inline script", current_host);
+      if (!in_iframe())		// sk only, but not for iframes !
+	  add_script("inline script", current_host);
       
       repaint_ui();
       
@@ -586,24 +613,11 @@ function(){   // fake line, keep_editor_happy
 	
 	var url = e.element.src;
 	var host = url_hostname(url);
-	var allowed = allowed_host(host);
-
+	
 	debug_log("beforeextscript: " + host);	
 	add_script(url, host);
-	if (host == current_host)
-	{
-	  total_current_host++;
-	  if (!allowed)
-	      blocked_current_host++;
-	}
-	else
-	{
-	  total_external++;
-	  if (!allowed)
-	      blocked_external++;
-	}
-
-        if (!allowed)
+	
+        if (!allowed_host(host))
 	    block_script(e);
 	repaint_ui();
     }
@@ -619,22 +633,23 @@ function(){   // fake line, keep_editor_happy
 	check_init();
 	
 	var host = url_hostname(e.src);
-	var script = find_script(e.src, host);	
+	var script = find_script(e.src, host);
 	debug_log("loaded: " + host);
-	if (!ev.from_iframe)  // sanity check ...
+	if (ev.from_iframe)
+	    script.size = ev.size; // hack it in
+	else // sanity check ...
 	    assert(allowed_host(host),
 		   "a script from\n" + host + "\nis being loaded even though it's blocked. That's a bug !!");
-	
-	if (host == current_host)
-	    loaded_current_host++; 
-	else
-	    loaded_external++;
+
+	stats.loaded++;
+	stats.total_size += script.size;
 	script.loaded = 1;
 
 	if (main_ui)
 	    repaint_ui();
 	if (in_iframe()) 	// tell parent so it can update menu
-	    window.top.postMessage(msg_header_iframe_script_loaded + e.src, '*');
+	    window.top.postMessage({ header: msg_header_iframe_script_loaded,
+		                     size: script.size, url: e.src }, '*');
     }
 
     function domcontentloaded_handler(e)
@@ -661,26 +676,36 @@ function(){   // fake line, keep_editor_happy
     {
 	var e = ue.event;
 	var m = e.data;
-	if (typeof(m) != "string")
-	    return;
-	check_init();
-	for (var h in message_handlers)
+	var header, data;
+	if (typeof(m) == "string")
 	{
-	    if (is_prefix(h, m))
-	    {
-		if (e.source == window)
-		{
-		    error("Looks like a script on this page is trying to forge ScriptKeeper messages, " +
-			  "something funny is going on !");
-		    return;
-		}
-		//debug_log("[msg] " + m);
-		ue.preventDefault();	// keep this conversation private.
-		var content = m.slice(h.length);		
-		(message_handlers[h])(e, content);
+	    var d = m.indexOf(':');
+	    if (d == -1)
 		return;
-	    }
+	    header = m.slice(0, d+1);
+	    data = m.slice(d+1);
 	}
+	else // object
+	{
+	    if (!m.header)
+		return;
+	    header = m.header;
+	    data = m;
+	}
+	
+	check_init();
+	if (!message_handlers[header])
+	    return;
+	if (e.source == window)
+	{
+	    error("Looks like a script on this page is trying to forge ScriptWeeder messages, " +
+		  "something funny is going on !");
+	    return;
+	}
+	//debug_log("[msg] " + m);
+	ue.preventDefault();	// keep this conversation private.
+	(message_handlers[header])(e, data);
+	return;
 	// not for us then.
     }
 

@@ -11,6 +11,15 @@
 	  opera.postError("scriptkeeper (bgprc): " + m);
   }
 
+  function post_message(dest, msg)
+  {
+      try
+      {   // can get DOMException: INVALID_STATE_ERR if tab's in a weird state	  
+	  dest.postMessage(msg);
+      }
+      catch(e) {}      
+  }
+
   function change_icon(mode)
   {
       if (!button)
@@ -25,12 +34,27 @@
       catch(e) {}
   }
 
+  function update_badge(badge, tooltip)
+  {
+      if (!button)
+	  return;
+      button.badge.display = badge.display;
+      button.badge.backgroundColor = badge.backgroundColor;
+      button.badge.color = badge.color;
+      button.badge.textContent = badge.textContent;
+      if (tooltip)
+	  button.title = tooltip;
+  }
+
   function set_button_disabled(disabled)
   {
       if (!button)
 	  return;
       if (disabled)
+      {
 	  button.icon = disabled_icon;
+	  button.badge.display = 'none';
+      }
       button.is_disabled = disabled;
       //button.disabled = true;
   }
@@ -42,7 +66,7 @@
       var tab = get_current_tab()
       if (!tab)
 	  return;
-      post_message(tab, "scriptkeeper_toggle_menu");
+      post_message(tab, 'scriptkeeper_toggle_menu:');
   }
 
   var button;
@@ -53,7 +77,13 @@
       {
         //disabled: true,
 	title: "ScriptKeeper",
-	icon: disabled_icon
+	icon: disabled_icon,
+	badge: {
+	    display: 'none',
+	    backgroundColor: '#5566ff',
+	    color: '#ffffff',
+	    textContent: '42'
+	  }
       };
       button = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
       button.onclick = clicked;
@@ -78,6 +108,12 @@
   {
       var m = e.data;
 
+      if (m.badge) // badge message
+      {
+	  update_badge(m.badge, m.tooltip);
+	  return;
+      }
+      
       if (m.header == "temp list cleared")
       {
 	  need_clear_templist = false;
@@ -85,32 +121,17 @@
       }
       
       debug = m.debug;
-      /*
-      if (m.button && !button)
-	  create_button();
-      if (!m.button && button)
-	  destroy_button();
-      if (m.disabled_icon != '')
-	  disabled_icon = m.disabled_icon;
-       */              
-
+      
       change_icon(m.mode);
+      if (m.tooltip)
+	  button.title = m.tooltip;      
       set_button_disabled(m.disabled);
-  }
-
-  function post_message(dest, msg)
-  {
-      try
-      {   // can get DOMException: INVALID_STATE_ERR if tab's in a weird state	  
-	  dest.postMessage(msg);
-      }
-      catch(e) {}      
   }
 
   function request_mode(dest)
   {
-      post_message(dest, "scriptkeeper bgproc to injected script:");
-      post_message(dest, "scriptkeeper background process:");
+      post_message(dest, "mode request");
+      //post_message(dest, "scriptkeeper background process:");
   }
 
   function tab_switched(e)
@@ -120,7 +141,7 @@
       if (!tab)
 	  return;
       debug_log("tab_switched(), requesting mode");
-      post_message(tab, "scriptkeeper background process:tab switch");
+      post_message(tab, "tab switch");
       request_mode(tab);
   }
 
@@ -134,27 +155,25 @@
 	  return;
 
       if (need_clear_templist)
-	  post_message(tab, "scriptkeeper background process:clear temp list");      
+	  post_message(tab, "clear temp list");      
 
       debug_log("requesting mode from current tab ...");	  
       request_mode(tab);
   }
 
   var need_clear_templist = true;
-  function loaded()
-  {
-      debug_log("loaded");
-      create_button();
-      
-      // when an injected script loads, background process gets a connect event      
-      opera.extension.onconnect = connected;
-      opera.extension.onmessage = messaged;
-      opera.extension.tabs.onfocus = tab_switched;
-      //opera.extension.tabs.onblur = ...
-  }
-
   debug_log("start");
-  window.addEventListener("load", loaded, false);
+
+  //  Doing away with the load handler, causing race conditions with onconnect on startup.
+  //  http://my.opera.com/community/forums/topic.dml?id=1706742
+  //  window.addEventListener("load", loaded, false);
+
+  // when an injected script loads, background process gets a connect event      
+  opera.extension.onconnect = connected;
+  opera.extension.onmessage = messaged;
+  opera.extension.tabs.onfocus = tab_switched;
+
+  create_button();
 
 </script>
 </head>

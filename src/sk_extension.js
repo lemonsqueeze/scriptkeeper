@@ -1,34 +1,83 @@
 function(){   // fake line, keep_editor_happy
     
     /**************************** Extension messaging ***************************/
-
+    
+    // not super robust, and won't match if there's a \n in the css.
+    function get_css_prop(selector, prop, fatal)
+    {
+	var pat = selector + ".*" + prop + " *: *([^;]*) *;";
+	var re = new RegExp(pat, 'g');
+	var m = get_style().match(re);
+	assert(m || !fatal, "get_css_prop(" + selector + ", " + prop + ") failed");
+	if (!m)
+	    return null;
+	return m[m.length - 1].replace(re, '$1');
+    }
+    
     var extension_button;
     function update_extension_button(force)
     {
 	if (!bgproc)
 	    return;
-	
+	update_extension_button_icon(force);
+	update_extension_button_badge(force);
+    }
+
+    var extension_button;    
+    function update_extension_button_icon(force)
+    {	
 	var needed = something_to_display();	
 	var status = (needed ? mode : 'off');
 	if (!force && extension_button == status) // already in the right state
 	    return;
-
-	bgproc.postMessage({ debug:debug_mode, mode:mode, disabled:!needed});
+	
+	bgproc.postMessage({ debug:debug_mode, mode:mode, disabled:!needed, tooltip:main_button_tooltip()});
 	debug_log("sent mode to bgproc");
 	extension_button = status;
     }
+    
+    var extension_button_badge;
+    function update_extension_button_badge(force)
+    {
+	var o = badge_object();
+	//var needed = (badge_logic != 'off');
+	var needed = icon_badge;
+	var status = (needed ? o.n + o.tooltip : 'off');
+	if (!force && extension_button_badge == status) // already in the right state
+	    return;
+
+	var color = (!needed ? '#000' : get_css_prop('.badge_' + o.className, 'background-color', true));
+	bgproc.postMessage({
+	      tooltip: o.tooltip,
+	      badge:
+		{
+		  display: (needed ? 'block' : 'none'),
+		  color: '#ffffff',
+		  backgroundColor: color,
+		  textContent: o.n
+		}
+	    });
+	extension_button_badge = status;
+    }    
 
     var bgproc;    
-    function extension_message_handler(e, m) 
+    function extension_message_handler(e) 
     {
+	var m = e.data;
 	debug_log("message from background process: " + m);
 	if (!bgproc)
 	    bgproc = e.source;
 	check_init();
+	if (m == "mode request")
+	{
+	    update_extension_button(true);
+	    return;
+	}
+	
 	if (m == "clear temp list")
 	{
 	    clear_temp_list();
-	    debug_log("temp list cleared");	    
+	    debug_log("temp list cleared");
 	    bgproc.postMessage({header:"temp list cleared"});
 	    return;
 	}
@@ -38,57 +87,13 @@ function(){   // fake line, keep_editor_happy
 	    clear_prev_settings();
 	    return;
 	}
-    
-	update_extension_button(true);
     }
 
     /**************************** userjs messaging ***************************/
 
-/*    
-    var bgproc;
-    function ujsfwd_before_message(ujs_event)
-    {
-	var e = ujs_event.event;
-	var m = e.data;
-
-	// if 2nd msg from bgproc,
-	// won't even get called, userjs uses beforeEvent.message and will cancel it.
-	debug_log("[msg] " + m);
-	
-	if (m == "scriptkeeper bgproc to injected script:")  // hello from bgproc
-	{
-	    bgproc = e.source;
-	    ujs_event.preventDefault(); // keep this private
-	    return;
-	}
-	
-	if (m && m.scriptkeeper) // from userjs, forward to bgproc
-	{
-	    debug_log("forwarding to bgproc");
-	    bgproc.postMessage(m);
-	    ujs_event.preventDefault(); // keep this private
-	}
-	// other msg, leave alone
-    }
-    
-    function forward_to_userjs()
-    {
-	if (!window.opera.scriptkeeper) // userjs is not running
-	    return false;
-	
-	opera.extension.onmessage = function(){};  // just so we get an event
-	// this is enough for userjs beforeEvent to fire,
-	// so no need to forward anything in this direction.
-	window.opera.addEventListener('BeforeEvent.message', ujsfwd_before_message, false);
-	debug_log("userjs detected, handing over and forwarding");
-	return true;
-    }
- */
-
     function init_extension_messaging()
     {
-	opera.extension.onmessage = function(e){}; // so we get an event, and catch it with beforeEvent
-	message_handlers["scriptkeeper background process:"] = extension_message_handler;
+	opera.extension.onmessage = extension_message_handler; // regular msg handler fires also	
     }
     
 }   // keep_editor_happy
