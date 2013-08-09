@@ -946,9 +946,19 @@ function(){   // fake line, keep_editor_happy
 	w.innerHTML = "<i>" + h + "</i>" + d;
     }
 
+    function list_clear_selected(ul)
+    {
+	foreach(ul.children, function(li)
+	{
+	    unset_class(li, 'clicked');
+	});
+    }
+    
     function list_item_onclick(e)
     {
-	toggle_class(this, 'clicked');
+	if (!e.ctrlKey)
+	    list_clear_selected(this.parentNode);
+	toggle_class(this, 'clicked');	
     }
 
     /***************************** Menu logic ******************************/

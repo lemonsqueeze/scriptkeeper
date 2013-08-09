@@ -1,4 +1,4 @@
-/* JSArmor CSS by laurenbacall (last update: 16/04/13) */
+/* JSArmor CSS by laurenbacall (last update: 24/04/13) */
 
 body                {
 			background: transparent;
@@ -492,8 +492,7 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 /*------------Icons----------------*/
 
 :before,
-:after,
-.slider b           {
+:after              {
                         font-family: 'entypo';
                         font-size: 125%;
                         font-weight: normal;
@@ -520,11 +519,11 @@ div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
 span.allow-all:before,
 .menu ul li.selected:before,
 .checkbox .button.checked:before,
-.button.add.confirm:before { content: '✓'; } /* Tick */
-.slider b,
+.button.add.confirm:before      { content: '✓'; } /* Tick */
+.slider b:before,
 span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
 span.temp-allow-all.revoke:before,
-.slider b.revoke                { content: ''; } /* Allow once revoke */
+.slider b.revoke:before         { content: ''; } /* Allow once revoke */
 .undo:before                    { content: ''; } /* Undo */
 div[class$='-bg']:before        { position: relative; top: 25%; float: left;} /* Slider bg icon styling */
 div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' */
@@ -534,7 +533,7 @@ div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' *
 .button.add:before              { content: '+'; } /* Add '+' */
 .button.delete:before           { content: '-'; } /* Delete '-' */
 .button.reset:before            { content: '⟲'; margin-left: -5px; } /* Reset */
-.item.iframe u:after            { content: ''; margin-left: 5px; float: none; } /* Iframe window */
+.item.iframe u:after            { content: ''; margin-left: 5px; right: 0; } /* Iframe window */
 
 
 :hover:after,
@@ -584,9 +583,8 @@ footer .static:hover,
 
 #about              { text-align: center; }
 #addon-icon         { width: 64px; height: 64px; background-size: contain; margin: 15px auto 8px; 
-		      background-image: url('../img/icon.png'); 
-		    }
-#addon-name         { font-size: 13pt; font-weight: bold; margin-bottom: 5px; }
+		      background-image: url('../img/icon.png'); }
+#addon-name         { color: #444; font-size: 13pt; font-weight: bold; margin-bottom: 5px; }
 #addon-version      { margin-bottom: 12px; }
 #about a.button     { text-decoration: none; display: block; }
 

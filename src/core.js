@@ -16,7 +16,7 @@ function(){   // fake line, keep_editor_happy
     var default_iframe_logic = 'filter';
 
     // 'normal'  or  'cache'
-    var default_reload_method = 'cache';
+    var default_reload_method = 'normal';
 
     
     /********************************* Globals *********************************/

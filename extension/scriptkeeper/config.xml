@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" version="1.0.2"
+<widget xmlns="http://www.w3.org/ns/widgets" version="1.0.3"
 	id="https://github.com/lemonsqueeze/scriptkeeper">
     <name>ScriptKeeper</name>
-    <description>Block &amp; filter scripts! An easy-to-use Javascript manager inspired by the popular NoScript add-on for Firefox.</description>
+    <description>Block and filter scripts! An easy-to-use Javascript manager inspired by the popular NoScript add-on for Firefox.</description>
     <author href="https://github.com/lemonsqueeze/scriptweeder">laurenbacall &amp; lemonsqueeze</author>
     <icon src="icon.png"/>
     <license href="http://www.gnu.org/licenses/gpl-2.0.html">
