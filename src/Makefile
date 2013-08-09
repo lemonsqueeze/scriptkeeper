@@ -1,6 +1,6 @@
 
 NAME	= scriptkeeper.js
-SRC	= main.js core.js sk_filter.js settings.js sk_extension.js utils.js userjs_ui.js sk_ui.js
+SRC	= main.js core.js sk_filter.js settings.js sk_extension.js utils.js tld.js userjs_ui.js sk_ui.js
 GEN_SRC	= scriptkeeper_style.js scriptkeeper_widgets.js
 TMPFILES= scriptkeeper.xml scriptkeeper.inlined.css custom.style
 ALLSRC	= $(SRC) $(GEN_SRC)
