@@ -82,8 +82,8 @@
 
 <widget name="item" hn init>
   <div class="item">
-    <div class="allow-bg"></div>
-    <div class="block-bg"></div>
+    <div class="allow-bg" onclick="item_onclick_allowed"></div>
+    <div class="block-bg" onclick="item_onclick_blacklisted"></div>
     <slider host="" allowed=""></slider>
   </div>
 </widget>
@@ -188,7 +188,7 @@
       <!-- list_items -->
     </ul>
     <input name="add-whitelist" id="add-whitelist" class=""
-	   onchange="list_entry_onchange" placeholder="Website address"/>
+	   onkeypress="list_entry_onkeypress" placeholder="Website address"/>
     <span class="button add" onclick="options_whitelist_add">Add</span>
     <span class="button delete" onclick="options_whitelist_remove">Remove</span>    
   </div>
@@ -200,7 +200,7 @@
       <!-- list_items -->
     </ul>
     <input name="add-blacklist" id="add-blacklist" class=""
-	   onchange="list_entry_onchange" placeholder="Website address"/>
+	   onkeypress="list_entry_onkeypress" placeholder="Website address"/>
     <span class="button add" onclick="options_blacklist_add">Add</span>
     <span class="button delete" onclick="options_blacklist_remove">Remove</span>    
   </div>

@@ -55,14 +55,14 @@ function(){   // fake line, keep_editor_happy
 	// won't even get called, userjs uses beforeEvent.message and will cancel it.
 	debug_log("[msg] " + m);
 	
-	if (m == "scriptweeder bgproc to injected script:")  // hello from bgproc
+	if (m == "scriptkeeper bgproc to injected script:")  // hello from bgproc
 	{
 	    bgproc = e.source;
 	    ujs_event.preventDefault(); // keep this private
 	    return;
 	}
 	
-	if (m && m.scriptweeder) // from userjs, forward to bgproc
+	if (m && m.scriptkeeper) // from userjs, forward to bgproc
 	{
 	    debug_log("forwarding to bgproc");
 	    bgproc.postMessage(m);
@@ -73,7 +73,7 @@ function(){   // fake line, keep_editor_happy
     
     function forward_to_userjs()
     {
-	if (!window.opera.scriptweeder) // userjs is not running
+	if (!window.opera.scriptkeeper) // userjs is not running
 	    return false;
 	
 	opera.extension.onmessage = function(){};  // just so we get an event
@@ -88,7 +88,7 @@ function(){   // fake line, keep_editor_happy
     function init_extension_messaging()
     {
 	opera.extension.onmessage = function(e){}; // so we get an event, and catch it with beforeEvent
-	message_handlers["scriptweeder background process:"] = extension_message_handler;
+	message_handlers["scriptkeeper background process:"] = extension_message_handler;
     }
     
 }   // keep_editor_happy

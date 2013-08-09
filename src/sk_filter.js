@@ -3,7 +3,7 @@ function(){   // fake line, keep_editor_happy
     /********************************* Defaults ************************************/
     
     // whether current host is allowed in filtered mode
-    var default_allow_current_host = true;    
+    var default_allow_current_host = false;
 
     var default_global_whitelist =
     { 'localhost':1,

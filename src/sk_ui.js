@@ -23,8 +23,8 @@ function(){   // fake line, keep_editor_happy
     {
 	disable_main_button = true;
 	
-	// window.opera.scriptweeder.toggle_menu() api for opera buttons etc...
-	message_handlers['scriptweeder_toggle_menu'] = api_toggle_menu;
+	// window.opera.scriptkeeper.toggle_menu() api for opera buttons etc...
+	message_handlers['scriptkeeper_toggle_menu'] = api_toggle_menu;
     }
 
     // normal case : called only once after document_ready.
@@ -220,6 +220,36 @@ function(){   // fake line, keep_editor_happy
 	unset_class(w, 'last-item');
     }
 
+    // click on blue background
+    function item_onclick_allowed(e)
+    {
+	var w = this.parentNode;
+	var s = w.querySelector('.slider');
+	var host = s.host;
+
+	if (host_allowed_globally(host))
+	{
+	    s.onclick(e); // forward event
+	    return;
+	}
+
+	// item is allowed but not whitelisted, add it
+	save_prev_settings(); // for undo	
+	global_allow_host(host);
+	
+	update_items();		// update position dependent stuff
+	allow_once_init(this.querySelector('b'), host);
+	need_reload = true;	
+    }
+
+    // click on red background
+    function item_onclick_blacklisted(e)
+    {
+	var w = this.parentNode;
+	var s = w.querySelector('.slider');
+	s.onclick(e); // forward event
+    }
+    
    function iframes_info(hn, allowed)
     {
         if (!hn.iframes || !hn.iframes.length)
@@ -329,8 +359,6 @@ function(){   // fake line, keep_editor_happy
 	}
 	else // whitelisting
 	{
-	    if (mode_adjusted_host(this.hn))
-		return; // FIXME
 	    if (allowed_host(host))
 	    {
 		global_remove_host(host);
@@ -692,7 +720,6 @@ function(){   // fake line, keep_editor_happy
     function options_whitelist_add(e)
     {
 	var entry = this.previousSibling;
-	entry.ignore = false;  // for onchange
 	set_class(entry, 'show');
 	set_class(this, 'confirm');
 	iwin.setTimeout(function(){entry.focus()}, 500);
@@ -720,15 +747,18 @@ function(){   // fake line, keep_editor_happy
 	//resize_iframe();
     }
 
-    function list_entry_onchange(e)
+    function list_entry_onkeypress(e)
     {
-	// onchange fires twice with enter key, ignore 2nd one
-	if (this.ignore)
-	    return;
-	this.ignore = true;
-	this.nextSibling.onclick(null);
+	if (e.key == "Enter")
+	    this.nextSibling.onclick(null);	    
+	if (e.key == "Esc")
+	{
+	    this.value = '';
+	    this.nextSibling.onclick(null);	    
+	}
     }
 
+    
     /***************************** Options blacklist ******************************/
     
     function options_blacklist_init(w)

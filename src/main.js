@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name ScriptWeeder
-// @author lemonsqueeze https://github.com/lemonsqueeze/scriptweeder
+// @name ScriptKeeper
+// @author laurenbacall, lemonsqueeze https://github.com/lemonsqueeze/scriptweeder
 // @description Block unwanted javascript. noscript on steroids for opera !
 // @license GNU GPL version 2 or later version.
 // @published $Date$
@@ -20,7 +20,7 @@
     var version_number = "1.5.5";
     var version_type = "userjs";
     var version_date = "$Date$";
-    var version_full = "scriptweeder " + version_type + " v" + version_number + ", " + version_date + ".";
+    var version_full = "scriptkeeper " + version_type + " v" + version_number + ", " + version_date + ".";
     
 @include "core.js"
 @include "sk_filter.js"
@@ -35,24 +35,17 @@
     // quiet: no page redirect
     function startup_checks(quiet)
     {
-	var start_page = "https://github.com/lemonsqueeze/scriptweeder/wiki/scriptweeder-userjs-installed-!";	
 	if (in_iframe()) // don't redirect to start page in iframes.
 	    return;
 	
-	quiet = true; // for now ...
-	
         // first run setup
-        if ((location.href == start_page || quiet) && global_setting('mode') == '')
+        if (global_setting('mode') == '')
         {
             set_global_setting('mode', default_mode);
             set_global_setting('version_number', version_number);
             set_global_setting('version_type', version_type);
 	    default_filter_settings();	    
 	}
-	
-        // first run, send to start page
-        if (global_setting('mode') == '') // will work with old settings
-	    location.href = start_page;	
 	
 	// upgrade from previous version
 	if (global_setting('version_number') != version_number)
@@ -67,16 +60,16 @@
     // for userjs doesn't matter, we could init() here no problem.
     function boot()
     {
-	// scriptweeder ui's iframe, don't run in there !
-	if (in_iframe() && window.name == 'scriptweeder_iframe')	// TODO better way of id ?
+	// scriptkeeper ui's iframe, don't run in there !
+	if (in_iframe() && window.name == 'scriptkeeper_iframe')	// TODO better way of id ?
 	    return;
 	if (location.hostname == "")	// bad url, opera's error page. 
 	    return;
 	
 	setup_event_handlers();
-	window.opera.scriptweeder = new Object();	// external api
-	window.opera.scriptweeder.version = version_number;
-	window.opera.scriptweeder.version_type = version_type;	
+	window.opera.scriptkeeper = new Object();	// external api
+	window.opera.scriptkeeper.version = version_number;
+	window.opera.scriptkeeper.version_type = version_type;	
 	debug_log("start");	
     }
     

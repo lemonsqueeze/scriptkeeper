@@ -8,7 +8,7 @@
   function debug_log(m)
   {
       if (debug)
-	  opera.postError("scriptweeder (bgprc): " + m);
+	  opera.postError("scriptkeeper (bgprc): " + m);
   }
 
   function change_icon(mode)
@@ -42,7 +42,7 @@
       var tab = get_current_tab()
       if (!tab)
 	  return;
-      post_message(tab, "scriptweeder_toggle_menu");
+      post_message(tab, "scriptkeeper_toggle_menu");
   }
 
   var button;
@@ -109,8 +109,8 @@
 
   function request_mode(dest)
   {
-      post_message(dest, "scriptweeder bgproc to injected script:");
-      post_message(dest, "scriptweeder background process:");
+      post_message(dest, "scriptkeeper bgproc to injected script:");
+      post_message(dest, "scriptkeeper background process:");
   }
 
   function tab_switched(e)
@@ -120,7 +120,7 @@
       if (!tab)
 	  return;
       debug_log("tab_switched(), requesting mode");
-      post_message(tab, "scriptweeder background process:tab switch");
+      post_message(tab, "scriptkeeper background process:tab switch");
       request_mode(tab);
   }
 
@@ -134,7 +134,7 @@
 	  return;
 
       if (need_clear_templist)
-	  post_message(tab, "scriptweeder background process:clear temp list");      
+	  post_message(tab, "scriptkeeper background process:clear temp list");      
 
       debug_log("requesting mode from current tab ...");	  
       request_mode(tab);

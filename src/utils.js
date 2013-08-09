@@ -393,9 +393,9 @@ function(){   // fake line, keep_editor_happy
 
     function log(msg)
     {
-	var h = "scriptweeder extension (main)  : ";
+	var h = "scriptkeeper extension (main)  : ";
 	if (in_iframe())
-	    h = "scriptweeder extension (iframe): ";
+	    h = "scriptkeeper extension (iframe): ";
 	console.log(h + msg);
     }
 
@@ -418,7 +418,7 @@ function(){   // fake line, keep_editor_happy
     
     function my_alert(msg)
     {
-	var title = "ScriptWeeder";
+	var title = "ScriptKeeper";
 	if (in_iframe())
 	    title += " (in iframe)"
 	alert(title + "\n\n" + msg);

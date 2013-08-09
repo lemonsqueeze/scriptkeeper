@@ -7,8 +7,7 @@ function(){   // fake line, keep_editor_happy
 	if (!scriptStorage)
 	{
 	    location.href = "opera:config#widget%20pref";
-	    alert("Welcome to scriptweeder !\n\n" +
-		  "Extension storage seems to be disabled,\n" +
+	    my_alert("Extension storage seems to be disabled,\n" +
 		  "check widget preferences quota on the following page.");
 	}
     }
@@ -231,6 +230,7 @@ function(){   // fake line, keep_editor_happy
 
 	s += version_full + "\n\n";
 	s += print_setting('', glob);
+        /* // no host settings here	
 	s += "\nhost settings:\n";
 	
 	var hosts = get_keys(host_settings).sort();
@@ -240,6 +240,7 @@ function(){   // fake line, keep_editor_happy
 	    var settings = print_setting(host, host_settings[host]);
 	    s += settings;
 	}
+	*/
 
 	save_file(s, !as_text);
     }
@@ -247,9 +248,7 @@ function(){   // fake line, keep_editor_happy
     // make sure file looks like a valid settings file
     function import_check_file(a)
     {
-	if (!is_prefix("jsarmor", a[0]) &&
-	    !is_prefix("scriptkiddie", a[0]) &&
-	    !is_prefix("scriptweeder", a[0]))
+	if (!is_prefix("scriptkeeper", a[0]))
 	    return false;
 	for (var i = 1; i < a.length; i++)
 	{

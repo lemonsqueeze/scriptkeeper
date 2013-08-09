@@ -3,7 +3,7 @@ function(){   // fake line, keep_editor_happy
     /************************* Default Settings *******************************/        
     
     // default mode on new install
-    var default_mode = 'relaxed';
+    var default_mode = 'filtered';
 
     // block inline scripts by default for block_all mode ?
     var default_block_inline_scripts = true;
@@ -16,7 +16,7 @@ function(){   // fake line, keep_editor_happy
     var default_iframe_logic = 'filter';
 
     // 'normal'  or  'cache'
-    var default_reload_method = 'normal';
+    var default_reload_method = 'cache';
 
     
     /********************************* Globals *********************************/
@@ -107,7 +107,7 @@ function(){   // fake line, keep_editor_happy
     // running in rescue_mode ?
     function rescue_mode()
     {
-	return (location.hash == '#scriptweeder');
+	return (location.hash == '#scriptkeeper');
     }
     
     // reload top window really: with 'filtered' iframe logic, iframes need parent to reload.
@@ -199,11 +199,11 @@ function(){   // fake line, keep_editor_happy
     /***************************** filtering js in iframes **************************/
 
     var show_ui_in_iframes;
-    var msg_header_iframe = "scriptweeder iframe rescue channel:";
-    var msg_header_iframe_script = "scriptweeder iframe script:";
-    var msg_header_iframe_script_loaded = "scriptweeder iframe script loaded:";
-    var msg_header_parent = "scriptweeder iframe parent:";
-    var message_topwin_cant_display = "can't help you dear, i'm a frameset";
+    var msg_header_iframe = "scriptkeeper iframe rescue channel:";
+    var msg_header_iframe_script = "scriptkeeper iframe script:";
+    var msg_header_iframe_script_loaded = "scriptkeeper iframe script loaded:";
+    var msg_header_parent = "scriptkeeper iframe parent:";
+    var message_topwin_cant_display = "scriptkeeper, can't help you dear, i'm a frameset";
     
     function init_iframe_logic()
     {
@@ -670,7 +670,7 @@ function(){   // fake line, keep_editor_happy
 	    {
 		if (e.source == window)
 		{
-		    error("Looks like a script on this page is trying to forge ScriptWeeder messages, " +
+		    error("Looks like a script on this page is trying to forge ScriptKeeper messages, " +
 			  "something funny is going on !");
 		    return;
 		}
