@@ -72,16 +72,15 @@ function(){   // fake line, keep_editor_happy
     function unblacklist_host(host, only_this_one)
     {
 	if (only_this_one)
+	    delete blacklist[host];
+	else
 	{
-	   delete blacklist[host];
-	   return;
+	    // remove host and all its suffixes if present
+	    foreach(host_suffixes(host), function(s)
+	    {
+		delete blacklist[s];
+	    });
 	}
-	
-	// remove host and all its suffixes if present
-	foreach(host_suffixes(host), function(s)
-        {
-	    delete blacklist[s];
-	});
 	set_global_setting('blacklist', serialize_name_hash(blacklist));
     }
     
@@ -95,16 +94,15 @@ function(){   // fake line, keep_editor_happy
     function global_remove_host(host, only_this_one)
     {
 	if (only_this_one)
+	    delete whitelist[host];
+	else
 	{
-	   delete whitelist[host];
-	   return;
+	    // remove host and all its suffixes if present
+	    foreach(host_suffixes(host), function(s)
+	    {
+		delete whitelist[s];
+	    });
 	}
-	
-	// remove host and all its suffixes if present
-	foreach(host_suffixes(host), function(s)
-        {
-	    delete whitelist[s];
-        });
 	set_global_setting('whitelist', serialize_name_hash(whitelist));
     }
     

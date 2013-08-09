@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>New Gui (last update: 24/04/13)</title>
+
+    <style>
+
+body                {
+                        background: hsl(0,0%,100%);                                
+                        color: hsla(0,0%,7%,0.70);
+                        font: normal 8pt 'Lucida Grande', sans-serif;
+                        margin: 50px auto;
+                    }
+
+@font-face          {
+                        font-family: 'entypo';
+                        src: url('entypo.woff') format('woff');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+
+
+/*-------------Large font option styling (apply ID on body element)----------------*/
+
+body#large-font,
+#large-font .slider,
+#large-font #add-whitelist,
+#large-font #add-blacklist      { font-size: 10pt; }
+
+/* Max-height scolling container */
+
+#large-font #scroller           { max-height: 372px; }
+
+/* Dropdown menu */
+
+#large-font .menu.main ul li.selected        { font-weight: bold; } /* Using bold font for selected menu item */
+#large-font .menu.main ul li.selected:before { content: ''; } /* Because the tick overlaps the text */
+
+/* Checkboxes */
+
+#large-font .checkbox .button   { width: 20px; height: 20px; top: 0; }
+
+ /* White/blacklist list styling */
+
+#large-font .list               { max-height: 250px; background-size: 52px 52px; }
+
+/* Sliders */
+
+#large-font #add-whitelist,
+#large-font #add-blacklist,
+#large-font .item,
+#large-font .slider             { height: 31px; }
+#large-font .slider             { top: -31px; }
+#large-font div.block-bg        { margin-top: -31px; }
+
+/* Icons */
+
+.dropdown:after                 { line-height: 11pt; }
+
+
+/*-------------Generic----------------*/
+
+*                   { box-sizing: border-box; cursor: default; } /* Auto-calculates padding/width */
+::selection         { background: transparent; } /* Makes text selection on buttons transparent */
+ul, ol              { list-style: none; padding: 0; margin: 0; }
+i                   { color: #9d9d9d; font-style: normal; cursor: move; } /* Targets the grey subdomain of the URL in .item */
+.menu.main .dropdown     { font-weight: bold; } /* Used for main menu drop-down */
+.button,
+.dropdown,
+.slider, .slider b,
+.menu ul li,
+footer *,
+.checkbox .label,
+#import_settings input[type=file]    { cursor: pointer; } /* Changes the buttons/menus cursor */
+.button,
+.menu,
+.slider             { text-align: center; } /* Center aligns text for these selectors */
+.disabled           { background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1) !important; color: hsla(0,0%,0%,0.5) !important; cursor: default; }
+.disabled:hover,
+.disabled:active    { border: solid hsla(0,0%,0%,0.1) 1px !important; box-shadow: none !important; }
+.disabled.temp-allow-all { border-left: none !important; border-right: none !important; }
+#large-font .checkbox,
+.list li,
+.slider,
+.option .menu .button.dropdown
+                    {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+.display-blocked .item.blacklisted:hover,  
+.slider b,
+.slider u,
+.button.add.confirm,
+div[class$='-bg'],
+footer div          { transition: all 200ms; -o-transition: all 200ms;}
+
+.item,
+[id^='add-']        { transition: all 500ms; -o-transition: all 500ms; }
+
+
+/*-------------Drop-down menus----------------*/
+/* Should normally appear when drop-down button is clicked */
+
+.menu ul            {
+                        background: #fff;
+                        color: #333;
+                        display: none;
+                        border-bottom-left-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.2) 1px;
+                        box-shadow: 0 2px 4px hsla(0,0%,0%,0.2);
+                        padding: 5px 0;
+                        margin: -9px 0 0;
+                        position: absolute;
+                        z-index: 4;
+                    }
+
+.menu:hover ul, .menu.main:hover ul     { display: block; }
+
+.menu ul li         { padding: 10px; margin: 0; }
+.menu ul li:hover   { background: #eee; }
+
+/* Main menu at top */
+
+.menu.main ul       { width: 167px; /* 20px less than #main-container width */ }
+
+/* Options drop-down menu styling */
+
+.option .menu       { width: 55%; display: inline-block; }
+
+.option .menu .button.dropdown
+                    {
+                        width: 100%;
+                        text-align: left;
+                        padding: 3px 14px 3px 8px; /* Added extra right-side padding to force ellipsis sooner */
+                    }
+
+.option .menu ul    { width: 91px; text-align: left; } /* Must change with any #main-container width  */
+
+.option .menu ul li { padding-left: 25px; }
+
+
+/*-------------Lists----------------*/
+
+.list               {   
+                        min-height: 120px;
+                        max-height: 300px;
+                        background-image: -o-linear-gradient(transparent 50%, #F3F3F3 50%, #F3F3F3);
+                        background-size: 48px 48px; /* Double the height of the li */
+                        background-attachment: local; /* Scrolls with content */
+                        overflow-y: auto;
+                        border-radius: 4px;
+                        border: solid #E5E5E5 1px; /* A solid color so the background doesn't show through */
+                        padding-bottom: 24px;
+                        margin-bottom: 8px;
+                    }
+
+.list li            { padding: 5px 10px; }
+
+/* Styling for selection - would normally stay selected until clicking elsewhere */
+
+.list li:active,
+.list li:active i   { background: #55b3d9; color: #fff; }
+
+
+/*-------------White/blacklist 'Add' input box & transition----------------*/
+
+[id^='add-']        {
+                        width: 100%;
+                        height: 24px;
+                        background: #fff;
+                        display: block;
+                        opacity: 0;
+                        visibility: hidden;
+                        padding: 3px;
+                        border: solid #E5E5E5 1px;
+                        border-top: solid #d4d4d4 1px;
+                        margin: -32px 0 8px;
+                    }
+
+[id^='add-']:focus  { box-shadow: 0 0 2px 1px #55b3d9; }
+
+[id^='add-'].show   {
+                        opacity: 1;
+                        visibility: visible;
+                        margin-top: 0;
+                    }
+
+
+/*-------------Containers----------------*/
+
+#main-container     {
+                        width: 187px;
+                        background-color: #fff;
+                        padding: 9px;
+                        border-radius: 6px;
+                        border: solid hsla(0,0%,0%,0.3) 1px;
+                        box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
+                        margin: 0 auto;
+                    }
+
+#items-container    { width: 167px; overflow: hidden; margin-bottom: -8px; } /* Overall items container, margin-bottom to raise footer */
+
+#scroller           { width: 200px; max-height: 352px; overflow-y: auto; } /* Scrolling container, max-height */
+
+#scroller-content   { width: 167px; overflow-y: hidden; } /* Actual inner items container, overflow-y covers blockedout animation */
+
+
+/*-------------Options specific styling----------------*/
+
+.option:not(:last-child)    { margin-bottom: 10px; }
+
+.title                      { display: block; margin: 0 0 10px 2px; }
+
+.option > .label            {
+                                width: 30%;
+                                font-style: normal;
+                                text-align: right;
+                                display: inline-block;
+                                margin: 3px 10px 0 0;
+                                vertical-align: top;
+                            }
+
+.checkbox                   { width: 60%; display: inline-block; position: relative; top: 3px; }
+
+.checkbox.no-label          { padding-left: 14px; margin-left: 30%; } /* Use for secondary options under a single label */
+
+/* 'Scripting' option container extra bottom-margin */
+
+.option:nth-child(2)        { margin-bottom: 15px; }
+
+/* Standalone version - creates centered 'block' alignment (proper width varies by font used) */
+
+.checkbox.standalone        {
+                                width: 140px;
+                                text-align: left;
+                                display: block;
+                                margin: 0 auto;
+                            }
+
+/* Load settings button */
+
+#import_settings input[type=file]   { height: 29px; width: 100%; opacity: 0; }
+.load                       {
+                                width: 100%;
+                                font: normal 8pt 'Lucida Grande', sans-serif; /* Duplicated from body */
+                                display: block;
+                                margin-top: -29px;
+                            }
+
+
+/*-------------Button/item slider----------------*/
+
+.button,
+.slider             {
+                        background: #f8f8f8 -o-linear-gradient(top, #f8f8f8, #f1f1f1);
+                        color: #444;
+                        padding: 6px 8px 7px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        margin-bottom: 8px;
+                    }
+
+.button:hover       {
+                        color: #222;
+                        border: solid #c6c6c6 1px;
+                        box-shadow: 0 1px 1px hsla(0,0%,0%,0.1);
+                        position: relative;
+                        z-index: 1;
+                    }
+
+.button:active      { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1); }
+
+
+/* Activate this style in JS after .menu button has been clicked and the drop-down appears */ 
+
+.button.dropdown:active
+                    {
+                        background: #eee -o-linear-gradient(top, #eee, #e0e0e0);
+                        color:  #333;
+                        border: solid #ccc 1px;
+                    }
+
+.checkbox .button   {
+                        width: 18px;
+                        height: 18px;
+                        display: inline-block;
+                        padding: 1px 3px;
+                        margin-right: 8px;
+                        position: relative;
+                        top: -2px;
+                        vertical-align: top;
+                    }
+
+.button.add,
+.button.delete      { display: inline-block; margin-right: 3px; margin-bottom: 0; }
+
+
+/*------------Menu modes dropdown button coloring----------------*/
+
+.button.dropdown[class*='mode-']:not(.mode-standard),
+#options-blacklist .button.add.confirm  { color: #fff; }
+.button.dropdown[class*='mode-']:not(.mode-standard):not(:hover):after  { color: hsla(0, 0%, 100%,0.8); } /* Menu drop-down icon */
+
+.button.dropdown.mode-enable-all:active { background: -o-linear-gradient(top, hsl(197,54%,58%), hsl(197,46%,52%)); }
+
+.button.dropdown.mode-relaxed
+                    {
+                        background: -o-linear-gradient(top, #8c9bef, #7c8ce6);
+                        border: solid #6377df 1px;
+                    }
+
+.button.dropdown.mode-relaxed:active { background: -o-linear-gradient(top, hsl(231,65%,71%), hsl(231,57%,66%)); }
+
+.button.dropdown.mode-disable-all,
+#options-blacklist .button.add.confirm
+                    {
+                        background: -o-linear-gradient(top, #e56262, #d85351);
+                        border: solid #ba3838 1px;
+                    }
+
+.button.dropdown.mode-disable-all:active { background: -o-linear-gradient(top, hsl(0,61%,62%), hsl(1,52%,55%)); }
+
+
+/*------------The 'Allow' toolbar buttons----------------*/
+
+#allow-toolbar      {
+                        width: 100%;
+                        display: table;
+                        table-layout: fixed;
+                        border-radius: 4px;
+                        margin-bottom: 8px;
+                    }
+
+.allow-all,
+.temp-allow-all,
+.undo               { display: table-cell; border-radius: 0; }
+
+/* Border-radius styling for first and last buttons */
+
+.allow-all          { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.undo               { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+
+/* Colored hover background */ 
+
+.allow-all:hover,
+.temp-allow-all:hover,
+.button.dropdown.mode-enable-all,
+#options-whitelist .button.add.confirm
+                    {
+                        background: -o-linear-gradient(top, #5ab7dc, #4aa8ce);
+                        color: #fff;
+                        border: solid #3895ba 1px;
+                    }
+
+.allow-all:active,
+.temp-allow-all:active,
+#options-whitelist .button.add.confirm:active,
+#options-blacklist .button.add.confirm:active  { box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.3); }
+
+
+/* Targets the middle button so it doesn't have double-borders */
+/* Duplicates some existing button code */
+
+temp-allow-all,
+temp-allow-all:hover,
+temp-allow-all:active { border-left: none; border-right: none; }
+temp-allow-all:hover,
+temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, 0 1px 1px hsla(0,0%,0%,0.1); }
+temp-allow-all:active { box-shadow: -1px 0 0 #3895ba, 1px 0 0 #3895ba, inset 0 1px 2px hsla(0,0%,0%,0.3); }
+
+
+/*------------Script items slider styling----------------*/
+
+.item               {
+                        height: 29px;
+                        max-height: 31px;
+                        opacity: 1;
+                        visibility: visible;
+                        overflow: hidden;
+                        margin-bottom: 8px;
+                        position: relative;
+                        z-index: 1;
+                    }
+
+.slider             {   
+                        height: 29px;
+                        font-size: 8pt; /* Fixes font-enlargement issue in animation */ 
+                        cursor: move;
+                        padding: 6px 10px;
+                        position: relative;
+                        top: -29px; /* Changed from '-100%' for blacklist hide transition */
+                        transition: all 500ms ease-in;
+                        -o-transition: all 500ms ease-in;
+                    }
+
+/* Targets first/last .item, removes margin-bottom (so footer can use it instead)
+   and raises it above the fade-out gradient so it's not covering it  */
+
+.item:first-child,
+.item:last-child    { z-index: 3 !important; }
+
+.top-level .slider  { font-weight: bold; } /* Top-level site currently being viewed styling */
+
+/* Allow once icon and script number counter on hover */
+
+.slider b,
+.slider u           {
+                        background: #f4f4f4;
+                        font-weight: normal;
+                        text-decoration: none;
+                        opacity: 0;
+                        padding: 2px;
+                        border-radius: 99px;
+                        box-shadow: 0 0 5px 5px #f4f4f4;
+                        margin: -2px -100% 0 -2px;
+                        position: relative;
+                        z-index: 1;
+                        float: left;
+                    }
+
+.slider u           { padding: 0; margin: 0 0 0 -100%; float: right; } /* Script number counter styling */
+
+/* Icon transparency on hover, including for 'Options' and 'About' icons */
+
+.slider:hover b,
+.slider:hover u             { color: hsla(0,0%,27%,0.5); opacity: 1; }
+
+.slider:hover b:hover,
+.slider b.revoke            { color: inherit; opacity: 0.8; } /* Solid when hovered on actual icon */
+
+.mode-adjusted .slider b,
+.slider.left.static b,
+.slider.right.static b      { display: none; } /* Hide 'Allow Once' icon when mode-adjusted, whitelisted or blacklisted */
+
+.temp-allowed .left.static b { display: inline-block; } /* Shows the 'Revoke' icon when temp-allowed */
+
+
+/*-------------Sliding grab movement demo----------------*/
+/* .slider.right has a "bug" where numeric
+    and special character sub-domains flip to
+    the 'wrong' side (really it's correct
+    but that's what we need for the CSS
+    transition to work). Quickfix: add '&lrm;'
+    before the list item names. */
+
+.slider.left:hover,
+.slider.left.static             { padding-left: 20px; box-shadow: -1px 0 2px hsla(0,0%,0%,0.1); margin-left: 35px; }
+.slider.right:hover,
+.slider.right.static            { direction: rtl; padding-right: 20px; box-shadow: 1px 0 2px hsla(0,0%,0%,0.1); margin-right: 35px; }
+
+
+/*-------------'Display blocked' transitions----------------*/
+/* These new selectors work/display only the live version */
+  
+.item.blacklisted   { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition-delay: 1s; -o-transition-delay: 1s; }
+
+/* Removes transition delay when switching back from display-blocked */
+
+.display-blocked .item.blacklisted,
+.display-blocked-trans .item.blacklisted      { transition-delay: 0; -o-transition-delay: 0; }
+  
+.display-blocked .item.blacklisted            { max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: 8px; }
+
+.display-blocked .item.blacklisted:hover      { opacity: 1; } /* Solid on hover */
+
+
+/*-------------Slider hidden colored backgrounds----------------*/
+
+div[class$='-bg']   {   /* Targets all div classes ending with '-bg' */
+                        width: 50%;
+                        height: 100%;
+                        background: #55b3d9;
+                        color: #fff;
+                        text-shadow: hsla(0,0%,0%,0.5) 0 1px 1px;
+                        padding: 0 12px;
+                        border-radius: 4px;
+                        border: solid hsla(0,0%,0%,0.1) 1px;
+                        box-shadow: inset 0 1px 2px hsla(0,0%,0%,0.1);
+                    }
+
+div.block-bg        { background: #d95555; margin-top: -29px; float: right; }
+
+/* Opacity adjusted when overridden in a Mode & when Allowed Once */
+
+.mode-adjusted .allow-bg,
+.temp-allowed .allow-bg           { background: hsla(197,63%,59%,0.5); }
+.mode-adjusted .allow-bg:hover,
+.temp-allowed .allow-bg:hover,
+.whitelisted .allow-bg            { background: #55b3d9; cursor: pointer; } /* Explicitly whitelist hover */
+
+
+/*------------Icons----------------*/
+
+:before,
+:after              {
+                        font-family: 'entypo';
+                        font-size: 125%;
+                        font-weight: normal;
+                        line-height: 10pt;
+                    }
+
+:after              {
+                        margin-left: -100%;
+                        margin-right: 0;
+                        position: relative; 
+                        left: 0;
+                        right: 4px;
+                        float: right;
+                    }
+
+.button:not(.undo):before       { margin-right: 5px; }
+
+.menu ul li:before              { margin-left: 16px; position: absolute; left: 0; } /* Drop-down menu icon positioning */
+.option .menu ul li:before      { margin-left: 9px; position: absolute; } /* Targets .option drop-down menus */
+
+.dropdown:after                 { content: ''; color: hsl(0,0%,47%); font-size: 100%; } /* Menu arrows */
+.option .menu .button.dropdown:after  { margin-right: -6px; } /* For the increased right-side padding of .option text */
+.allow-bg:before,
+span.allow-all:before,
+.menu ul li.selected:before,
+.checkbox .button.checked:before,
+.button.add.confirm:before      { content: '✓'; } /* Tick */
+.slider b:before,
+span.temp-allow-all:before      { content: '🕔'; } /* Allow once */
+span.temp-allow-all.revoke:before,
+.slider b.revoke:before         { content: ''; } /* Allow once revoke */
+.undo:before                    { content: ''; } /* Undo */
+div[class$='-bg']:before        { position: relative; top: 25%; float: left;} /* Slider bg icon styling */
+div.block-bg:before             { content: '✕'; float: right; } /* Block 'x' */
+#options-button:before          { content: '⚙'; } /* Options cog */
+#display-blocked:before         { content: ''; } /* Eye */
+#about-button:before            { content: 'ℹ'; } /* About 'i' */
+.button.add:before              { content: '+'; } /* Add '+' */
+.button.delete:before           { content: '-'; } /* Delete '-' */
+.button.reset:before            { content: '⟲'; margin-left: -5px; } /* Reset */
+.item.iframe u:after            { content: ''; margin-left: 5px; right: 0; } /* Iframe window */
+
+:hover:after,
+:active:after       { color: inherit; }
+
+
+/*------------Fade-out gradients for overflowing scrolling items----------------*/
+
+#items-container:before,
+#items-container:after
+                    {
+                        width: 100%;
+                        height: 12px;
+                        background: -o-linear-gradient(top, transparent, #fff);
+                        content: '';
+                        pointer-events: none; /* Would allow click-through but it's not supported in Opera! */
+                        display: block;
+                        margin-bottom: -12px;
+                        position: relative;
+                        top: -12px;
+                        z-index: 2;
+                    }
+
+#items-container:before { background: -o-linear-gradient(bottom, transparent, #fff); top: 0; }
+
+
+/*------------Footer icons/buttons----------------*/
+
+footer                          { margin-top: 8px; } /* Creates margin between last item and footer */
+
+footer div,
+footer ol li                    { display: inline-block; opacity: 0.25; }
+footer div:hover,
+footer ol li:hover,
+footer .static,
+#display-blocked.show:hover,
+ #display-blocked.show.static   { opacity: 0.5; } /* Use the 'static' class to show icons in their active state */
+footer .static:hover,
+#display-blocked.static:hover   { opacity: 0.7; }
+#options-button                 { margin-right: 7px; } /* It's okay, in the demo it just appears to have more whitespace */
+#display-blocked                { visibility: hidden; opacity: 0; }
+#display-blocked.show           { visibility: visible; opacity: 0.25; }
+#about-button                   { float: right; }
+
+
+/*------------About section (linked to the 'i' icon)----------------*/
+
+#about              { text-align: center; }
+#addon-icon         { width: 64px; height: 64px; background: url('icon.png'); background-size: contain; margin: 15px auto 8px; }
+#addon-name         { color: #444; font-size: 13pt; font-weight: bold; margin-bottom: 5px; }
+#addon-version      { margin-bottom: 12px; }
+#about a.button     { text-decoration: none; display: block; }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="main-container">
+
+        <section id="main-interface">
+
+            <nav class="menu main">
+                <div class="button dropdown mode-relaxed">Relaxed mode</div>
+                <ul class="menu">
+                    <li>Globally enable all</li>
+                    <li class="selected">Relaxed mode</li>
+                    <li>Standard mode</li>
+                    <li>Globally disable all</li>
+                </ul>
+            </nav>
+
+            <div id="allow-toolbar">
+                <span class="button allow-all" title="Allow all">All</span>
+                <span class="button temp-allow-all" title="Allow all once">All</span>
+                <span class="button undo" title="Undo last change"></span>
+            </div>
+
+            <div id="items-container">
+
+                <div id="scroller">
+
+                    <div id="scroller-content">
+
+                        <div class="item top-level mode-adjusted">
+                            <div class="allow-bg" title="Allow permanently"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider left static">&lrm;<i>blog.</i>tumblr.com</div>
+                        </div>
+
+                        <div class="item mode-adjusted">
+                            <div class="allow-bg" title="Allow permanently"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider left static">&lrm;<i>assets.</i>pinterest.com</div>
+                        </div>
+            
+                        <div class="item temp-allowed">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider left static">&lrm;<b class="revoke" title="Cancel allow once"></b><i>www.</i>youtube.com<u>(2)</u></div>
+                        </div>
+            
+                        <div class="item">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider">&lrm;<b title="Allow once"></b><i>apis.</i>google.com<u>(4)</u></div>
+                        </div>
+
+                        <div class="item iframe">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider">&lrm;<b title="Allow once"></b><i>iframe.</i>google.com<u title="IFrame">(4)</u></div>
+                        </div>
+
+                        <div class="item blacklisted">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider right static">&lrm;<i>0.</i>gravatar.com</div>
+                        </div>
+            
+                        <div class="item">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider left">&lrm;<i>widgets.</i>twimg.com</div>
+                        </div>
+            
+                         <div class="item blacklisted">
+                            <div class="allow-bg"></div>
+                            <div class="block-bg"></div>
+                            <div class="slider right static">&lrm;<i>static.ak.</i>fbcdn.net</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- <section id="options">
+
+            <nav class="menu main">
+                <div class="button dropdown">General</div>
+                <ul>
+                    <li class="selected">General</li>
+                    <li>Allowed sites</li>
+                    <li>Blocked sites</li>
+                    <li>Import/Export</li>
+                </ul>
+            </nav>
+
+            <div id="options-general">
+
+                <div class="option">
+                        <strong class="title">Appearance:</strong>
+                            <em class="label">Show:</em>
+                            <div class="checkbox">
+                                <div class="button checked"></div><span class="label">Large font</span>
+                            </div>
+                    </div>
+
+                    <div class="option">
+                        <strong class="title">Scripting:</strong>
+                        <em class="label">Reload:</em>
+                            <div class="menu">
+                                <div class="button dropdown">Normal</div>
+                                <ul>
+                                    <li class="selected">Normal</li>
+                                    <li>Cached</li>
+                                </ul>
+                            </div>
+                        <em class="label">Enable top-level:</em>
+                            <div class="menu">
+                                <div class="button dropdown">Relaxed only</div>
+                                <ul>
+                                    <li class="selected">Always</li>
+                                    <li>Relaxed only</li>
+                                </ul>
+                            </div>
+                    </div>
+
+                    <div class="option">
+                        <strong class="title">IFrames:</strong>
+                            <em class="label">Scripts:</em>
+                            <div class="menu">
+                                <div class="button dropdown">Inherit</div>
+                                <ul>
+                                    <li>Allow</li>
+                                    <li class="selected">Inherit</li>
+                                    <li>Disable</li>
+                                </ul>
+                            </div>
+                    </div>
+            
+                    <div class="option">
+                        <strong class="title">Globally disable all:</strong>
+                            <div class="checkbox standalone">
+                                <div class="button checked"></div><span class="label" title="Imitate true disabling">Imitate true disabling</span>
+                            </div>
+                    </div>
+
+            </div>
+
+
+            <div id="options-whitelist">
+
+                <ul class="list">
+                    <li><i>connect.</i>facebook.com</li>
+                    <li><i>www.</i>github.com</li>
+                    <li><i>my.</i>opera.com</li>
+                    <li><i>z-ecx.</i>amazon-images.com</li>
+                </ul>
+
+                <input name="add-whitelist" id="add-whitelist" class="show" placeholder="Website address">
+
+                <span class="button add">Add</span>
+                <span class="button delete">Remove</span>
+
+            </div>
+
+            <div id="options-blacklist">
+
+                <ul class="list">
+                    <li><i>apis.</i>google.com</li>
+                    <li><i>widgets.</i>twimg.com</li>
+                    <li><i>static.ak.</i>fbcdn.net</li>
+                </ul>
+
+                <input name="add-blacklist" id="add-blacklist" placeholder="Website address">
+
+                <span class="button add">Add</span>
+                <span class="button delete">Remove</span>
+
+            </div>
+
+
+            <div id="options-import-export">
+
+                <div class="option">
+                        <strong class="title">Settings:</strong>
+                            <div class="button save">Save...</div>
+                            <form id="import_settings">
+                                <input type="file" autocomplete="off" oninit="import_settings_init">
+                                <button class="button load">Load...</button>
+                            </form>
+                </div>
+
+                <div class="option">
+                        <strong class="title">Reset to defaults:</strong>
+                            <div class="button reset">Reset</div>
+                </div>
+
+            </div>
+
+        </section> -->
+
+
+        <!-- <section id="about">
+
+            <div id="addon-icon"></div>
+            <div id="addon-name">ScriptKeeper</div>
+            <div id="addon-version">Version 0.17</div>
+
+            <a href="" class="button" >Feedback & support</a>
+
+        </section> -->
+
+
+        <footer>
+            <div id="options-button" title="Options"></div>
+            <div id="display-blocked" class="show" title="Display blocked"></div>
+            <div id="about-button" title="About"></div>
+        </footer>
+
+    </div>
+
+
+</body>
+</html>
