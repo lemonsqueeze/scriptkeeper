@@ -55,10 +55,11 @@ function(){   // fake line, keep_editor_happy
     
     function host_blacklisted(host)
     {
-	if (blacklist[host])
-	    return true;	
-	// whole domain blacklisted ?
-	return (blacklist[get_domain(host)] ? true : false);
+	var s = host_suffixes(host);
+	for (var i = 0; i < s.length; i++)
+	    if (blacklist[s[i]])
+		return true;
+	return false;
     }    
 
     function blacklist_host(host)
@@ -68,11 +69,19 @@ function(){   // fake line, keep_editor_happy
 	temp_remove_host(host);  // don't cumulate temp + blacklist
     }
 
-    function unblacklist_host(host)
+    function unblacklist_host(host, only_this_one)
     {
-	delete blacklist[host];
-	// remove domain also if it's there
-	delete blacklist[get_domain(host)];
+	if (only_this_one)
+	{
+	   delete blacklist[host];
+	   return;
+	}
+	
+	// remove host and all its suffixes if present
+	foreach(host_suffixes(host), function(s)
+        {
+	    delete blacklist[s];
+	});
 	set_global_setting('blacklist', serialize_name_hash(blacklist));
     }
     
@@ -83,20 +92,29 @@ function(){   // fake line, keep_editor_happy
 	temp_remove_host(host);  // don't cumulate temp + global
     }
     
-    function global_remove_host(host)
+    function global_remove_host(host, only_this_one)
     {
-	delete whitelist[host];
-	// remove domain also if it's there
-	delete whitelist[get_domain(host)];
+	if (only_this_one)
+	{
+	   delete whitelist[host];
+	   return;
+	}
+	
+	// remove host and all its suffixes if present
+	foreach(host_suffixes(host), function(s)
+        {
+	    delete whitelist[s];
+        });
 	set_global_setting('whitelist', serialize_name_hash(whitelist));
     }
     
     function host_allowed_globally(host)
     {
-	if (whitelist[host])
-	    return true;	
-	// whole domain allowed ?
-	return (whitelist[get_domain(host)] ? true : false);
+	var s = host_suffixes(host);
+	for (var i = 0; i < s.length; i++)
+	    if (whitelist[s[i]])
+		return true;
+	return false;
     }
 
     function temp_allow_host(host)
@@ -129,10 +147,11 @@ function(){   // fake line, keep_editor_happy
 
     function on_helper_blacklist(host)
     {
-	if (helper_blacklist[host])
-	    return true;	
-	// whole domain blacklisted ?
-	return (helper_blacklist[get_domain(host)] ? true : false);
+	var s = host_suffixes(host);
+	for (var i = 0; i < s.length; i++)
+	    if (helper_blacklist[s[i]])
+		return true;
+	return false;
     }
     
     function filtered_mode_allowed_host(host)

@@ -711,7 +711,7 @@ function(){   // fake line, keep_editor_happy
 	{
 	    if (!has_class(li, 'clicked'))
 		return;
-	    global_remove_host(li.host);
+	    global_remove_host(li.host, true);
 	    need_reload = true;
 	});
 	show_options(null, "whitelist"); // refresh ui
@@ -780,7 +780,7 @@ function(){   // fake line, keep_editor_happy
 	{
 	    if (!has_class(li, 'clicked'))
 		return;
-	    unblacklist_host(li.host);
+	    unblacklist_host(li.host, true);
 	    need_reload = true;
 	});
 	show_options(null, "blacklist"); // refresh ui
