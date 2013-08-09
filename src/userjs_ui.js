@@ -236,7 +236,7 @@ function(){   // fake line, keep_editor_happy
     {
 	set_style(get_style());
     }
-
+    
     function populate_iframe()
     {
 	iframe.contentWindow.name = 'scriptweeder_iframe';
@@ -259,14 +259,19 @@ function(){   // fake line, keep_editor_happy
 	extra_height = (extra_height ? extra_height : 0);
         var width = 0;
         var height = 0;
-        if (main_ui.style.display != 'none')
+        if (main_ui && main_ui.style.display != 'none')
         {
             width = main_ui.offsetWidth + 20;
             height = main_ui.offsetHeight + 20;
 	    if (main_ui.extra_height)
 		height += main_ui.extra_height;
 	    height = max(height, 200); // for mode menu display
-        }	
+        }
+	if (main_button)
+	{
+	    width = max(width, main_button.offsetWidth);
+	    height = max(height, main_button.offsetHeight);
+	}
         debug_log("resize_iframe");
         
         iframe.style.width = (width + extra_width) + 'px';
@@ -280,7 +285,7 @@ function(){   // fake line, keep_editor_happy
     {
 	debug_log("create_iframe()");
 	assert(!document.querySelector('#scriptweeder_iframe'),
-	       "There are 2 scriptweeder instances running ! Both extension and userjs version installed maybe ?");
+	       "There are 2 scriptweeder instances running ! Something went wrong in the extension-userjs handshake.");
 	
 	iframe = document.createElement('iframe');
 	iframe.id = 'scriptweeder_iframe';
@@ -294,7 +299,19 @@ function(){   // fake line, keep_editor_happy
 	iframe.allowtransparency="true";
 	
 	iframe.onload = populate_iframe;
+	// respawn if we get wiped out. This happens with CSS PrefixR extension for instance.
+	iframe.addEventListener('DOMNodeRemovedFromDocument', delayed(respawn_iframe, 10, true), false);
 	document.body.appendChild(iframe);
+    }
+
+    function respawn_iframe()
+    {
+	var zombie = document.querySelector('#scriptweeder_iframe');
+	if (zombie && zombie != iframe)
+	    zombie.parentNode.removeChild(zombie);
+	iframe = null;
+	reset_ui();
+	init_ui();
     }
 
 }   // keep_editor_happy

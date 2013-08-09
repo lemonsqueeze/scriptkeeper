@@ -16,9 +16,16 @@
 <widgets>
 
 <widget name="main_menu" init>
-  <div id="main-container">
+  <div id="main-container" onclick="menu_onclick">
     <main_interface></main_interface>    
     <main_footer></main_footer>    
+  </div>
+</widget>
+
+<!-- replaces toolbar button when page has frameset -->
+<widget name="main_button" init>
+  <div id="main-button" onclick="toggle_menu">
+    <button class="tbutton"><img/></button><br>
   </div>
 </widget>
 
@@ -26,10 +33,10 @@
 <widget name="main_footer">
   <footer>
     <!-- set static class to highlight active items -->
-    <div id="options-button" title="Options" onclick="options_clicked"></div>
-    <div id="display-blocked" class="show" title="Display blocked" 
+    <div id="options-button" title="Options" onclick="show_options"></div>
+    <div id="display-blocked" class="" title="Display blocked" 
 	 oninit="display_blacklisted_init" onclick="display_blacklisted_onclick"></div>
-    <div id="about-button" title="About" onclick="style_editor"></div>
+    <div id="about-button" title="About" onclick="show_about"></div>
   </footer>
 </widget>
 
@@ -44,7 +51,7 @@
 
 <widget name="mode_menu" init>
   <nav class="menu main">
-    <div class="button dropdown">Relaxed mode</div>     <!-- js sets mode-... classes -->
+    <dropdown_button/>     <!-- js sets mode-... classes -->
     <ul class="menu">
       <li mode="allow_all" onclick="mode_menu_clicked">Globally enable all</li>
       <li mode="relaxed"   onclick="mode_menu_clicked">Relaxed mode</li>
@@ -88,7 +95,7 @@
 </widget>
 
 <widget name="options" section init>
-  <section id="options">
+  <section id="options" onclick="menu_onclick">
     <options_menu></options_menu>
     <!-- options sections go here -->
     <main_footer></main_footer>
@@ -97,7 +104,7 @@
 
 <widget name="options_menu">
   <nav class="menu main">
-    <div class="button dropdown">General</div>
+    <dropdown_button/>
     <ul>
       <li onclick="options_menu_onclick">General</li>
       <li onclick="options_menu_onclick">Allowed sites</li>
@@ -144,7 +151,7 @@
 <def macro="select_reload_method">
   <em class="label">Reload:</em>
   <div class="menu" oninit="select_reload_method_init">
-    <div class="button dropdown">Normallll</div>
+    <dropdown_button/>
     <ul>
       <li value="normal">Normal</li>
       <li value="cache">Cached</li>
@@ -155,7 +162,7 @@
 <def macro="select_allow_current_host">
       <em class="label">Enable top-level:</em>
       <div class="menu" oninit="select_allow_current_host_init">
-        <div class="button dropdown">Always</div>
+	<dropdown_button/>
         <ul>
           <li value="y">Always</li>
           <li value="n">Relaxed only</li>
@@ -166,7 +173,7 @@
 <def macro="select_iframe_logic">
   <em class="label">Scripts:</em>
   <div class="menu" oninit="select_iframe_logic_init">
-    <div class="button dropdown">Inherit</div>
+    <dropdown_button/>
     <ul>
       <li value="allow">Allow</li>
       <li value="filter">Inherit</li>
@@ -229,6 +236,19 @@
 </def>
 
 
+<!-- about menu -->
+
+<widget name="about" init>
+  <section id="about">
+    <div id="addon-icon"></div>
+    <div id="addon-name">ScriptKeeper</div>
+    <div id="addon-version">Version xxx</div>
+    <a href="https://addons.opera.com/extensions/details/scriptkeeper" class="button" >Feedback & support</a>
+    <main_footer></main_footer>
+  </section>
+</widget>
+
+
 <!-- low level stuff -->
 
 <widget name="checkbox_item" id title label state callback klass init>
@@ -261,5 +281,8 @@
   <textarea class="textarea" spellcheck="false"></textarea>
 </widget>
 
+<def macro="dropdown_button" label>
+  <div class="button dropdown" onclick="dropdown_onclick">$label</div>
+</def>
 
 </widgets>

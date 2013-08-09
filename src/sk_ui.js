@@ -46,28 +46,38 @@ function(){   // fake line, keep_editor_happy
     
     function init_ui_needed()
     {
-	if (init_ui_done || !document_ready)
-	    return false;
-	if (element_tag_is(document.body, 'frameset')) // frames, can't show ui in there !
-	    return false;
-        if (!there_is_work_todo &&			// no scripts ?
-	    !document.querySelector('iframe') &&	// no iframes ?
-	    !rescue_mode())				// rescue mode, always show ui
-            return false;				// don't show ui.
-	
- 	var force_page_ui = (window != window.top && topwin_cant_display);
-	
-	// don't display ui in iframes unless needed
-	if (window != window.top)
-	    return (show_ui_in_iframes || force_page_ui);
-	
-	var not_needed = disable_main_button && !menu_request;		
-	return (rescue_mode() || force_page_ui || !not_needed);
+        if (init_ui_done || !document_ready)
+            return false;
+        if (element_tag_is(document.body, 'frameset')) // frames, can't show ui in there !
+            return false;
+        if (!there_is_work_todo &&                      // no scripts ?
+            !document.querySelector('iframe') &&        // no iframes ?
+            !rescue_mode())                             // rescue mode, always show ui
+            return false;                               // don't show ui.
+        
+        var force_page_ui = (in_iframe() && topwin_cant_display);
+        
+        // don't display ui in iframes unless needed
+        if (in_iframe())
+            return (show_ui_in_iframes || force_page_ui);
+        
+        var not_needed = disable_main_button && !menu_request;
+        return (rescue_mode() || !not_needed);
     }
-
+    
+    // not 100% foolproof, but for what it's used it'll be ok
     function ui_needed()
     {
-	return (iframe || init_ui_needed());
+        return (iframe || init_ui_needed());
+    }
+
+    function something_to_display()
+    {
+        var tmp = disable_main_button;
+        disable_main_button = false;
+        var needed = ui_needed();
+        disable_main_button = tmp;
+        return needed;
     }
     
     // called only once when the injected iframe is ready to display stuff.
@@ -100,7 +110,25 @@ function(){   // fake line, keep_editor_happy
     function parent_main_ui()
     {
 	idoc.body.appendChild(main_ui);
-    }    
+    }
+
+    var main_button;
+    function update_main_button()
+    {
+	if (!topwin_cant_display)
+	    return;
+	if (!main_button) // first time, hide menu
+	    toggle_menu();
+	if (main_button)
+	    main_button.parentNode.removeChild(main_button);
+	main_button = new_widget("main_button");
+	idoc.body.appendChild(main_button);
+    }
+
+    function main_button_init(w)
+    {
+	set_class(w, mode);
+    }
 
     /****************************** external api *****************************/
 
@@ -112,6 +140,11 @@ function(){   // fake line, keep_editor_happy
 	init_ui();
 	if (!idoc)  // ui not ready yet
 	    return;
+	toggle_menu();	
+    }
+
+    function toggle_menu()
+    {
 	if (main_ui)
 	    close_menu();
 	else
@@ -123,6 +156,13 @@ function(){   // fake line, keep_editor_happy
     function main_menu_init(w)
     {
 	set_unset_class(w, 'display-blocked', display_blacklisted);
+	set_display_blacklisted_visibility(w);
+    }
+
+    function set_display_blacklisted_visibility(w)
+    {
+	var icon = w.querySelector('#display-blocked');
+	set_unset_class(icon, 'show', something_blacklisted());
     }
     
     function display_blacklisted_init(w)
@@ -173,14 +213,30 @@ function(){   // fake line, keep_editor_happy
 	    return;	
 	w.hn = hn;
 	var s = w.querySelector('.slider');
-	slider_init(s, hn);
+	slider_init(s, hn, w);
 	set_unset_class(w, 'top-level', (hn.name == current_host));
 	set_unset_class(w, 'blacklisted', host_blacklisted(hn.name));
 	unset_class(w, 'first-item');
 	unset_class(w, 'last-item');
     }
+
+   function iframes_info(hn, allowed)
+    {
+        if (!hn.iframes || !hn.iframes.length)
+            return null;
+        var n = hn.iframes.length;
+        var title = n + " iframe" + (n>1 ? "s" : "");
+        //if (iframe_logic != 'filter')
+	//   title += ". use 'filter' iframe setting to block/allow in the menu.";
+        
+        if (iframe_logic == 'block_all')
+            allowed = false;
+        if (iframe_logic == 'allow')
+            allowed = true;
+        return {count:n, title:title, allowed:allowed};
+    }
     
-    function slider_init(w, hn)
+    function slider_init(w, hn, item)
     {
 	if (!hn)
 	    return;
@@ -192,7 +248,12 @@ function(){   // fake line, keep_editor_happy
 	var d = get_domain(host);
 	var h = host.slice(0, host.length - d.length);
 	var n = hn.scripts.length;
-	w.innerHTML = "&lrm;<b></b><i>" + h + "</i>" + d + "<u>(" + n + ")</u>";
+	var iframes = iframes_info(hn, allowed_host(host));
+	set_unset_class(item, 'iframe', iframes);
+	var u = '<u>(' + n + ')</u>';	
+	if (iframes)
+	    u = '<u title="' + iframes.title + '">(' + (n + iframes.count) + ')</u>';
+	w.innerHTML = '&lrm;<b></b><i>' + h + '</i>' + d + u;
 	var b = w.querySelector('b');
 	allow_once_init(b, host);
     }
@@ -280,6 +341,7 @@ function(){   // fake line, keep_editor_happy
 	}
 	
 	update_items();		// update position dependent stuff
+	set_display_blacklisted_visibility(main_ui);  // in case blacklisted stuff changed
 	allow_once_init(this.querySelector('b'), host);
 	need_reload = true;
     }
@@ -339,9 +401,42 @@ function(){   // fake line, keep_editor_happy
 	
 	// .revoke for allow_all and temp_allow_all
 	if (!has_class(allow_all, 'disabled'))
-	    set_unset_class(allow_all, 'revoke',  !something_to_allow(true));
+	    set_unset_class(allow_all, 'revoke',  !something_to_allow(true) && something_allowed_globally());
 	if (!has_class(temp_allow_all, 'disabled'))
-	    set_unset_class(temp_allow_all, 'revoke',  !something_to_allow());       
+	    set_unset_class(temp_allow_all, 'revoke',  !something_to_allow() && something_temp_allowed());       
+    }
+
+    function something_blacklisted()
+    {
+	var ret = false;
+	foreach_host_node(function(hn, dn)
+	{
+	    if (host_blacklisted(hn.name))
+		ret = true;
+	});
+	return ret;
+    }
+
+    function something_allowed_globally()
+    {
+	var ret = false;
+	foreach_host_node(function(hn, dn)
+	{
+	    if (host_allowed_globally(hn.name))
+		ret = true;
+	});
+	return ret;
+    }
+    
+    function something_temp_allowed()
+    {
+	var ret = false;
+	foreach_host_node(function(hn, dn)
+	{
+	    if (host_temp_allowed(hn.name))
+		ret = true;
+	});
+	return ret;
     }
     
     // for top buttons logic
@@ -371,7 +466,7 @@ function(){   // fake line, keep_editor_happy
 	    if (!allow && host_allowed_globally(host))
 		global_remove_host(host);
 	});
-	set_unset_class(this, 'revoke',  !something_to_allow(true));
+	set_unset_class(this, 'revoke',  !something_to_allow(true) && something_allowed_globally());
 	update_items();		// update ui
 	need_reload = true;
     }
@@ -389,7 +484,7 @@ function(){   // fake line, keep_editor_happy
 	    if (!allow && host_temp_allowed(host))
 		temp_remove_host(host);	   
 	});
-	set_unset_class(this, 'revoke',  !something_to_allow());
+	set_unset_class(this, 'revoke',  !something_to_allow() && something_temp_allowed());
 	update_items();		// update ui
 	need_reload = true;
     }
@@ -399,9 +494,9 @@ function(){   // fake line, keep_editor_happy
 	if (!have_prev_settings())
 	    return;
 	
-	var blacklisted = get_blacklisted_items();
 	load_prev_settings();
 	allow_toolbar_init(main_ui.querySelector('#allow-toolbar'));
+	set_display_blacklisted_visibility(main_ui);  // in case blacklisted stuff changed	
 	update_items();		// update ui
 	blacklisted_animations_sizing();
     }
@@ -428,17 +523,6 @@ function(){   // fake line, keep_editor_happy
         // if just exceed max-height by one item, allow it to display without scrolling
         // otherwise gradient won't show up (first and last items have higher z-order)
 	scroller.style = (i == 10 ? 'max-height:inherit' : '');
-    }
-
-    function get_blacklisted_items()
-    {
-	var blacklisted = [];
-	foreach_item(function(item, host)
-	{
-	    if (host_blacklisted(host))
-		blacklisted.push(item);
-	});
-	return blacklisted;
     }
 
     function foreach_item(f)
@@ -492,7 +576,7 @@ function(){   // fake line, keep_editor_happy
     
     /***************************** Options menu ******************************/
     
-    function options_clicked(e, section)
+    function show_options(e, section)
     {
 	if (e && main_ui.id == 'options') // dismiss
 	{
@@ -531,7 +615,7 @@ function(){   // fake line, keep_editor_happy
 	for (var i = 0; i < this.parentNode.children.length; i++)
 	    if (this.parentNode.children[i] == this)
 		break;
-	options_clicked(null, options_sections[i]);
+	show_options(null, options_sections[i]);
     }
 
     /***************************** Options general ******************************/
@@ -602,7 +686,7 @@ function(){   // fake line, keep_editor_happy
 	    global_remove_host(li.host);
 	    need_reload = true;
 	});
-	options_clicked(null, "whitelist"); // refresh ui
+	show_options(null, "whitelist"); // refresh ui
     }
 
     function options_whitelist_add(e)
@@ -625,7 +709,7 @@ function(){   // fake line, keep_editor_happy
 	    need_reload = true;
 	}
 	// that'd be the easy way...
-	// options_clicked(null, 'whitelist');
+	// show_options(null, 'whitelist');
 	// return;
 
 	entry.value = ''; // clear it
@@ -669,7 +753,7 @@ function(){   // fake line, keep_editor_happy
 	    unblacklist_host(li.host);
 	    need_reload = true;
 	});
-	options_clicked(null, "blacklist"); // refresh ui
+	show_options(null, "blacklist"); // refresh ui
     }
 
     function options_blacklist_add(e)
@@ -692,7 +776,7 @@ function(){   // fake line, keep_editor_happy
 	    need_reload = true;
 	}
 	// that'd be the easy way...
-	// options_clicked(null, 'blacklist');
+	// show_options(null, 'blacklist');
 	// return;
 
 	entry.value = ''; // clear it
@@ -717,6 +801,24 @@ function(){   // fake line, keep_editor_happy
     function import_settings_init()
     {   this.onchange = file_loader(parse_settings_file); }    
 
+    /***************************** About menu ******************************/        
+
+    function show_about(e)
+    {
+	if (e && main_ui.id == 'about') // dismiss
+	{
+	    repaint_ui_now();
+	    return;
+	}	
+	var w = new_widget("about");
+        switch_menu(w);		
+    }
+    
+    function about_init(w)
+    {
+	var v = w.querySelector('#addon-version');
+	v.innerHTML = 'Version ' + version_number;
+    }
     
     /***************************** Checkbox items ******************************/
     
@@ -752,6 +854,28 @@ function(){   // fake line, keep_editor_happy
 
     /***************************** dropdowns ******************************/
 
+    function menu_onclick()
+    {
+	switch_dropdown(null);
+    }
+    
+    function dropdown_onclick(e)
+    {
+	var menu = this.parentNode;
+	switch_dropdown(menu);
+	e.stopPropagation();
+    }
+
+    var current_dropdown;    
+    function switch_dropdown(d)
+    {
+	if (current_dropdown && current_dropdown != d)
+	    unset_class(current_dropdown, 'active');
+	current_dropdown = d;
+	if (d)
+	    toggle_class(d, 'active');
+    }
+    
     function setup_dropdown(w, current, callback)
     {
 	var button = w.querySelector('.button');
@@ -905,10 +1029,12 @@ function(){   // fake line, keep_editor_happy
 	menu_request = false;	// external api menu request (opera button ...)
 
 	var old = main_ui;
+	main_ui = null;
 	create_main_ui();
 	if (old)
 	    old.parentNode.removeChild(old); // remove main_ui
 	parent_main_ui();
+	update_main_button();
 	resize_iframe();
     }
 

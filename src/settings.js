@@ -39,7 +39,7 @@ function(){   // fake line, keep_editor_happy
 					// page, site, domain, or global.
 					//  (0,     1,     2,      3)
     
-    var scoped_prefixes;		// prefixes
+    var scoped_prefixes = ['', '', '', ''];
     
     function init_scope(url)
     {
@@ -148,6 +148,7 @@ function(){   // fake line, keep_editor_happy
     
     function set_hosts_setting(hosts)
     {
+	assert(!in_iframe() || topwin_cant_display, "Use main menu to change hosts in iframes");
 	hosts = hosts.replace(/^ */, '');
 	if (hosts == '')
 	    hosts = ' '; // can't store empty string, would mean current_host.

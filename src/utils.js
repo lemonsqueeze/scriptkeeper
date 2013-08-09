@@ -1,12 +1,17 @@
 function(){   // fake line, keep_editor_happy
 
     /***************************** Domain, url utils **************************/    
-    
+
     function url_hostname(url)
     {
-        var t = document.createElement('a');
-        t.href = url;
-        return t.hostname;
+	if (is_prefix("file:", url))
+	    return "localhost";
+	if (url == "inline script" ||
+	    is_prefix("data:", url))  // following can't handle data: urls
+	    return current_host;
+	
+	var p = split_url(url);
+	return p[0];
     }
 
     // strip http(s):// from url
@@ -39,7 +44,7 @@ function(){   // fake line, keep_editor_happy
 	//        http://www.joezimjs.com/javascript/the-lazy-mans-url-parsing/
 	u = strip_http(u);
 	var a = u.match(/^([^/]*)(\/|\/.*\/)([\w-.]*)([^/]*)$/);
-	assert(a, "split_url(): shouldn't happen");
+	assert(a, "split_url(): couldn't parse url:\n" + u);
 	return a.slice(1);
     }
     
@@ -225,17 +230,17 @@ function(){   // fake line, keep_editor_happy
     {
 	n.className += ' ' + klass;
     }
-    
+
     function unset_class(n, klass)
     {
-	var re = RegExp(' ' + klass + '( |$)', 'g'); // crap, 'g' doesn't work here
-	var old;
-	do
-	{
-	    old = n.className;	    
-	    n.className = n.className.replace(re, '$1');
-	}
-	while(old != n.className);
+       var re = RegExp(' ' + klass + '( |$)', 'g'); // crap, 'g' doesn't work here
+       var old;
+       do
+       {
+           old = n.className;      
+           n.className = n.className.replace(re, '$1');
+       }
+       while(old != n.className);       
     }
 
     function set_unset_class(n, klass, set)
@@ -283,7 +288,7 @@ function(){   // fake line, keep_editor_happy
 	var h = new Object();	
 	foreach(s.split(' '), function(key)
 	{
-	    if (key != '')  // "".split(' ') = [""] ...
+	    if (key != '')  // "".split(' ') = [""] ...	    
 		h[key] = 1;
 	});
 	return h;
@@ -365,16 +370,31 @@ function(){   // fake line, keep_editor_happy
 	
 	return (xform(v1) < xform(v2));
     }
-    
-    function function_exists(name)
+
+    function in_iframe()
     {
-	return eval("typeof " + name) == "function";
+	return (window != window.parent &&
+		window != window.top);
+	// was return (window != window.top);
+	// but framesets can override top (!)
+	// ex http://cybertech.net.pl/online/astro/khc/@inetBook/gui/index.htm
+    }
+    
+    function delayed(f, time, main_window)
+    {
+	var win = (main_window ? window : iwin);
+	return (function(){ win.setTimeout(f, time); });
+    }
+    
+    function function_defined(name)
+    {	
+	return (eval("typeof " + name) == 'function');
     }
 
     function log(msg)
     {
 	var h = "scriptweeder extension (main)  : ";
-	if (window != window.top)
+	if (in_iframe())
 	    h = "scriptweeder extension (iframe): ";
 	console.log(h + msg);
     }
@@ -398,8 +418,8 @@ function(){   // fake line, keep_editor_happy
     
     function my_alert(msg)
     {
-	var title = "scriptweeder";
-	if (window != window.top)
+	var title = "ScriptWeeder";
+	if (in_iframe())
 	    title += " (in iframe)"
 	alert(title + "\n\n" + msg);
     }
@@ -425,7 +445,7 @@ function(){   // fake line, keep_editor_happy
 	var f = files[0];
 	var reader = new iwin.FileReader();
 	
-	reader.onload = function(e) { callback(e.target.result, f.name); };	
+	reader.onload = function(e) { callback(e.target.result, f.name); };
 	reader.readAsBinaryString(f);
 	//reader.readAsText(f);
 	}

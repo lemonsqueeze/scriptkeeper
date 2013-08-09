@@ -18,23 +18,15 @@ function(){   // fake line, keep_editor_happy
     // 'normal'  or  'cache'
     var default_reload_method = 'normal';
 
-    // whether current host is allowed in filtered mode
-    var default_allow_current_host = true;
     
     /********************************* Globals *********************************/
 
     // FIXME this doesn't work for iframes ...
     var debug_mode = (location.hash == '#swdebug');
-    var paranoid = false;
     
     /* stuff load_global_settings() takes care of */
     var current_host;
     var current_domain;
-    var whitelist;
-    var blacklist;
-    var templist;
-    var helper_blacklist;
-    var allow_current_host;
     var block_inline_scripts = false;
     var handle_noscript_tags = false;
     var reload_method;
@@ -82,6 +74,8 @@ function(){   // fake line, keep_editor_happy
     function load_global_settings()
     {
 	load_global_context(location.href, true);
+	if (location.hash == '#swblockall' && !in_iframe())
+	    force_block_all_mode();
 	
 	init_iframe_logic();	
 	reload_method = global_setting('reload_method', default_reload_method);
@@ -98,15 +92,13 @@ function(){   // fake line, keep_editor_happy
 	
 	init_scope(url);
 	init_mode();
-
+	
 	if (do_startup_checks)
 	    startup_checks();
-	
-	whitelist = deserialize_name_hash(global_setting('whitelist'));
-	blacklist = deserialize_name_hash(global_setting('blacklist'));
-	templist = deserialize_name_hash(global_setting('templist'));
-	helper_blacklist = deserialize_name_hash(global_setting('helper_blacklist'));
-	allow_current_host = global_bool_setting('allow_current_host', default_allow_current_host);
+
+	init_filter();
+	if (!allowed_host(current_host))  // block inline scripts if current_host not allowed
+	    block_inline_scripts = true;
     }
 
     
@@ -121,7 +113,7 @@ function(){   // fake line, keep_editor_happy
     // reload top window really: with 'filtered' iframe logic, iframes need parent to reload.
     function reload_page()
     {
-	if (window != window.top)		// in iframe, no choice there.
+	if (in_iframe())		// in iframe, no choice there.
 	    window.top.location.reload(false);
 	
 	// All of these reload from server ...
@@ -173,7 +165,7 @@ function(){   // fake line, keep_editor_happy
       handle_noscript_tags = false;      
       if (new_mode == 'block_all')
       {
-	  block_inline_scripts = bool_setting('inline', default_block_inline_scripts);
+	  block_inline_scripts = true;
 	  handle_noscript_tags = bool_setting('nstags', default_handle_noscript_tags);
       }
     }
@@ -184,6 +176,13 @@ function(){   // fake line, keep_editor_happy
 	set_mode_no_update(new_mode);
 	need_reload = true;
 	repaint_ui_now();
+    }
+
+    function force_block_all_mode()
+    {
+	mode = 'block_all';
+	block_inline_scripts = true;
+	handle_noscript_tags = true;
     }    
 
     var mode;				// current_mode
@@ -199,28 +198,35 @@ function(){   // fake line, keep_editor_happy
     
     /***************************** filtering js in iframes **************************/
 
-    var show_ui_in_iframes;    
-    var iframe_message_header = "scriptweeder lost iframe rescue channel:";
-    var message_topwin_cant_display = "can't help you, i'm a frameset my dear";
+    var show_ui_in_iframes;
+    var msg_header_iframe = "scriptweeder iframe rescue channel:";
+    var msg_header_iframe_script = "scriptweeder iframe script:";
+    var msg_header_iframe_script_loaded = "scriptweeder iframe script loaded:";
+    var msg_header_parent = "scriptweeder iframe parent:";
+    var message_topwin_cant_display = "can't help you dear, i'm a frameset";
     
     function init_iframe_logic()
     {
 	// let contained iframes know their parent host.
-	if (window == window.top)
+	if (!in_iframe())
 	    set_global_setting('top_window_url', location.href);
 	
 	show_ui_in_iframes = global_bool_setting('show_ui_in_iframes', default_show_ui_in_iframes);
-	message_handlers[iframe_message_header] = iframe_message_handler;
+	// TODO clean this up
+	message_handlers[msg_header_iframe] = message_from_iframe;
+	message_handlers[msg_header_iframe_script] = message_add_iframe_script;
+	message_handlers[msg_header_iframe_script_loaded] = message_iframe_script_loaded;	
+	message_handlers[msg_header_parent] = message_from_parent;
 	
 	iframe_logic = global_setting('iframe_logic');
 	if (iframe_logic != 'block_all' && iframe_logic != 'filter' && iframe_logic != 'allow')
 	    iframe_logic = default_iframe_logic;
 
-	if (window == window.top) // not running in iframe ?
+	if (!in_iframe())
 	    return;
 	
 	// tell parent about us so it can display our host in the menu.
-	window.top.postMessage(iframe_message_header + location.href, '*');
+	window.top.postMessage(msg_header_iframe + location.href, '*');
 	
 	// switch mode depending on iframe_logic
 	// TODO: add way to override with page setting *only* ? should be safe enough
@@ -229,8 +235,8 @@ function(){   // fake line, keep_editor_happy
     
     function decide_iframe_mode()
     {	
-	if (iframe_logic == 'block_all')
-	    iframe_block_all_mode();
+	if (iframe_logic == 'block_all')	        
+	    force_block_all_mode();  // can't use set_mode_no_update('block_all'), it would save the setting.
 	else if (iframe_logic == 'filter')
 	    use_iframe_parent_mode(true);
 	else if (iframe_logic == 'allow')
@@ -240,38 +246,27 @@ function(){   // fake line, keep_editor_happy
     }
 
     // set mode based on parent settings
+    var parent_url;
+    var parent_domain;
     function use_iframe_parent_mode(check_allowed)
     {
 	// 'filter' logic uses parent window's settings to decide what to do with page scripts.
-	var parent_url = get_parent_url();
-	var allowed, parent_mode;
+	parent_url = get_parent_url();
+	parent_domain = get_domain(url_hostname(parent_url));
 	assert(parent_url != '', "parent_url is empty !");
 	
-	load_global_context(parent_url);		// get parent settings
-	parent_mode = mode;	
-	if (check_allowed)
-	{
-	    allowed = allowed_host(location.hostname);	// does parent allow us ?
-	    clear_domain_nodes();			// wipe out hosts nodes this will have created
-	}
-	load_global_context();
+	var parent = merge_parent_settings(parent_url, check_allowed);
+	var parent_mode = parent.mode;
+	var allowed = parent.allows_us;
 	
 	// alert("iframe " + location.hostname + " allowed: " + allowed);
 	if (parent_mode == 'block_all' ||
 	    (check_allowed && !allowed))
-	    iframe_block_all_mode();
+	    force_block_all_mode();        // can't use set_mode_no_update('block_all'), it would save the setting.
 	else
 	    mode = parent_mode;
     }
-    
-    // can't use set_mode_no_update('block_all'), it would save the setting.
-    function iframe_block_all_mode()
-    {
-	mode = 'block_all';
-	block_inline_scripts = true;
-	handle_noscript_tags = true;
-    }
-    
+        
     function get_parent_url()
     {
 	// 1) try getting it directly. that won't work cross domain
@@ -288,17 +283,21 @@ function(){   // fake line, keep_editor_happy
 	//    twice without side effects...
     	return global_setting('top_window_url');
     }
-    
-    function iframe_message_handler(e, content)
+
+    // add scripts from iframes to menu
+    function message_add_iframe_script(e, url)
     {
-	var source = e.source;	// WindowProxy of sender
-	// e.origin contains 'http://hostname' of the sender
-	if (source === window.top)
-	    message_from_parent(e, content);
-	else
-	    message_from_iframe(e, content);
+	add_script(url, url_hostname(url));
+	repaint_ui();	
     }
 
+    // script loaded event from iframe, update menu
+    function message_iframe_script_loaded(e, url)
+    {
+	var ev = { from_iframe:true, event:{ target:{ tagName:'script', src:url } } };
+	beforeload_handler(ev);
+    }
+    
     // iframe instance making itself known to us. (works for nested iframes unlike DOM harvesting)
     function message_from_iframe(e, url)
     {
@@ -307,7 +306,7 @@ function(){   // fake line, keep_editor_happy
 	// fortunately this works even before domcontentloaded
 	if (element_tag_is(document.body, 'frameset')) // sorry, can't help you dear
 	{
-	    e.source.postMessage(iframe_message_header + message_topwin_cant_display, '*');
+	    e.source.postMessage(msg_header_parent + message_topwin_cant_display, '*');
 	    return;
 	}	
 	add_iframe(url);			// add to menu so we can block/allow it.
@@ -318,7 +317,8 @@ function(){   // fake line, keep_editor_happy
     function message_from_parent(e, answer)
     {
 	debug_log("[msg] from parent: " + answer);
-	assert(!topwin_cant_display, "topwin_cant_display logic shouldn't get called twice !");
+	assert(!topwin_cant_display, "topwin_cant_display logic shouldn't get called twice !\n" +
+	       location.href + "\n" + parent_url);
 	
 	// crap, parent uses frameset, we're not in an iframe actually.
 	// -> fall back to normal logic and show ui everywhere.
@@ -362,146 +362,7 @@ function(){   // fake line, keep_editor_happy
     }
     
     // TODO show iframe placeholder ?
-    
-    /***************************** Host filtering *****************************/    
-    
-    function host_blacklisted(host)
-    {
-	if (blacklist[host])
-	    return true;	
-	// whole domain blacklisted ?
-	return (blacklist[get_domain(host)] ? true : false);
-    }    
-
-    function blacklist_host(host)
-    {
-	blacklist[host] = 1;
-	set_global_setting('blacklist', serialize_name_hash(blacklist));
-	temp_remove_host(host);  // don't cumulate temp + blacklist
-    }
-
-    function unblacklist_host(host)
-    {
-	delete blacklist[host];
-	// remove domain also if it's there
-	delete blacklist[get_domain(host)];
-	set_global_setting('blacklist', serialize_name_hash(blacklist));
-    }
-    
-    function global_allow_host(host)
-    {
-	whitelist[host] = 1;
-	set_global_setting('whitelist', serialize_name_hash(whitelist));
-	temp_remove_host(host);  // don't cumulate temp + global
-    }
-    
-    function global_remove_host(host)
-    {
-	delete whitelist[host];
-	// remove domain also if it's there
-	delete whitelist[get_domain(host)];
-	set_global_setting('whitelist', serialize_name_hash(whitelist));
-    }
-    
-    function host_allowed_globally(host)
-    {
-	if (whitelist[host])
-	    return true;	
-	// whole domain allowed ?
-	return (whitelist[get_domain(host)] ? true : false);
-    }
-
-    function temp_allow_host(host)
-    {
-	templist[host] = 1;
-	set_global_setting('templist', serialize_name_hash(templist));
-    }
-    
-    function temp_remove_host(host)
-    {
-	delete templist[host];
-	// remove domain also if it's there
-	delete templist[get_domain(host)];
-	set_global_setting('templist', serialize_name_hash(templist));
-    }
-    
-    function host_temp_allowed(host)
-    {
-	if (templist[host])
-	    return true;	
-	// whole domain allowed ?
-	return (templist[get_domain(host)] ? true : false);
-    }
-
-    function clear_temp_list()
-    {
-	templist = {};
-	set_global_setting('templist', serialize_name_hash(templist));	
-    }
-
-    function on_helper_blacklist(host)
-    {
-	if (helper_blacklist[host])
-	    return true;	
-	// whole domain blacklisted ?
-	return (helper_blacklist[get_domain(host)] ? true : false);
-    }
-    
-    function filtered_mode_allowed_host(host)
-    {
-	return (
-	    (host == current_host && allow_current_host) ||
-	    host_allowed_globally(host) ||
-	    host_temp_allowed(host));
-    }
-
-    // cached in host_node.helper_host
-    // dn arg optional
-    function relaxed_mode_helper_host(host, dn)
-    {
-	dn = (dn ? dn : get_domain_node(get_domain(host), true));
-	return (dn.related ||
-		((dn.helper || helper_host(host)) &&
-		 !on_helper_blacklist(host)));
-    }
-    
-    // allow related and helper domains
-    function relaxed_mode_allowed_host(host)
-    {	
-	return (relaxed_mode_helper_host(host) ||
-		filtered_mode_allowed_host(host));
-    }
-
-    // switch to filtered mode for this site,
-    // allow every host allowed in relaxed mode, except host
-    function relaxed_mode_to_filtered_mode(host)
-    {
-	if (scope == 3)  // FIXME: should we handle others ?
-	    change_scope(1);
-	set_mode('filtered');
-	
-	foreach_host_node(function(hn)
-	{
-	  var h = hn.name;
-	  if (relaxed_mode_allowed_host(h))
-	  {
-	      if (h == host)
-		  remove_host(h);
-	      else
-		  allow_host(h);
-	  }
-	});      
-    }
-    
-    function allowed_host(host)
-    {
-	if (host_blacklisted(host)) return false;
-	if (mode == 'block_all') return false; 
-	if (mode == 'filtered')  return filtered_mode_allowed_host(host);
-	if (mode == 'relaxed')   return relaxed_mode_allowed_host(host); 
-	if (mode == 'allow_all') return true;
-	error('mode="' + mode + '", this should not happen!');
-    }
+        
     
     /**************************** Scripts store *******************************/
 
@@ -536,13 +397,19 @@ function(){   // fake line, keep_editor_happy
 	    return null;
 	var n = new Object();
 	n.name = domain;
-	n.related = related_domains(domain, current_domain);
+	n.related = is_related_domain(domain);
 	n.helper = helper_domain(domain);
 	n.hosts = [];
 	domain_nodes.push(n);
 	return n;
     }
 
+    function is_related_domain(d)
+    {
+	return (related_domains(d, current_domain) ||
+	        (parent_domain && related_domains(d, parent_domain))); // for iframes, make parent related
+    }
+    
     function get_host_node(host, domain_node, create)
     {
 	var hosts = domain_node.hosts;
@@ -575,6 +442,10 @@ function(){   // fake line, keep_editor_happy
 	var domain_node = get_domain_node(domain, true);
 	var host_node = get_host_node(host, domain_node, true);
 	host_node.scripts.push(s);
+
+	if (in_iframe()) 	// tell parent so it can display script in the menu.
+	    window.top.postMessage(msg_header_iframe_script + url, '*');
+	
 	return s;
     }
 
@@ -697,6 +568,9 @@ function(){   // fake line, keep_editor_happy
       debug_log("beforescript");      
       total_inline++;
       total_inline_size += e.element.text.length;
+
+      // add fake scripts so current_host shows up in menu
+      add_script("inline script", current_host);
       
       repaint_ui();
       
@@ -745,10 +619,9 @@ function(){   // fake line, keep_editor_happy
 	check_init();
 	
 	var host = url_hostname(e.src);
-	var script = find_script(e.src, host);
+	var script = find_script(e.src, host);	
 	debug_log("loaded: " + host);
-
-	if (paranoid)	// sanity check ...
+	if (!ev.from_iframe)  // sanity check ...
 	    assert(allowed_host(host),
 		   "a script from\n" + host + "\nis being loaded even though it's blocked. That's a bug !!");
 	
@@ -760,6 +633,8 @@ function(){   // fake line, keep_editor_happy
 
 	if (main_ui)
 	    repaint_ui();
+	if (in_iframe()) 	// tell parent so it can update menu
+	    window.top.postMessage(msg_header_iframe_script_loaded + e.src, '*');
     }
 
     function domcontentloaded_handler(e)
@@ -782,9 +657,9 @@ function(){   // fake line, keep_editor_happy
 	init_ui();
     }
 
-    function before_message_handler(ujs_event)
+    function before_message_handler(ue)
     {
-	var e = ujs_event.event;
+	var e = ue.event;
 	var m = e.data;
 	if (typeof(m) != "string")
 	    return;
@@ -792,9 +667,15 @@ function(){   // fake line, keep_editor_happy
 	for (var h in message_handlers)
 	{
 	    if (is_prefix(h, m))
-	    {		
+	    {
+		if (e.source == window)
+		{
+		    error("Looks like a script on this page is trying to forge ScriptWeeder messages, " +
+			  "something funny is going on !");
+		    return;
+		}
 		//debug_log("[msg] " + m);
-		ujs_event.preventDefault();	// keep this conversation private.
+		ue.preventDefault();	// keep this conversation private.
 		var content = m.slice(h.length);		
 		(message_handlers[h])(e, content);
 		return;
@@ -803,122 +684,6 @@ function(){   // fake line, keep_editor_happy
 	// not for us then.
     }
 
-    
-    /**************************** Extension messaging ***************************/
-
-    function get_icon_from_css(mode, fatal)
-    {
-	var data_re = new RegExp(".*'(data:image/png;base64,[^']*)'.*");
-	function findit(selector)
-	{
-	    var m = get_style().match(new RegExp(selector + ".*'data:image/png;base64,[^']*'", 'g'));
-	    if (!m)
-		return null;
-	    return m[m.length - 1].replace(data_re, '$1'); // get the last one.
-	}
-
-	// look for toolbar specific rule first:   #toolbar_button.<mode> img
-	var data_url = findit("#toolbar_button." + mode + "[ \t]+img");
-	if (data_url)
-	    return data_url;
-	
-	// then main button rule:  #main_button.<mode> img 
-	data_url = findit("#main_button." + mode + "[ \t]+img");
-	if (data_url)
-	    return data_url;	
-
-	// generic rule then: .<mode> img
-	data_url = findit("." + mode + "[ \t]+img");
-	if (data_url)
-	    return data_url;
-	assert(!fatal, "There's a problem with this style, couldn't find toolbar button image for " + mode + " mode.");
-	return "";
-    }
-
-    var extension_button;
-    function update_extension_button(force)
-    {
-	if (!bgproc)
-	    return;
-	
-	var tmp = disable_main_button;
-	disable_main_button = false; // just want to know if there's something to display
-	var needed = ui_needed();
-	disable_main_button = tmp;
-	
-	var status = (needed ? mode : 'off');
-	if (!force && extension_button == status) // already in the right state
-	    return;
-
-	bgproc.postMessage({ debug:debug_mode, mode:mode, disabled:!needed});
-	debug_log("sent mode to bgproc");
-	extension_button = status;
-    }
-
-    var bgproc;    
-    function extension_message_handler(e, m) 
-    {
-	debug_log("message from background process: " + m);
-	if (!bgproc)
-	    bgproc = e.source;
-	check_init();
-	if (m == "clear temp list")
-	{
-	    clear_temp_list();
-	    debug_log("temp list cleared");	    
-	    bgproc.postMessage({header:"temp list cleared"});
-	    return;
-	}
-
-	if (m == "tab switch")
-	{
-	    clear_prev_settings();
-	    return;
-	}
-    
-	update_extension_button(true);
-    }
-
-    /**************************** userjs messaging ***************************/
-
-    var bgproc;
-    function ujsfwd_before_message(ujs_event)
-    {
-	var e = ujs_event.event;
-	var m = e.data;
-
-	// if 2nd msg from bgproc,
-	// won't even get called, userjs uses beforeEvent.message and will cancel it.
-	debug_log("[msg] " + m);
-	
-	if (m == "scriptweeder bgproc to injected script:")  // hello from bgproc
-	{
-	    bgproc = e.source;
-	    ujs_event.preventDefault(); // keep this private
-	    return;
-	}
-	
-	if (m && m.scriptweeder) // from userjs, forward to bgproc
-	{
-	    debug_log("forwarding to bgproc");
-	    bgproc.postMessage(m);
-	    ujs_event.preventDefault(); // keep this private
-	}
-	// other msg, leave alone
-    }
-    
-    function forward_to_userjs()
-    {
-	if (!window.opera.scriptweeder) // userjs is not running
-	    return false;
-	
-	opera.extension.onmessage = function(){};  // just so we get an event
-	// this is enough for userjs beforeEvent to fire,
-	// so no need to forward anything in this direction.
-	window.opera.addEventListener('BeforeEvent.message', ujsfwd_before_message, false);
-	debug_log("userjs detected, handing over and forwarding");
-	return true;
-    }
     
     /**************************** Handlers setup ***************************/
 
@@ -947,9 +712,8 @@ function(){   // fake line, keep_editor_happy
 	document.addEventListener('DOMContentLoaded',		domcontentloaded_handler,	false);
 	window.opera.addEventListener('BeforeEvent.message',		before_message_handler,		false);	
 	window.setTimeout(check_document_ready, 50);
-	
-	opera.extension.onmessage = function(e){}; // so we get an event, and catch it with beforeEvent
-	message_handlers["scriptweeder background process:"] = extension_message_handler;
+
+	init_extension_messaging();
     }
 
 
