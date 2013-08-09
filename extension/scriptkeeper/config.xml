@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" version="1.0"
+<widget xmlns="http://www.w3.org/ns/widgets" version="1.0.1"
 	id="https://github.com/lemonsqueeze/scriptkeeper">
     <name>ScriptKeeper</name>
     <description>Block &amp; filter scripts! An easy-to-use Javascript manager inspired by the popular NoScript add-on for Firefox.</description>

@@ -852,6 +852,13 @@ function(){   // fake line, keep_editor_happy
 	var icon = w.querySelector('#about-button');
 	set_class(icon, 'static');	
     }
+
+    // since we're in iframe links need to reload main page to work
+    function link_loader()
+    {
+        location.href = this.href;
+    }
+
     
     /***************************** Checkbox items ******************************/
     

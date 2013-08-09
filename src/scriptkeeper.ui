@@ -243,7 +243,7 @@
     <div id="addon-icon"></div>
     <div id="addon-name">ScriptKeeper</div>
     <div id="addon-version">Version xxx</div>
-    <a href="https://addons.opera.com/extensions/details/scriptkeeper" class="button" >Feedback & support</a>
+    <link_button href="https://addons.opera.com/extensions/details/scriptkeeper" label="Feedback & support"/>
     <main_footer></main_footer>
   </section>
 </widget>
@@ -283,6 +283,10 @@
 
 <def macro="dropdown_button" label>
   <div class="button dropdown" onclick="dropdown_onclick">$label</div>
+</def>
+
+<def macro="link_button" href label>
+  <a href="$href" onclick="link_loader" class="button">$label</a>
 </def>
 
 </widgets>
