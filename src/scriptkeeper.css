@@ -196,6 +196,8 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
                         border: solid hsla(0,0%,0%,0.3) 1px;
                         box-shadow: 0 3px 12px hsla(0,0%,0%,0.50);
                         margin: 0 auto;
+			position: relative; /* make z-index work */
+			z-index: 1;
                     }
 
 #items-container    { width: 167px; overflow: hidden; margin-bottom: -8px; } /* Overall items container, margin-bottom to raise footer */
@@ -455,6 +457,7 @@ footer div          { transition: all 200ms; -o-transition: all 200ms;}
 .item.blacklisted   { max-height: 0; opacity: 0; visibility: hidden; margin-bottom: 0; transition-delay: 1s; -o-transition-delay: 1s; }
 
 /* Remove transition delay when switching back from display-blocked */
+.display-blocked .item.blacklisted,			/* this one speeds up item hovers */
 .display-blocked-trans .item.blacklisted 	{ transition-delay: 0; -o-transition-delay: 0; } 
 
 .display-blocked .item.blacklisted	{ max-height: 31px; opacity: 0.5; visibility: visible; margin-bottom: 8px; }
@@ -598,7 +601,7 @@ footer .static:hover,
 
 /*------------ Main button ----------------*/
 
-#main-button            { position:absolute; top:0px; right:0px; border-width: 2px; margin: 0px; float:none; z-index:1; } 
+#main-button            { position:absolute; top:0px; right:0px; border-width: 2px; margin: 0px; float:none; z-index:0; } 
 #main-button img        { width:18px; height:18px; vertical-align:middle; 
 			  background-size:contain; background-repeat:no-repeat; background-position:center 
 			}

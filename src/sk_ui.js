@@ -818,6 +818,9 @@ function(){   // fake line, keep_editor_happy
     {
 	var v = w.querySelector('#addon-version');
 	v.innerHTML = 'Version ' + version_number;
+
+	var icon = w.querySelector('#about-button');
+	set_class(icon, 'static');	
     }
     
     /***************************** Checkbox items ******************************/

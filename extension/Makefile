@@ -3,7 +3,7 @@ DIR=scriptkeeper
 EXT=scriptkeeper-$(VERSION).oex
 
 #VERS_MAG=$(shell cat ../scriptkeeper.js | grep 'var version' | sed -e "s|.*v\([0-9.]\+\)'.*|\1|")
-VERSION=0.0.17
+VERSION=0.0.19
 
 all: $(EXT)
 
