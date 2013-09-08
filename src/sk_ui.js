@@ -986,6 +986,7 @@ function(){   // fake line, keep_editor_happy
 	need_menu = false;
 	main_ui.parentNode.removeChild(main_ui);
 	main_ui = null;
+	resize_iframe();
 	
 	if (need_reload)
             reload_page();
